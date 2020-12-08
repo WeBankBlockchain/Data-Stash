@@ -2,9 +2,11 @@
 
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
-WeBankBlockchain-Data-Stash 是一个基于[FISCO-BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS)平台的数据治理工具。
 
-如何以有限的磁盘空间来存储无限膨胀的账本数据，是区块链数据治理领域的关键问题之一。数据仓库组件Data-Stash用于解决账本和磁盘之间的矛盾。通过为节点生成全量备份作为后备保障，使节点便可以放心地进行数据裁剪，而不必担心数据丢失。Data-Stash还可以用于节点快速同步、监管审计等场景。
+
+如何以有限的磁盘空间来存储无限膨胀的账本数据，是区块链数据治理领域的关键问题之一。WeBankBlockchain-Data-Stash 是一个基于[FISCO-BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS)平台的数据治理工具，以解决账本和磁盘之间的矛盾。通过为节点生成全量备份作为后备保障，使节点便可以放心地进行数据裁剪，而不必担心数据丢失。Data-Stash还可以用于节点快速同步、监管审计等场景。
+
+**此版本只支持**[FISCO BCOS 2.6及以上](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/)。
 
 ## 关键特性
 
@@ -26,7 +28,7 @@ WeBankBlockchain-Data-Stash 是一个基于[FISCO-BCOS](https://github.com/FISCO
 
 | 依赖软件   | 说明                                                         | 备注 |
 | ---------- | ------------------------------------------------------------ | ---- |
-| FISCO-BCOS       | >= 2.0 |      |
+| FISCO-BCOS       | >= 2.6 |      |
 | Java       | \>= JDK[1.8]                                                 |      |
 | Git        | 下载安装包需要使用Git                                          |      |
 
