@@ -31,7 +31,7 @@ WeBankBlockchain-Data-Stash 是一个基于[FISCO-BCOS](https://github.com/FISCO
 | MySQL | >= mysql-community-server[5.7] | |
 | Nginx | >= nginx[1.17.3]| |
 | Java | JDK[1.8] | |
-| Git | 下载的安装包使用Git | |
+| Git |  | |
 
 ## 文档
 
