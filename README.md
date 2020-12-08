@@ -19,9 +19,7 @@ WeBankBlockchain-Data-Stash 是一个基于[FISCO-BCOS](https://github.com/FISCO
 
 - 易于使用
 
-
 ## 环境要求
-
 
 在使用本组件前，请确认系统环境已安装相关依赖软件，清单如下：
 
@@ -34,7 +32,6 @@ WeBankBlockchain-Data-Stash 是一个基于[FISCO-BCOS](https://github.com/FISCO
 | Git |  | |
 
 ## 文档
-
 - [**中文**](https://data-doc.readthedocs.io/zh_CN/latest/docs/WeBankBlockchain-Data-Stash/index.html)
 - [**快速安装**](https://data-doc.readthedocs.io/zh_CN/latest/docs/WeBankBlockchain-Data-Stash/quickstart.html)
 
@@ -45,14 +42,6 @@ WeBankBlockchain-Data-Stash 是一个基于[FISCO-BCOS](https://github.com/FISCO
 - 欢迎提交代码(Pull requests)。
 - [提问和提交BUG](https://github.com/WeBankBlockchain/WeBankBlockchain-Data-Stash/issues)。
 - 如果发现代码存在安全漏洞，请在[这里](https://security.webank.com)上报。
-
-## 加入我们的社区
-
-FISCO BCOS开源社区是国内活跃的开源社区，社区长期为机构和个人开发者提供各类支持与帮助。已有来自各行业的数千名技术爱好者在研究和使用FISCO BCOS。如您对FISCO BCOS开源技术及应用感兴趣，欢迎加入社区获得更多支持与帮助。
-
-
-![](https://media.githubusercontent.com/media/FISCO-BCOS/LargeFiles/master/images/QR_image.png)
-
 
 ## License
 ![license](http://img.shields.io/badge/license-Apache%20v2-blue.svg)
