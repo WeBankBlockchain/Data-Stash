@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webank.blockchain.data.stash.db.dao.SysConsensusInfoMapper">
+	<resultMap id="BaseResultMap" type="com.webank.blockchain.data.stash.db.model.SysConsensusInfo">
+		<id column="_id_" jdbcType="BIGINT" property="id" />
+		<result column="_hash_" jdbcType="VARCHAR" property="hash" />
+		<result column="_status_" jdbcType="INTEGER" property="status" />
+		<result column="_num_" jdbcType="BIGINT" property="num" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="type" jdbcType="VARCHAR" property="type" />
+		<result column="node_id" jdbcType="VARCHAR" property="nodeId" />
+		<result column="enable_num" jdbcType="VARCHAR" property="enableNum" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		_id_, _hash_, _status_, _num_, name, type, node_id, enable_num
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.Long"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from _sys_consensus_
+		where _id_ = #{id,jdbcType=BIGINT}
+	</select>
+	<select id="selectByNodeIdOrderByNumDescLimit" parameterType="String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from _sys_consensus_
+		where node_id = #{nodeId,jdbcType=VARCHAR} and type='sealer' order by _num_ desc limit 1
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from _sys_consensus_
+		where _id_ = #{id,jdbcType=BIGINT}
+	</delete>
+	<insert id="insert" parameterType="com.webank.blockchain.data.stash.db.model.SysConsensusInfo">
+		insert into _sys_consensus_ (_id_, _hash_, _status_, _num_,
+		name, type, node_id,
+		enable_num)
+		values (#{id,jdbcType=BIGINT}, #{hash,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER},
+		#{num,jdbcType=BIGINT},
+		#{name,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{nodeId,jdbcType=VARCHAR},
+		#{enableNum,jdbcType=VARCHAR})
+	</insert>
+	
+	<insert id="batchInsert" parameterType="java.util.List" >
+		replace into _sys_consensus_ (_id_, _hash_, _status_, _num_,
+		name, type, node_id,
+		enable_num)
+		values
+		<foreach collection="list" item="item" index="index" separator="," >
+			(#{item.id,jdbcType=BIGINT}, #{item.hash,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER},
+		#{item.num,jdbcType=BIGINT},
+		#{item.name,jdbcType=VARCHAR}, #{item.type,jdbcType=VARCHAR}, #{item.nodeId,jdbcType=VARCHAR},
+		#{item.enableNum,jdbcType=VARCHAR})
+    	</foreach>
+	</insert>
+	
+	<insert id="batchInsertDetail" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="pkId">
+		insert into _sys_consensus_d_ (_id_, _hash_, _status_, _num_,
+		name, type, node_id,
+		enable_num)
+		values
+		<foreach collection="list" item="item" index="index" separator="," >
+			(#{item.id,jdbcType=BIGINT}, #{item.hash,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER},
+		#{item.num,jdbcType=BIGINT},
+		#{item.name,jdbcType=VARCHAR}, #{item.type,jdbcType=VARCHAR}, #{item.nodeId,jdbcType=VARCHAR},
+		#{item.enableNum,jdbcType=VARCHAR})
+    	</foreach>
+	</insert>
+	<update id="updateByPrimaryKey" parameterType="com.webank.blockchain.data.stash.db.model.SysConsensusInfo">
+		update _sys_consensus_
+		set _status_ = #{status,jdbcType=INTEGER},
+		_hash_ = #{hash,jdbcType=VARCHAR},
+		_num_ = #{num,jdbcType=BIGINT},
+		name = #{name,jdbcType=VARCHAR},
+		type = #{type,jdbcType=VARCHAR},
+		node_id = #{nodeId,jdbcType=VARCHAR},
+		enable_num = #{enableNum,jdbcType=VARCHAR}
+		where _id_ = #{id,jdbcType=BIGINT}
+	</update>
+	
+	<update id="createTable" parameterType="String">
+		CREATE TABLE IF NOT EXISTS ${tableName} (
+		`_id_` bigint(20) unsigned NOT NULL,
+		`_hash_` VARCHAR(128) NOT NULL DEFAULT '0x00',
+		`_status_` int(11) DEFAULT NULL,
+		`_num_` bigint(20) DEFAULT NULL,
+		`name` VARCHAR(128) DEFAULT 'node',
+		`type` VARCHAR(128),
+		`node_id` VARCHAR(256),
+		`enable_num` VARCHAR(256),
+		PRIMARY KEY (`_id_`),
+		  KEY (_num_),
+		  KEY (name)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	<update id="createDetailTable" parameterType="String">
+		CREATE TABLE IF NOT EXISTS 
+		${tableName} (
+		`pk_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+		`_id_` bigint(20) unsigned NOT NULL,
+		`_hash_` VARCHAR(128) NOT NULL DEFAULT '0x00',
+		`_status_` int(11) DEFAULT NULL,
+		`_num_` bigint(20) DEFAULT NULL,
+		`name` VARCHAR(128) DEFAULT 'node',
+		`type` VARCHAR(128),
+		`node_id` VARCHAR(256),
+		`enable_num` VARCHAR(256),
+		PRIMARY KEY (`pk_id`),
+		  KEY (_num_),
+		  KEY (_id_),
+		  KEY(`_id_`, `_num_`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	<insert id="insertDetail" parameterType="com.webank.blockchain.data.stash.db.model.SysConsensusInfo"
+		useGeneratedKeys="true" keyProperty="pkId">
+		insert into _sys_consensus_d_
+		(_id_, _hash_, _status_, _num_, name, type, node_id,
+		enable_num)
+		values (#{id,jdbcType=BIGINT}, #{hash,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{num,jdbcType=BIGINT},
+		#{name,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{nodeId,jdbcType=VARCHAR},
+		#{enableNum,jdbcType=VARCHAR})
+	</insert>
+	<select id="selectDetailByEntryId" parameterType="java.lang.Long"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from _sys_consensus_d_
+		where _id_ = #{id,jdbcType=BIGINT}
+	</select>
+	
+	<select id="selectDetailByBlockNum" parameterType="java.lang.Long"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from _sys_consensus_d_
+		where _num_ =
+		#{num,jdbcType=BIGINT}
+	</select>
+	
+	<delete id="deleteDetailByBlockNum" parameterType="java.lang.Long">
+		delete from _sys_consensus_d_
+		where _num_ = #{num,jdbcType=BIGINT}
+	</delete>
+</mapper>
