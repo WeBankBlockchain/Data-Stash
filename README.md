@@ -2,9 +2,8 @@
 
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
+WeBankBlockchain-Data-Stash 是一个基于[FISCO-BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS)平台的数据治理工具，为区块链底层平台FISCO BCOS提供节点数据扩容、备份、裁剪及快速同步的能力。用户可基于binlog协议同步区块链底层节点全量数据，实现冷热数据分离，支持断点续传、数据可信验证，并提供快速同步机制，助力FISCO BCOS轻松应对节点海量数据的运维场景。
 
-
-如何以有限的磁盘空间来存储无限膨胀的账本数据，是区块链数据治理领域的关键问题之一。WeBankBlockchain-Data-Stash 是一个基于[FISCO-BCOS](https://github.com/FISCO-BCOS/FISCO-BCOS)平台的数据治理工具，以解决账本和磁盘之间的矛盾。通过为节点生成全量备份作为后备保障，使节点便可以放心地进行数据裁剪，而不必担心数据丢失。Data-Stash还可以用于节点快速同步、监管审计等场景。
 
 **此版本只支持**[FISCO BCOS 2.6及以上](https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/)。
 
