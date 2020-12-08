@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webank.blockchain.data.stash.db.dao.SysCnsInfoMapper">
+  <resultMap id="BaseResultMap" type="com.webank.blockchain.data.stash.db.model.SysCnsInfo">
+    <id column="_id_" jdbcType="BIGINT" property="id" />
+	<result column="_hash_" jdbcType="VARCHAR" property="hash" />
+	<result column="_status_" jdbcType="INTEGER" property="status" />
+	<result column="_num_" jdbcType="BIGINT" property="num" />
+	<result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="version" jdbcType="VARCHAR" property="version" />
+    <result column="address" jdbcType="VARCHAR" property="address" />
+    <result column="abi" jdbcType="VARCHAR" property="abi" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    _id_, _hash_, _status_, _num_, name, version, address, abi
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from _sys_cns_
+    where _id_ = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from _sys_cns_
+    where _id_ = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.webank.blockchain.data.stash.db.model.SysCnsInfo">
+    insert into _sys_cns_ (_id_, _hash_, _status_, _num_, name, 
+      version, address, abi
+      )
+    values (#{id,jdbcType=BIGINT}, #{hash,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER},
+		#{num,jdbcType=BIGINT}, #{name,jdbcType=BIGINT},
+      #{version,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{abi,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+  <insert id="batchInsert" parameterType="java.util.List" >
+		replace into _sys_cns_ (_id_, _hash_, _status_, _num_, name, version, address, abi) values
+		<foreach collection="list" item="item" index="index" separator="," >
+			(#{item.id,jdbcType=BIGINT}, #{item.hash,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER},
+		#{item.num,jdbcType=BIGINT}, #{item.name,jdbcType=BIGINT},
+      #{item.version,jdbcType=VARCHAR}, #{item.address,jdbcType=VARCHAR}, #{item.abi,jdbcType=VARCHAR}
+      )
+    	</foreach>
+	</insert>
+	
+	<insert id="batchInsertDetail" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="pkId">
+		insert into _sys_cns_d_ (_id_, _hash_, _status_, _num_, name, version, address, abi) values
+		<foreach collection="list" item="item" index="index" separator="," >
+			(#{item.id,jdbcType=BIGINT}, #{item.hash,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER},
+		#{item.num,jdbcType=BIGINT}, #{item.name,jdbcType=BIGINT},
+      #{item.version,jdbcType=VARCHAR}, #{item.address,jdbcType=VARCHAR}, #{item.abi,jdbcType=VARCHAR}
+      )
+    	</foreach>
+	</insert>
+  
+  <update id="updateByPrimaryKey" parameterType="com.webank.blockchain.data.stash.db.model.SysCnsInfo">
+    update _sys_cns_
+    set _status_ = #{status,jdbcType=INTEGER},
+		_hash_ = #{hash,jdbcType=VARCHAR},
+		_num_ = #{num,jdbcType=BIGINT},
+		name = #{name,jdbcType=VARCHAR},
+      version = #{version,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      abi = #{abi,jdbcType=VARCHAR}
+    where _id_ = #{entryId,jdbcType=BIGINT}
+  </update>
+  
+  <update id="createTable" parameterType="String">  
+    CREATE TABLE IF NOT EXISTS ${tableName} (
+  		`_id_` bigint(20) unsigned NOT NULL,
+		`_hash_` VARCHAR(128) NOT NULL DEFAULT '0x00',
+		`_status_` int(11) DEFAULT NULL,
+		`_num_` bigint(20) DEFAULT NULL,
+  		`name` VARCHAR(128),
+		`version` VARCHAR(128),
+		`address` VARCHAR(256),
+		`abi` longtext,
+  		PRIMARY KEY (`_id_`),
+		KEY (name)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  </update> 
+  <update id="createDetailTable" parameterType="String">
+		CREATE TABLE IF NOT EXISTS ${tableName} (
+		`pk_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+		`_id_` bigint(20) unsigned NOT NULL,
+		`_hash_` VARCHAR(128) NOT NULL DEFAULT '0x00',
+		`_status_` int(11) DEFAULT NULL,
+		`_num_` bigint(20) DEFAULT NULL,
+  		`name` VARCHAR(128),
+		`version` VARCHAR(128),
+		`address` VARCHAR(256),
+		`abi` longtext,
+  		PRIMARY KEY (`pk_id`),
+		KEY (name),
+		KEY (_id_),
+		KEY (_num_),
+		KEY(`_id_`, `_num_`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	<insert id="insertDetail" parameterType="com.webank.blockchain.data.stash.db.model.SysCnsInfo" useGeneratedKeys="true" keyProperty="pkId">
+		insert into _sys_cns_d_ (_id_, _hash_, _status_, _num_, version, address, abi)
+    	values (#{id,jdbcType=BIGINT}, #{hash,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{num,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR},
+      	#{version,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{abi,jdbcType=VARCHAR})
+	</insert>
+	<select id="selectDetailByEntryId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    	select
+		<include refid="Base_Column_List" />
+		from _sys_cns_d_
+		where _id_ = #{id,jdbcType=BIGINT}
+  </select>
+  
+  <select id="selectDetailByBlockNum" parameterType="java.lang.Long"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from _sys_cns_d_
+		where _num_ =
+		#{num,jdbcType=BIGINT}
+	</select>
+	
+	<delete id="deleteDetailByBlockNum" parameterType="java.lang.Long">
+		delete from _sys_cns_d_
+		where _num_ = #{num,jdbcType=BIGINT}
+	</delete>
+</mapper>

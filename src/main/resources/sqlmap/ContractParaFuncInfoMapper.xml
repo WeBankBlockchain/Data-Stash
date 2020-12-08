@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webank.blockchain.data.stash.db.dao.ContractParaFuncInfoMapper">
+	<resultMap id="BaseResultMap" type="com.webank.blockchain.data.stash.db.model.ContractParaFuncInfo">
+		<id column="_id_" jdbcType="BIGINT" property="id" />
+		<result column="_hash_" jdbcType="VARCHAR" property="hash" />
+		<result column="_status_" jdbcType="INTEGER" property="status" />
+		<result column="_num_" jdbcType="BIGINT" property="num" />
+		<result column="parallel" jdbcType="VARCHAR" property="parallel" />
+		<result column="selector" jdbcType="VARCHAR" property="selector" />
+		<result column="functionName" jdbcType="VARCHAR" property="functionName" />
+		<result column="criticalSize" jdbcType="VARCHAR" property="criticalSize" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		_id_, _hash_, _status_, _num_, parallel, selector, functionName, criticalSize
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.Long"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from ${tableName}
+		where _id_ = #{id,jdbcType=BIGINT}
+	</select>
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from ${tableName}
+		where _id_ = #{id,jdbcType=BIGINT}
+	</delete>
+	
+	<insert id="insert" parameterType="com.webank.blockchain.data.stash.db.model.ContractParaFuncInfo">
+		insert into ${tableName} (_id_, _hash_, _status_, _num_,
+		parallel, selector, functionName, criticalSize)
+		values (#{contractParaFuncInfo.id,jdbcType=BIGINT},
+		#{contractParaFuncInfo.hash,jdbcType=VARCHAR},
+		#{contractParaFuncInfo.status,jdbcType=INTEGER},
+		#{contractParaFuncInfo.num,jdbcType=BIGINT},
+		#{contractParaFuncInfo.parallel,jdbcType=VARCHAR},
+		#{contractParaFuncInfo.selector,jdbcType=VARCHAR},
+		#{contractParaFuncInfo.functionName,jdbcType=VARCHAR},
+		#{contractParaFuncInfo.criticalSize,jdbcType=VARCHAR})
+	</insert>
+	
+	<insert id="batchInsert" parameterType="java.util.List" >
+		replace into ${tableName} (_id_, _hash_, _status_, _num_,
+		parallel, selector, functionName, criticalSize)
+		values
+		<foreach collection="list" item="item" index="index" separator="," >
+			(#{item.id,jdbcType=BIGINT},
+		#{item.hash,jdbcType=VARCHAR},
+		#{item.status,jdbcType=INTEGER},
+		#{item.num,jdbcType=BIGINT},
+		#{item.parallel,jdbcType=VARCHAR},
+		#{item.selector,jdbcType=VARCHAR},
+		#{item.functionName,jdbcType=VARCHAR},
+		#{item.criticalSize,jdbcType=VARCHAR})
+    	</foreach>
+	</insert>
+	
+	<insert id="batchInsertDetail" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="list.pkId">
+		insert into ${tableName} (_id_, _hash_, _status_, _num_,
+		parallel, selector, functionName, criticalSize)
+		values
+		<foreach collection="list" item="item" index="index" separator="," >
+			(#{item.id,jdbcType=BIGINT},
+		#{item.hash,jdbcType=VARCHAR},
+		#{item.status,jdbcType=INTEGER},
+		#{item.num,jdbcType=BIGINT},
+		#{item.parallel,jdbcType=VARCHAR},
+		#{item.selector,jdbcType=VARCHAR},
+		#{item.functionName,jdbcType=VARCHAR},
+		#{item.criticalSize,jdbcType=VARCHAR})
+    	</foreach>
+	</insert>
+	
+	<update id="updateByPrimaryKey" parameterType="com.webank.blockchain.data.stash.db.model.ContractParaFuncInfo">
+		update ${tableName}
+		set _status_ = #{contractParaFuncInfo.status,jdbcType=INTEGER},
+		_hash_ = #{contractParaFuncInfo.hash,jdbcType=VARCHAR},
+		_num_ = #{contractParaFuncInfo.num,jdbcType=BIGINT},
+		parallel = #{contractParaFuncInfo.balance,jdbcType=VARCHAR},
+		selector = #{contractParaFuncInfo.nonce,jdbcType=VARCHAR},
+		functionName = #{contractParaFuncInfo.code,jdbcType=VARCHAR},
+		criticalSize = #{contractParaFuncInfo.codeHash,jdbcType=VARCHAR}
+		where _id_ = #{contractParaFuncInfo.id,jdbcType=BIGINT}
+	</update>
+	
+	<select id="existTable" parameterType="String" resultType="Integer">
+		select count(*)
+		from information_schema.TABLES
+		where table_name=#{tableName}
+	</select>
+	
+	<update id="createTable" parameterType="String">
+		CREATE TABLE IF NOT EXISTS ${tableName} (
+		`_id_` bigint(20) unsigned NOT NULL,
+		`_hash_` VARCHAR(128) NOT NULL DEFAULT '0x00',
+		`_status_` int(11) DEFAULT NULL,
+		`_num_` bigint(20) DEFAULT NULL,
+		`parallel` text,
+		`selector` text,
+		`functionName` text,
+		`criticalSize` text,
+		PRIMARY KEY (`_id_`),
+		KEY (_num_)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	<update id="createDetailTable" parameterType="String">
+		CREATE TABLE IF NOT EXISTS
+		${tableName} (
+		`pk_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+		`_id_` bigint(20) unsigned NOT NULL,
+		`_hash_` VARCHAR(128) NOT NULL DEFAULT '0x00',
+		`_status_` int(11) DEFAULT NULL,
+		`_num_` bigint(20) DEFAULT NULL,
+		`parallel` text,
+		`selector` text,
+		`functionName` text,
+		`criticalSize` text
+		PRIMARY KEY (`pk_id`),
+		KEY (_id_),
+		KEY (_num_),
+		KEY(`_id_`, `_num_`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	<insert id="insertDetail" parameterType="com.webank.blockchain.data.stash.db.model.ContractParaFuncInfo"
+		useGeneratedKeys="true" keyProperty="contractParaFuncInfo.pkId">
+		insert into ${tableName} (_id_, _hash_, _status_, _num_,
+		parallel, selector, functionName, criticalSize)
+		values (#{contractParaFuncInfo.id,jdbcType=BIGINT},
+		#{contractParaFuncInfo.hash,jdbcType=VARCHAR},
+		#{contractParaFuncInfo.status,jdbcType=INTEGER},
+		#{contractParaFuncInfo.num,jdbcType=BIGINT},
+		#{contractParaFuncInfo.parallel,jdbcType=VARCHAR},
+		#{contractParaFuncInfo.selector,jdbcType=VARCHAR},
+		#{contractParaFuncInfo.functionName,jdbcType=VARCHAR},
+		#{contractParaFuncInfo.criticalSize,jdbcType=VARCHAR})
+	</insert>
+	<select id="selectDetailByEntryId" parameterType="java.lang.Long"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from ${tableName}
+		where _id_ = #{id,jdbcType=BIGINT}
+	</select>
+	
+	<select id="selectDetailByBlockNum" parameterType="java.lang.Long"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from ${tableName}
+		where _num_ = #{num,jdbcType=BIGINT}
+	</select>
+	
+	<delete id="deleteDetailByBlockNum" parameterType="java.lang.Long">
+		delete from ${tableName}
+		where _num_ = #{num,jdbcType=BIGINT}
+	</delete>
+</mapper>

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webank.blockchain.data.stash.db.dao.SysTablesInfoMapper">
+	<resultMap id="BaseResultMap" type="com.webank.blockchain.data.stash.db.model.SysTablesInfo">
+		<id column="_id_" jdbcType="BIGINT" property="id" />
+		<result column="_hash_" jdbcType="VARCHAR" property="hash" />
+		<result column="_status_" jdbcType="INTEGER" property="status" />
+		<result column="_num_" jdbcType="BIGINT" property="num" />
+		<result column="table_name" jdbcType="VARCHAR" property="tableName" />
+		<result column="key_field" jdbcType="VARCHAR" property="keyField" />
+		<result column="value_field" jdbcType="VARCHAR" property="valueField" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		_id_, _hash_, _status_, _num_, table_name, key_field, value_field
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.Long"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from _sys_tables_
+		where _id_ = #{id,jdbcType=BIGINT}
+	</select>	
+	
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+		delete from ${tableName}
+		where _id_ = #{id,jdbcType=BIGINT}
+	</delete>
+	
+	<insert id="insert" parameterType="com.webank.blockchain.data.stash.db.model.SysTablesInfo">
+		insert into _sys_tables_ (_id_, _hash_, _status_, _num_,table_name, key_field, value_field) values 
+		(#{id,jdbcType=BIGINT}, #{hash,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER},#{num,jdbcType=BIGINT},#{tableName,jdbcType=VARCHAR}, #{keyField,jdbcType=VARCHAR}, #{valueField,jdbcType=VARCHAR})
+	</insert>
+	
+	<insert id="batchInsert" parameterType="java.util.List" >
+		replace into _sys_tables_ (_id_, _hash_, _status_, _num_,table_name, key_field, value_field) values
+		<foreach collection="list" item="item" index="index" separator="," >
+			(#{item.id,jdbcType=BIGINT}, #{item.hash,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER},#{item.num,jdbcType=BIGINT},#{item.tableName,jdbcType=VARCHAR}, #{item.keyField,jdbcType=VARCHAR}, #{item.valueField,jdbcType=VARCHAR})
+    	</foreach>
+	</insert>
+	
+	<insert id="batchInsertDetail" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="pkId">
+		insert into _sys_tables_d_ (_id_, _hash_, _status_, _num_,table_name, key_field, value_field) values
+		<foreach collection="list" item="item" index="index" separator="," >
+			(#{item.id,jdbcType=BIGINT}, #{item.hash,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER},#{item.num,jdbcType=BIGINT},#{item.tableName,jdbcType=VARCHAR}, #{item.keyField,jdbcType=VARCHAR}, #{item.valueField,jdbcType=VARCHAR})
+    	</foreach>
+	</insert>
+	
+	<select id="selectTables" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from _sys_tables_
+	</select>
+
+	<update id="updateByPrimaryKey" parameterType="com.webank.blockchain.data.stash.db.model.SysTablesInfo">
+		update _sys_tables_
+		set _status_ = #{status,jdbcType=INTEGER},
+		_hash_ = #{hash,jdbcType=VARCHAR},
+		_num_ = #{num,jdbcType=BIGINT},
+		table_name = #{tableName,jdbcType=VARCHAR},
+		key_field = #{keyField,jdbcType=VARCHAR},
+		value_field = #{valueField,jdbcType=VARCHAR}
+		where _id_ = #{id,jdbcType=BIGINT}
+	</update>
+	
+	<select id="existTable" parameterType="String" resultType="Integer">
+		select count(*)
+		from information_schema.TABLES
+		where table_name=#{tableName} and table_schema=#{tableSchema}
+	</select>
+	
+	<update id="createTable" parameterType="String">
+		CREATE TABLE IF NOT EXISTS ${tableName} (
+		`_id_` bigint(20) unsigned NOT NULL,
+		`_hash_` VARCHAR(128) NOT NULL DEFAULT '0x00',
+		`_status_` int(11) DEFAULT 0,
+		`_num_` bigint(20) DEFAULT 0,
+		`table_name` VARCHAR(128) DEFAULT '',
+		`key_field` VARCHAR(1024) DEFAULT '',
+		`value_field` VARCHAR(1024) DEFAULT '',
+		PRIMARY KEY (`_id_`),
+		KEY (_num_),
+		KEY(`_id_`, `_num_`),
+		UNIQUE KEY (table_name)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	
+	<update id="createDetailTable" parameterType="String">
+		CREATE TABLE IF NOT EXISTS 
+		${tableName} (
+		`pk_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+		`_id_` bigint(20) unsigned NOT NULL,
+		`_hash_` VARCHAR(128) NOT NULL DEFAULT '0x00',
+		`_status_` int(11) DEFAULT NULL,
+		`_num_` bigint(20) DEFAULT NULL,
+		`table_name` VARCHAR(128) DEFAULT '',
+		`key_field` VARCHAR(1024) DEFAULT '',
+		`value_field` VARCHAR(1024) DEFAULT '',
+		PRIMARY KEY (`pk_id`),
+		KEY (_num_),
+		KEY (_id_),
+		UNIQUE KEY (table_name)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+	</update>
+	
+	<insert id="insertSysTables">
+		insert ignore into  `_sys_tables_` ( `_id_`, `table_name` , `key_field`, `value_field`) values 
+		(2, '_sys_tables_', 'table_name','key_field,value_field'),
+		(3, '_sys_consensus_', 'name','type,node_id,enable_num'),
+		(4, '_sys_table_access_', 'table_name','address,enable_num'),
+		(5, '_sys_current_state_', 'key','value'),
+		(6, '_sys_number_2_hash_', 'number','value'),
+		(7, '_sys_tx_hash_2_block_', 'hash','value,index'),
+		(8, '_sys_hash_2_block_', 'hash','value'),
+		(9, '_sys_cns_', 'name','version,address,abi'),
+		(10, '_sys_config_', 'key','value,enable_num'),
+		(11, '_sys_block_2_nonces_', 'number','value'),
+		(12, '_sys_hash_2_header_', 'hash','value,sigs' )
+	</insert>
+	
+	<select id="getTableSchema" parameterType="String" resultType="map">
+		select key_field, value_field from _sys_tables_ where table_name = #{tableName}
+	</select>
+	
+	<update id="createTableBySql" parameterType="java.lang.String">
+		${sql}
+	</update>
+	
+	<delete id="deleteByBlockNum" parameterType="java.lang.Long">
+		delete from ${tableName}
+		where _num_ = #{blockNum,jdbcType=BIGINT}
+	</delete>
+	
+	<select id="selectTableDataByNum" parameterType="java.lang.Long"
+		resultType="java.util.Map">
+		select * from ${tableName}
+		where _num_ = #{blockNum,jdbcType=BIGINT}
+	</select>
+	
+	<select id="selectTopByEntryId" parameterType="java.lang.Long"
+		resultType="java.util.Map">
+		select * from ${tableName}
+		where _id_ = #{id,jdbcType=BIGINT} order by _num_ desc limit 1
+	</select>	
+</mapper>
