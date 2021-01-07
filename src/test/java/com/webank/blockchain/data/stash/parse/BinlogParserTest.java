@@ -27,6 +27,7 @@ import com.webank.blockchain.data.stash.utils.BytesUtil;
 import com.webank.blockchain.data.stash.utils.CRC32Util;
 
 import cn.hutool.core.convert.Convert;
+import com.webank.blockchain.data.stash.utils.FlagUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -39,6 +40,21 @@ import org.junit.Test;
  *
  */
 public class BinlogParserTest {
+
+    @Test
+    public void testFlagUtil(){
+        String[] fields = "key,value,enable_num,_status_,_num_,_id_".split(",");
+        byte[] usedFlag = new byte[]{-32};
+        int settedLength = FlagUtils.onlySettedFields(fields, usedFlag).length;
+        Assert.assertEquals(3, settedLength);
+
+        fields = "key,value,enable_num,_status_,_num_,_id_".split(",");
+        usedFlag = new byte[]{(byte)160};
+        settedLength = FlagUtils.onlySettedFields(fields, usedFlag).length;
+        Assert.assertEquals(2, settedLength);
+
+
+    }
 
     @Test
     public void testBinLogParse() throws Exception{
