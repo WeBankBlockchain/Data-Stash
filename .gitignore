@@ -1,5 +1,6 @@
 ### common ###
 logs/
+src/main/resources/*.properties
 src/test/resources
 
 ### mac ###
