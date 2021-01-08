@@ -10,7 +10,7 @@ src/test/resources
 .gradle/
 build
 dist/
-
+binlogcache/
 ## eclipse ##
 .classpath
 .project
