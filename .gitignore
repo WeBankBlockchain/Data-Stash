@@ -1,6 +1,6 @@
 ### common ###
-log/
-src/main/resources
+logs/
+src/main/resources/*.properties
 src/test/resources
 
 ### mac ###
@@ -10,7 +10,7 @@ src/test/resources
 .gradle/
 build
 dist/
-
+binlogcache/
 ## eclipse ##
 .classpath
 .project
