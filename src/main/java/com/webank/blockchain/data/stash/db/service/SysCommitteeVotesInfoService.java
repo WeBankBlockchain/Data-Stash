@@ -21,6 +21,7 @@ import java.util.List;
  */
 @Slf4j
 @Service
+@SuppressWarnings("unchecked")
 public class SysCommitteeVotesInfoService extends DBBaseOperation implements StorageService {
     private static final int SYS_COMMITTEE_VOTES_BATCH = 2;
 
