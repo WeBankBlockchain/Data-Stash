@@ -34,6 +34,7 @@ import java.util.List;
  */
 @Service
 @Slf4j
+@SuppressWarnings("unchecked")
 public class SysHash2HeaderInfoService extends DBBaseOperation implements StorageService {
 
     private static final int SYS_HASH_2_HEADER_BATCH = 2;
