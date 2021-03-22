@@ -16,6 +16,7 @@ package com.webank.blockchain.data.stash.parser;
 import java.util.*;
 
 import com.webank.blockchain.data.stash.constants.DBDynamicTableConstants;
+import com.webank.blockchain.data.stash.utils.FlagUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -123,7 +124,7 @@ public class BlockBytesParser {
 
     }
 
-    private RtnObjInfo<EntryInfo> processEntry(String tableName, String[] fields, byte[] binlogBytes, int entryIndex,
+    private RtnObjInfo<EntryInfo> processEntry(String tableName, String[] allFields, byte[] binlogBytes, int entryIndex,
             long blockNum) throws DataStashException {
 
         RtnObjInfo<EntryInfo> entryData = new RtnObjInfo<>();
@@ -141,33 +142,39 @@ public class BlockBytesParser {
         entry.setNum(blockNum);
 
         // 4. handle usedFlags
-        int fieldsLength = fields.length - 3;
-        int usedFlagBytesCount = (int)Math.ceil(fieldsLength/8.0);
+        int usedFlagBytesCount = (int)(Math.ceil((allFields.length - 3)/8.0));
+        byte[] usedFlags = new byte[usedFlagBytesCount];
+        for(int i=0;i<usedFlagBytesCount;i++){
+            usedFlags[i] = binlogBytes[entryIndex + 9 + i];
+        }
         // 5. get other column value
         int valueIndex = entryIndex + 9 + usedFlagBytesCount;
         List<ColumnInfo> columns = new ArrayList<ColumnInfo>();
         List<byte[]> columnBytes = new ArrayList<byte[]>();
         Map<String, ColumnInfo> entryContext = new HashMap<>();
-        for (int i = 0; i < fieldsLength; i++) {
+
+        String[] onlySettedFields = FlagUtils.onlySettedFields(allFields, usedFlags);
+
+        for (int i = 0; i < onlySettedFields.length; i++) {
             int valueLen = BytesUtil.byte4FromSrcToInt(binlogBytes, valueIndex);
             byte[] b = BytesUtil.subBytes(binlogBytes, valueIndex + 4, valueLen);
             String value = new String(b);
             ColumnInfo columnInfo = new ColumnInfo();
-            columnInfo.setColumnName(fields[i]);
+            columnInfo.setColumnName(allFields[i]);
             columnInfo.setColumnValue(value);
 
             columns.add(columnInfo);
             columnBytes.add(b);
-            entryContext.put(fields[i], columnInfo);
+            entryContext.put(allFields[i], columnInfo);
 
             valueIndex = valueIndex + valueLen + 4;
         }
 
         //6. Convert binary data
-        for (int i = 0; i < fieldsLength; i++) {
+        for (int i = 0; i < onlySettedFields.length; i++) {
             ColumnInfo columnInfo = columns.get(i);
             byte[] b = columnBytes.get(i);
-            if (isBinaryField(tableName, fields[i], entryContext)){
+            if (isBinaryField(tableName, allFields[i], entryContext)){
                 columnInfo.setColumnValue(HexUtil.encodeHexStr(b));
             }
         }

@@ -27,7 +27,8 @@ public class DBStaticTableConstants {
 	public static final String SYS_TX_HASH_2_BLOCK_TABLE = "_sys_tx_hash_2_block_";
 	public static final String SYS_NUMBER_2_HASH_TABLE = "_sys_number_2_hash_";
 	public static final String SYS_HASH_2_HEADER_TABLE = "_sys_hash_2_header_";
-	
+	public static final String SYS_COMMITTE_VOTES_TABLE = "_sys_committe_votes_";
+
 	/** entry detail table post fix */
 	public static final String SYS_DETAIL_TABLE_POST_FIX = "d_";
 
