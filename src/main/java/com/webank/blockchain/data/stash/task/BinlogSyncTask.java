@@ -65,6 +65,7 @@ public class BinlogSyncTask implements ApplicationRunner {
             checkManager.check();
             blockReadManager.read();
             cleanManager.clean();
+            Thread.sleep(5000);
             if (!button) {
                 break;
             }
