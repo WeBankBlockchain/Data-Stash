@@ -20,7 +20,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 group = 'com.webank'
-version = '1.0.1-SNAPSHOT'
+version = '1.0.1'
 
 ext['lombok.version'] = "1.18.8"
 
