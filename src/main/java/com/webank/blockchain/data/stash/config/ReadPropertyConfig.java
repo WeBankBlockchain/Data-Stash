@@ -30,7 +30,7 @@ import lombok.Data;
 @ConfigurationProperties("read")
 @Data
 public class ReadPropertyConfig {
-    private int files = 5;
+    private int files = 10;
     private String clean = "yes";
     private String backupSuffix = "ok";
 

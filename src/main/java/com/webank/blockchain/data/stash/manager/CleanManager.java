@@ -20,16 +20,11 @@ import java.util.TreeSet;
 import com.webank.blockchain.data.stash.db.mapper.BlockTaskPoolMapper;
 import com.webank.blockchain.data.stash.db.model.BlockTaskPool;
 import com.webank.blockchain.data.stash.entity.RemoteServerInfo;
-import com.webank.blockchain.data.stash.enums.BlockTaskPoolSyncStatusEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.webank.blockchain.data.stash.config.ReadPropertyConfig;
 import com.webank.blockchain.data.stash.config.SystemPropertyConfig;
-import com.webank.blockchain.data.stash.db.mapper.BlockTaskPoolMapper;
-import com.webank.blockchain.data.stash.db.model.BlockTaskPool;
-import com.webank.blockchain.data.stash.entity.RemoteServerInfo;
-import com.webank.blockchain.data.stash.enums.BlockTaskPoolSyncStatusEnum;
 import com.webank.blockchain.data.stash.utils.BinlogFileUtils;
 
 import cn.hutool.core.io.FileUtil;
@@ -57,7 +52,8 @@ public class CleanManager {
 
     public void clean() {
         BlockTaskPool latest =
-                blockTaskPoolMapper.getLatestOneBySyncStatus(BlockTaskPoolSyncStatusEnum.Done.getSyncStatus());
+                blockTaskPoolMapper.getLastFinishedBlock();
+        if(latest == null) return;
         for (RemoteServerInfo server : sources) {
             TreeSet<Long> localFiles =
                     BinlogFileUtils.getFileIds(server.getLocalFilePath(), systemPropertyConfig.getBinlogSuffix());

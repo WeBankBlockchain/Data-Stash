@@ -24,7 +24,6 @@ import com.webank.blockchain.data.stash.config.SystemPropertyConfig;
 import com.webank.blockchain.data.stash.db.mapper.BlockTaskPoolMapper;
 import com.webank.blockchain.data.stash.db.model.BlockTaskPool;
 import com.webank.blockchain.data.stash.entity.RemoteServerInfo;
-import com.webank.blockchain.data.stash.enums.BlockTaskPoolSyncStatusEnum;
 import com.webank.blockchain.data.stash.fetch.BinlogFileDir;
 import com.webank.blockchain.data.stash.fetch.DefaultStreamProgress;
 import com.webank.blockchain.data.stash.fetch.HttpFileScanner;
@@ -34,18 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import com.webank.blockchain.data.stash.config.ReadPropertyConfig;
-import com.webank.blockchain.data.stash.config.SystemPropertyConfig;
-import com.webank.blockchain.data.stash.db.mapper.BlockTaskPoolMapper;
-import com.webank.blockchain.data.stash.db.model.BlockTaskPool;
-import com.webank.blockchain.data.stash.entity.RemoteServerInfo;
-import com.webank.blockchain.data.stash.enums.BlockTaskPoolSyncStatusEnum;
-import com.webank.blockchain.data.stash.fetch.BinlogFileDir;
-import com.webank.blockchain.data.stash.fetch.DefaultStreamProgress;
 import com.webank.blockchain.data.stash.fetch.HttpFileFetcher;
-import com.webank.blockchain.data.stash.fetch.HttpFileScanner;
-import com.webank.blockchain.data.stash.utils.BinlogFileUtils;
-import com.webank.blockchain.data.stash.utils.JsonUtils;
 
 import cn.hutool.core.io.StreamProgress;
 import cn.hutool.http.HttpException;
@@ -104,7 +92,7 @@ public class DownloadManager {
             log.info("Download start from last local file: {}", last);
         } else {
             BlockTaskPool b =
-                    blockTaskPoolMapper.getLatestOneBySyncStatus(BlockTaskPoolSyncStatusEnum.Done.getSyncStatus());
+                    blockTaskPoolMapper.getLastFinishedBlock();
             if (b != null && b.getBlockHeight() > 0) {
                 last = remote.floor(b.getBlockHeight());
             }

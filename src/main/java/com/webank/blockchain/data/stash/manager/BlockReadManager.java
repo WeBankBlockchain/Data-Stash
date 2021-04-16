@@ -14,8 +14,7 @@
 package com.webank.blockchain.data.stash.manager;
 
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import java.util.concurrent.CompletableFuture;
 
 import com.webank.blockchain.data.stash.config.SystemPropertyConfig;
 import com.webank.blockchain.data.stash.constants.BinlogConstants;
@@ -58,21 +57,24 @@ public class BlockReadManager {
 
     public void read() throws IORuntimeException, InterruptedException, Exception {
         //Determine the block to start
-        BlockTaskPool blockTaskPool = blockTaskPoolMapper.getLatestOne();
+        BlockTaskPool blockTaskPool = blockTaskPoolMapper.getLastFinishedBlock();
         long todoNumber = prepare(blockTaskPool);
-
+        List<CompletableFuture> all = new ArrayList<>();
         try(MultiSourceBlockReader blockReader = new MultiSourceBlockReader(sources, todoNumber,config.getBinlogSuffix())){
             List<byte[]> blocks;
             while ((blocks = blockReader.read()) != null){
                 //Extract body and verify crc
                 List<byte[]> blockDatas = toBlockBodyDatas(todoNumber, blocks);
                 //Handle block body
-                handleBlockBody(todoNumber, blockDatas);
+                all.add(handleBlockBodyAsync(todoNumber, blockDatas));
                 //Start next task
                 todoNumber++;
                 initTaskStatus(todoNumber);
             }
         }
+
+        CompletableFuture.allOf(all.toArray(new CompletableFuture[0])).get();
+        log.info("Start next batch");
     }
 
     private List<byte[]> toBlockBodyDatas(long blockNumber, List<byte[]> blockPackage){
@@ -92,8 +94,8 @@ public class BlockReadManager {
         return blockDatas;
     }
 
-    private void handleBlockBody(long todoNumber, List<byte[]> blockBodys){
-        blockHandler.handleAsync(blockBodys)
+    private CompletableFuture handleBlockBodyAsync(long todoNumber, List<byte[]> blockBodys){
+        return blockHandler.handleAsync(blockBodys)
                 .thenAccept(__ -> blockTaskPoolMapper.updateSyncStatusByBlockHeight(BlockTaskPoolSyncStatusEnum.Done.getSyncStatus(),
                         todoNumber))
                 .exceptionally(e -> {
@@ -110,22 +112,15 @@ public class BlockReadManager {
             initTaskStatus(0);
             return 0;
         }
-        if (blockTaskPool.getSyncStatus() == 2) {
-            initTaskStatus(blockTaskPool.getBlockHeight() + 1);
-            return blockTaskPool.getBlockHeight() + 1;
-        } else {
-            long todoNumber = blockTaskPool.getBlockHeight();
-            rollBackService.rollBack(todoNumber);
-            blockTaskPoolMapper.updateSyncStatusByBlockHeight(BlockTaskPoolSyncStatusEnum.INIT.getSyncStatus(),
-                    todoNumber);
-            return todoNumber;
-        }
+        initTaskStatus(blockTaskPool.getBlockHeight() + 1);
+        return blockTaskPool.getBlockHeight() + 1;
     }
+
     public BlockTaskPool initTaskStatus(long todoNumber) {
         BlockTaskPool bp = new BlockTaskPool();
         bp.setBlockHeight(todoNumber);
         log.info("begin to insert block {}", todoNumber);
-        blockTaskPoolMapper.insert(bp);
+        blockTaskPoolMapper.replaceInto(bp);
         return bp;
     }
 

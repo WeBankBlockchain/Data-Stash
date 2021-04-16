@@ -59,7 +59,7 @@ public class ValidatorController {
 
     @UseTime
     public boolean validateBlockRlp(String blockRlp) throws Exception {
-
+        /*
         BlockV2RC2 block = new BlockV2RC2(blockRlp);
         BigInteger blockNumber = BigInteger.valueOf(blockTaskPoolMapper.getLatestOne().getBlockHeight());
         BigInteger parentBlockNumber = blockNumber.subtract(BigInteger.ONE);
@@ -119,6 +119,8 @@ public class ValidatorController {
             log.error("blockRlp sigList check Error: {}", blockRlp);
             return false;
         }
+
+         */
 
         return true;
 
