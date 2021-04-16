@@ -14,7 +14,8 @@
 package com.webank.blockchain.data.stash.handler;
 
 import java.util.List;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
+import java.util.function.Function;
 
 import com.webank.blockchain.data.stash.db.face.DataStorage;
 import com.webank.blockchain.data.stash.db.mapper.BlockTaskPoolMapper;
@@ -31,6 +32,8 @@ import com.webank.blockchain.data.stash.exception.DataStashException;
 import com.webank.blockchain.data.stash.verify.BlockValidation;
 
 import lombok.extern.slf4j.Slf4j;
+
+import javax.annotation.PostConstruct;
 
 /**
  * BlockHandler
@@ -57,34 +60,45 @@ public class BlockHandler {
     @Autowired
     private BlockTaskPoolMapper blockTaskPoolMapper;
 
-    public boolean handler(List<byte[]> blockBytesList) throws Exception {
+    ExecutorService computePool;
+    ExecutorService sqlPool;
 
-        if (blockBytesList == null || blockBytesList.size() == 0) {
-            throw new DataStashException(DataStashExceptionCodeEnums.DATA_STASH_BLOCK_BYTES_LIST_IS_NULL);
-        }
+    @PostConstruct
+    private void init(){
+        //checkpoint manager requires the block parse must be serialized
+        computePool = Executors.newSingleThreadExecutor();
+        sqlPool = Executors.newFixedThreadPool(config.getSqlThreads());
+    }
 
-        // 1. parse block data
+    public CompletableFuture<Void> handleAsync(List<byte[]> blockBytesList) {
+        return CompletableFuture
+                .supplyAsync(() -> parseBinlogThenVerify(blockBytesList), computePool)
+                .thenAcceptAsync(blockInfo -> storeBlockData(blockInfo), sqlPool);
+    }
+
+
+    private BinlogBlockInfo parseBinlogThenVerify(List<byte[]> blockBytesList) {
+        // 1. Parse binlog
         byte[] firstBlockBytes = blockBytesList.get(0);
         BinlogBlockInfo blockInfo = parser.getBinlogBlockInfo(firstBlockBytes);
         log.debug("===============end binlog parse===================");
 
-        // 2. verify block data
+        // 2. Verify
         if (blockBytesList.size() != 1 && config.getBinlogVerify() == 1) {
-            if (!validator.vaildBlocks(blockInfo, blockBytesList))
-                return false;
+            if (!validator.vaildBlocks(blockInfo, blockBytesList)){
+                throw new DataStashException(DataStashExceptionCodeEnums.DATA_STASH_BINLOG_VERIFY_ERROR);
+            }
+            log.debug("===============end binlog verify===================");
         }
-        log.debug("===============end block validation===================");
+        // 3. By pass submit to checkpoint service
+        checkPointManager.futureCreateCheckPoint(blockInfo);
+        return blockInfo;
+    }
 
-        // set task pool status
+    private void storeBlockData(BinlogBlockInfo blockInfo) {
         blockTaskPoolMapper.updateSyncStatusByBlockHeight(BlockTaskPoolSyncStatusEnum.DOING.getSyncStatus(),
                 blockInfo.getBlockNum());
-        Future<Boolean> f = checkPointManager.futureCreateCheckPoint(blockInfo);
         dataStorage.storageBlock(blockInfo);
         log.debug("===============end block data store===================");
-
-        f.get();
-        log.debug("===============end create check point===================");
-
-        return true;
     }
 }

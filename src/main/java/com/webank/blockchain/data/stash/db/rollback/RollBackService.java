@@ -57,8 +57,6 @@ public class RollBackService {
     private CheckPointInfoService checkPointInfoService;
     @Autowired
     private DylamicTableInfoService dylamicTableInfoService;
-    @Autowired
-    private BinlogOffsetMapper binlogOffsetMapper;
 
     public boolean rollBack(long blockNum) {
 
@@ -121,7 +119,6 @@ public class RollBackService {
             }
         }
         checkPointInfoService.deleteByBlockNum(blockNum);
-        binlogOffsetMapper.deleteByBlockHeight(blockNum);
         return true;
 
     }

@@ -9,6 +9,7 @@ import com.webank.blockchain.data.stash.utils.BinlogFileUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
@@ -105,7 +106,7 @@ public class MultiSourceBlockReader implements Closeable {
         }
         BinlogLocationBO location = this.locate(source, floor);
         //2. Location position
-        InputStream newStream = FileUtil.getInputStream(location.getFilePath());
+        InputStream newStream = FileUtil.getInputStream(new File((location.getFilePath())));
         seekToPosition(floor, newStream, blockNumber);
         //3. Update current status
         this.inputStreams.put(source, newStream);

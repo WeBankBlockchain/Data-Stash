@@ -43,7 +43,7 @@
 	
 	<delete id="deleteByBlockNum" parameterType="java.lang.Long">
 		delete from check_point
-		where block_num = #{num,jdbcType=BIGINT}
+		where block_num >= #{num,jdbcType=BIGINT}
 	</delete>
 	
 </mapper>

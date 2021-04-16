@@ -127,7 +127,7 @@
 	
 	<delete id="deleteByBlockNum" parameterType="java.lang.Long">
 		delete from ${tableName}
-		where _num_ = #{blockNum,jdbcType=BIGINT}
+		where _num_ >= #{blockNum,jdbcType=BIGINT}
 	</delete>
 	
 	<select id="selectTableDataByNum" parameterType="java.lang.Long"
