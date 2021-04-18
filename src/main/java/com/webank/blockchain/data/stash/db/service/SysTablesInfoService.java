@@ -140,8 +140,8 @@ public class SysTablesInfoService extends DBBaseOperation implements StorageServ
         return mapper.selectTableDataByNum(tableName, blockNum);
     } 
     
-    public List<Map<String, Object>> selectTopOneById(String tableName, long id){
-        return mapper.selectTopByEntryId(tableName, id);
+    public List<Map<String, Object>> selectDataForTopBlock(String tableName){
+        return mapper.selectDataForTopBlock(tableName);
     }
     
     public void deleteById(String tableName, long id){

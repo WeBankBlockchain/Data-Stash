@@ -13,10 +13,9 @@
  */
 package com.webank.blockchain.data.stash.db.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 
+import com.webank.blockchain.data.stash.constants.DBStaticTableConstants;
 import com.webank.blockchain.data.stash.convertor.DBEntryConvertor;
 import com.webank.blockchain.data.stash.db.model.BaseInfo;
 import com.webank.blockchain.data.stash.entity.EntryInfo;
@@ -52,8 +51,8 @@ public abstract class DBBaseOperation<T extends BaseInfo> {
     
     private void processEntries(String tableName,List<T> list){
         if(list != null && list.size() > 0){
-            batchSave(tableName, list);
             batchSaveDetail(tableName, list);
+            batchSave(tableName, list);
         }
     }
     

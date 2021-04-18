@@ -137,10 +137,10 @@
 		where _num_ = #{blockNum,jdbcType=BIGINT}
 	</select>
 	
-	<select id="selectTopByEntryId" parameterType="java.lang.Long"
+	<select id="selectDataForTopBlock"
 		resultType="java.util.Map">
 		select * from ${tableName}
-		where _id_ = #{id,jdbcType=BIGINT} order by _num_ desc limit 1
+		where _num_ = (select  max(_num_)  from  ${tableName})
 	</select>
 
 	<select id="rollbackTableFromBlock">

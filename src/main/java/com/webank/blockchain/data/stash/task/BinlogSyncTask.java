@@ -49,6 +49,9 @@ public class BinlogSyncTask implements ApplicationRunner {
     private CleanManager cleanManager;
 
     @Autowired
+    private RecoverSnapshotManager recoverSnapshotManager;
+
+    @Autowired
     private ReadPropertyConfig readConfig;
     private boolean button = true;
 
@@ -63,6 +66,8 @@ public class BinlogSyncTask implements ApplicationRunner {
             checkManager.check();
             blockReadManager.read();
             cleanManager.clean();
+            recoverSnapshotManager.recoverSnapshotFromDetailTables();
+
             Thread.sleep(5000);
             if (!button) {
                 break;

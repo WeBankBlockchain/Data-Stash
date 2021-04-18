@@ -55,7 +55,7 @@ public interface SysTablesInfoMapper extends BaseMapper {
     
     List<Map<String, Object>> selectTableDataByNum(@Param("tableName")String tableName, @Param("blockNum")Long blockNum);
     
-    List<Map<String, Object>> selectTopByEntryId(@Param("tableName")String tableName, @Param("id")Long id);
+    List<Map<String, Object>> selectDataForTopBlock(@Param("tableName")String tableName);
 
     void rollbackTableFromBlock( @Param("tableName")String tableName, @Param("blockNum")Long blockNum);
 }
