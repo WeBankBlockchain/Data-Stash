@@ -41,7 +41,7 @@
 		where _num_ = #{blockNum,jdbcType=BIGINT} order by _id_
 	</select>
 	
-	<delete id="deleteByBlockNum" parameterType="java.lang.Long">
+	<delete id="rollbackByBlockNum" parameterType="java.lang.Long">
 		delete from check_point
 		where block_num >= #{num,jdbcType=BIGINT}
 	</delete>

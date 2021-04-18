@@ -19,6 +19,7 @@ import java.util.Map;
 import com.webank.blockchain.data.stash.db.model.SysTablesInfo;
 import org.apache.ibatis.annotations.Param;
 import com.webank.blockchain.data.stash.db.model.SysTablesInfo;
+import org.apache.ibatis.annotations.Select;
 
 /**
  * SysTablesInfoMapper
@@ -29,7 +30,7 @@ import com.webank.blockchain.data.stash.db.model.SysTablesInfo;
  *
  */
 public interface SysTablesInfoMapper extends BaseMapper {
-    
+
     int deleteByPrimaryKey(@Param("tableName")String tableName, @Param("id")Long id);
 
     int insert(SysTablesInfo record);
@@ -55,5 +56,6 @@ public interface SysTablesInfoMapper extends BaseMapper {
     List<Map<String, Object>> selectTableDataByNum(@Param("tableName")String tableName, @Param("blockNum")Long blockNum);
     
     List<Map<String, Object>> selectTopByEntryId(@Param("tableName")String tableName, @Param("id")Long id);
-    
+
+    void rollbackTableFromBlock( @Param("tableName")String tableName, @Param("blockNum")Long blockNum);
 }

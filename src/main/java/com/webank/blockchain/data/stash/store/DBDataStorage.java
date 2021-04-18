@@ -85,7 +85,7 @@ public class DBDataStorage implements DataStorage {
             storageServices.get(DBDynamicTableConstants.CONTRACT_PARAFUNC_INFO_SERVICE).storeTableData(tableName,
                     tableDataInfo);
         } else {
-            storageServices.get(DBDynamicTableConstants.DYLAMIC_TABLE_INFO_SERVICE).storeTableData(tableName,
+            storageServices.get(DBDynamicTableConstants.DYNAMIC_TABLE_INFO_SERVICE).storeTableData(tableName,
                     tableDataInfo);
         }
     }

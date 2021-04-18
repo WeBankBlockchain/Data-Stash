@@ -44,9 +44,9 @@ public interface BlockTaskPoolMapper {
             + ") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;")
     public void createTable();
 
-    @Insert("replace into block_task_pool(block_height, certainty ,block_timestamp, updatetime, sync_status)\n"
+    @Insert("insert ignore into block_task_pool(block_height, certainty ,block_timestamp, updatetime, sync_status)\n"
             + "values(#{blockHeight}, #{certainty}, #{blockTime}, #{updatetime}, #{syncStatus})")
-    int replaceInto(BlockTaskPool blockTaskPool);
+    int insertIgnoreInto(BlockTaskPool blockTaskPool);
 
     @Select("SELECT * FROM block_task_pool WHERE block_height = #{blockHeight}")
     @Results({ @Result(property = "pkId", column = "pk_id"), @Result(property = "blockHeight", column = "block_height"),
@@ -77,5 +77,8 @@ public interface BlockTaskPoolMapper {
 
     @Update("update block_task_pool set sync_status=#{sync_status} where block_height=#{block_height}")
     void updateSyncStatusByBlockHeight(@Param("sync_status") int syncStatus, @Param("block_height") long blockHeight);
+
+    @Update("delete from block_task_pool where block_height >= #{block}")
+    void rollbackByBlockNumber(@Param("block") long block);
 
 }

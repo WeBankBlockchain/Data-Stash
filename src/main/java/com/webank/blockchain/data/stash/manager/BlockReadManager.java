@@ -20,7 +20,6 @@ import com.webank.blockchain.data.stash.config.SystemPropertyConfig;
 import com.webank.blockchain.data.stash.constants.BinlogConstants;
 import com.webank.blockchain.data.stash.db.mapper.BlockTaskPoolMapper;
 import com.webank.blockchain.data.stash.db.model.BlockTaskPool;
-import com.webank.blockchain.data.stash.db.rollback.RollBackService;
 import com.webank.blockchain.data.stash.entity.RemoteServerInfo;
 import com.webank.blockchain.data.stash.enums.BlockTaskPoolSyncStatusEnum;
 import com.webank.blockchain.data.stash.handler.BlockHandler;
@@ -52,8 +51,6 @@ public class BlockReadManager {
     private BlockHandler blockHandler;
     @Autowired
     private List<RemoteServerInfo> sources;
-    @Autowired
-    private RollBackService rollBackService;
 
     public void read() throws IORuntimeException, InterruptedException, Exception {
         //Determine the block to start
@@ -120,7 +117,7 @@ public class BlockReadManager {
         BlockTaskPool bp = new BlockTaskPool();
         bp.setBlockHeight(todoNumber);
         log.info("begin to insert block {}", todoNumber);
-        blockTaskPoolMapper.replaceInto(bp);
+        blockTaskPoolMapper.insertIgnoreInto(bp);
         return bp;
     }
 

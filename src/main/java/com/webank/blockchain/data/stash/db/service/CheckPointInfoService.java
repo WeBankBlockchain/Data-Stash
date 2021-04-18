@@ -71,7 +71,7 @@ public class CheckPointInfoService extends DBBaseOperation {
         
     }
     
-    public void deleteByBlockNum(long num){
-        mapper.deleteByBlockNum(num);
+    public void rollbackByBlockNum(long num){
+        mapper.rollbackByBlockNum(num);
     }
 }

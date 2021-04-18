@@ -68,9 +68,9 @@ public class CheckPointManager {
     private CheckPointInfoService checkPointService;
     @Autowired
     private SysTablesInfoService sysTablesInfoService;
-    private ExecutorService executor;
-
+    @Autowired
     private SystemPropertyConfig config;
+    private ExecutorService executor;
 
     @PostConstruct
     private void init(){

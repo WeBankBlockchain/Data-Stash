@@ -147,4 +147,8 @@ public class SysTablesInfoService extends DBBaseOperation implements StorageServ
     public void deleteById(String tableName, long id){
         mapper.deleteByPrimaryKey(tableName, id);
     }
+
+    public void rollbackFrom(String table, long block){
+        this.mapper.rollbackTableFromBlock(table, block);
+    }
 }

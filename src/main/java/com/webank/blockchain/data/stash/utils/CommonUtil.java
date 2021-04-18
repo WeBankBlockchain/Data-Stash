@@ -15,6 +15,7 @@ package com.webank.blockchain.data.stash.utils;
 
 import java.util.List;
 
+import com.webank.blockchain.data.stash.constants.DBDynamicTableConstants;
 import com.webank.blockchain.data.stash.constants.DBStaticTableConstants;
 import com.webank.blockchain.data.stash.constants.DBStaticTableConstants;
 import com.webank.blockchain.data.stash.entity.ColumnInfo;
@@ -47,5 +48,4 @@ public class CommonUtil {
         }
         return detailTableName;
     }
-
 }

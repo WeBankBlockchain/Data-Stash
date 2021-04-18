@@ -44,6 +44,7 @@
 			(#{item.id,jdbcType=BIGINT}, #{item.hash,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER},#{item.num,jdbcType=BIGINT},#{item.tableName,jdbcType=VARCHAR}, #{item.keyField,jdbcType=VARCHAR}, #{item.valueField,jdbcType=VARCHAR})
     	</foreach>
 	</insert>
+
 	
 	<select id="selectTables" resultMap="BaseResultMap">
 		select
@@ -140,5 +141,10 @@
 		resultType="java.util.Map">
 		select * from ${tableName}
 		where _id_ = #{id,jdbcType=BIGINT} order by _num_ desc limit 1
-	</select>	
+	</select>
+
+	<select id="rollbackTableFromBlock">
+		delete from ${tableName}
+		where _num_ >= #{blockNum,jdbcType=BIGINT}
+	</select>
 </mapper>

@@ -18,7 +18,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import com.webank.blockchain.data.stash.constants.DBStaticTableConstants;
-import com.webank.blockchain.data.stash.db.service.DylamicTableInfoService;
+import com.webank.blockchain.data.stash.db.service.DynamicTableInfoService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 public class HeartBeatTask {
 
     @Autowired
-    private DylamicTableInfoService service;
+    private DynamicTableInfoService service;
     
     @Scheduled(fixedDelay = 60 * 1000)
     public void sendHeartBeat() throws Exception {
