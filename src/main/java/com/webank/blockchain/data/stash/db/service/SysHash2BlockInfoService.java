@@ -60,7 +60,7 @@ public class SysHash2BlockInfoService extends DBBaseOperation implements Storage
 	@SuppressWarnings("unchecked")
     @Override
     @Transactional
-    public void storageTabelData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
+    public void storeTableData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
         storage(tableName, tableDataInfo, SysHash2BlockInfo.class);
     }
 

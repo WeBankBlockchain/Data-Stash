@@ -47,7 +47,7 @@ public class ContractDataInfoService extends DBBaseOperation implements StorageS
 	@SuppressWarnings("unchecked")
 	@Transactional
     @Override
-    public void storageTabelData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
+    public void storeTableData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
 	    storage(tableName, tableDataInfo, ContractDataInfo.class);
     }
 

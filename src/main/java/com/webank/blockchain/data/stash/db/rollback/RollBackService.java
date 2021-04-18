@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.webank.blockchain.data.stash.db.mapper.BinlogOffsetMapper;
 import com.webank.blockchain.data.stash.db.model.DylamicTableInfo;
 import com.webank.blockchain.data.stash.db.model.SysTablesInfo;
 import com.webank.blockchain.data.stash.db.service.CheckPointInfoService;
@@ -25,11 +24,6 @@ import com.webank.blockchain.data.stash.db.service.DylamicTableInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.webank.blockchain.data.stash.db.mapper.BinlogOffsetMapper;
-import com.webank.blockchain.data.stash.db.model.DylamicTableInfo;
-import com.webank.blockchain.data.stash.db.model.SysTablesInfo;
-import com.webank.blockchain.data.stash.db.service.CheckPointInfoService;
-import com.webank.blockchain.data.stash.db.service.DylamicTableInfoService;
 import com.webank.blockchain.data.stash.db.service.SysTablesInfoService;
 import com.webank.blockchain.data.stash.entity.ColumnInfo;
 import com.webank.blockchain.data.stash.entity.EntryInfo;

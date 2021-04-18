@@ -15,7 +15,6 @@ package com.webank.blockchain.data.stash.handler;
 
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.function.Function;
 
 import com.webank.blockchain.data.stash.db.face.DataStorage;
 import com.webank.blockchain.data.stash.db.mapper.BlockTaskPoolMapper;
@@ -65,9 +64,11 @@ public class BlockHandler {
 
     @PostConstruct
     private void init(){
-        //checkpoint manager requires the block parse must be serialized
-        computePool = Executors.newSingleThreadExecutor();
-        sqlPool = Executors.newFixedThreadPool(config.getSqlThreads());
+        //Dont use unbound arrays, otherwise OOM will happen!
+        computePool = new ThreadPoolExecutor(this.config.getParseThreads(), this.config.getParseThreads(),
+                0, TimeUnit.DAYS, new LinkedBlockingQueue<>(config.getQueuedSize()), (r, executor) -> r.run());
+        sqlPool = new ThreadPoolExecutor(this.config.getSqlThreads(), this.config.getSqlThreads(),
+                0, TimeUnit.DAYS, new LinkedBlockingQueue<>(config.getQueuedSize()), (r, executor) -> r.run());
     }
 
     public CompletableFuture<Void> handleAsync(List<byte[]> blockBytesList) {
@@ -98,7 +99,7 @@ public class BlockHandler {
     private void storeBlockData(BinlogBlockInfo blockInfo) {
         blockTaskPoolMapper.updateSyncStatusByBlockHeight(BlockTaskPoolSyncStatusEnum.DOING.getSyncStatus(),
                 blockInfo.getBlockNum());
-        dataStorage.storageBlock(blockInfo);
+        dataStorage.storeBlock(blockInfo);
         log.debug("===============end block data store===================");
     }
 }

@@ -78,7 +78,7 @@ public class SysTablesInfoService extends DBBaseOperation implements StorageServ
     @SuppressWarnings("unchecked")
     @Override
     @Transactional
-    public void storageTabelData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
+    public void storeTableData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
         storage(tableName, tableDataInfo, SysTablesInfo.class);
         for (EntryInfo entry : tableDataInfo.getNewEntrys()) {
             createTableByTableName(CommonUtil.getValueColumn(entry.getColumns(), "table_name"));

@@ -49,7 +49,7 @@ public class ContractParaFuncInfoService extends DBBaseOperation implements Stor
 	@SuppressWarnings("unchecked")
     @Override
 	@Transactional
-    public void storageTabelData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
+    public void storeTableData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
 	    storage(tableName, tableDataInfo, ContractParaFuncInfo.class);
     }
 

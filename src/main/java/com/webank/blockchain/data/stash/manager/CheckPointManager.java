@@ -20,10 +20,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
+import com.webank.blockchain.data.stash.config.SystemPropertyConfig;
 import com.webank.blockchain.data.stash.db.model.CheckPointInfo;
 import com.webank.blockchain.data.stash.db.model.SysTablesInfo;
 import com.webank.blockchain.data.stash.db.service.CheckPointInfoService;
@@ -51,6 +50,8 @@ import com.webank.blockchain.data.stash.handler.TreeMapComparator;
 import com.webank.blockchain.data.stash.utils.CommonUtil;
 import com.webank.blockchain.data.stash.utils.JsonUtils;
 
+import javax.annotation.PostConstruct;
+
 /**
  * CheckPointOperator
  *
@@ -67,7 +68,14 @@ public class CheckPointManager {
     private CheckPointInfoService checkPointService;
     @Autowired
     private SysTablesInfoService sysTablesInfoService;
-    private ExecutorService executor = Executors.newSingleThreadExecutor();
+    private ExecutorService executor;
+
+    private SystemPropertyConfig config;
+
+    @PostConstruct
+    private void init(){
+        this.executor = new ThreadPoolExecutor(1,1,0, TimeUnit.DAYS,new LinkedBlockingQueue<>(config.getQueuedSize()));
+    }
 
     public Future<Boolean> futureCreateCheckPoint(BinlogBlockInfo blockInfo) {
         return (Future<Boolean>) executor.submit(() -> {

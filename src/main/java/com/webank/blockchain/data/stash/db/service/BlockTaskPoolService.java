@@ -14,7 +14,6 @@
 package com.webank.blockchain.data.stash.db.service;
 
 import com.webank.blockchain.data.stash.db.face.StorageService;
-import com.webank.blockchain.data.stash.db.mapper.BinlogOffsetMapper;
 import com.webank.blockchain.data.stash.db.mapper.BlockTaskPoolMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,17 +34,13 @@ public class BlockTaskPoolService implements StorageService {
 
     @Autowired
     private BlockTaskPoolMapper mapper;
-    @Autowired
-    private BinlogOffsetMapper binlogOffsetMapper;
-
     @Override
     public void createSchema() {
         mapper.createTable();
-        binlogOffsetMapper.createTable();
     }
 
     @Override
-    public void storageTabelData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
+    public void storeTableData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
 
         
     }

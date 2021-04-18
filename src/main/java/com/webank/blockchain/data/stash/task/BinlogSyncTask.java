@@ -37,8 +37,8 @@ import lombok.Data;
 @Component
 @Data
 public class BinlogSyncTask implements ApplicationRunner {
-    @Autowired
-    private RollbackManager rollbackManager;
+//    @Autowired
+//    private RollbackManager rollbackManager;
     @Autowired
     private DownloadManager downloadManager;
     @Autowired
@@ -57,7 +57,7 @@ public class BinlogSyncTask implements ApplicationRunner {
         if (readConfig.getFiles() < 3) {
             readConfig.setFiles(3);
         }
-
+        //18260717126
         while (true) {
             downloadManager.download();
             checkManager.check();

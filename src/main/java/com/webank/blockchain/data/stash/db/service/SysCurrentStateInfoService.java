@@ -60,7 +60,7 @@ public class SysCurrentStateInfoService extends DBBaseOperation implements Stora
 	@SuppressWarnings("unchecked")
     @Override
     @Transactional
-    public void storageTabelData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
+    public void storeTableData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
         storage(tableName, tableDataInfo, SysCurrentStateInfo.class);
     }
 

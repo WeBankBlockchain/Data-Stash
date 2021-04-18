@@ -58,40 +58,34 @@ public class DBDataStorage implements DataStorage {
 
     @Override
     @UseTime
-    public void storageBlock(BinlogBlockInfo blockInfo) throws DataStashException {
+    public void storeBlock(BinlogBlockInfo blockInfo) throws DataStashException {
 
         TableDataInfo sysTableData = blockInfo.getTables().get(DBStaticTableConstants.SYS_TABLES_TABLE);
         if ((sysTableData != null) && (sysTableData.getNewEntrys() != null)
                 && (sysTableData.getNewEntrys().size() > 0)) {
             String serviceName = StringStyleUtils.underline2upper(DBStaticTableConstants.SYS_TABLES_TABLE)
                     + DBDynamicTableConstants.DB_SERVICE_POST_FIX;
-            storageServices.get(serviceName).storageTabelData(DBStaticTableConstants.SYS_TABLES_TABLE, sysTableData);
+            storageServices.get(serviceName).storeTableData(DBStaticTableConstants.SYS_TABLES_TABLE, sysTableData);
             blockInfo.getTables().remove(DBStaticTableConstants.SYS_TABLES_TABLE);
         }
-        blockInfo.getTables().entrySet().parallelStream().forEach(e -> {
-            try {
-                storageData(e.getKey(), e.getValue());
-            } catch (DataStashException e1) {
-                e1.printStackTrace();
-            }
-        });
+        blockInfo.getTables().entrySet().forEach(e -> storeData(e.getKey(), e.getValue()));
     }
 
     @Override
     @UseTime
-    public void storageData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
+    public void storeData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
         log.info("storage table name : {}", tableName);
         String serviceName = StringStyleUtils.underline2upper(tableName) + DBDynamicTableConstants.DB_SERVICE_POST_FIX;
         if (storageServices.containsKey(serviceName)) {
-            storageServices.get(serviceName).storageTabelData(tableName, tableDataInfo);
+            storageServices.get(serviceName).storeTableData(tableName, tableDataInfo);
         } else if (tableName.startsWith(DBDynamicTableConstants.CONTRACT_DATA_PRE_FIX)) {
-            storageServices.get(DBDynamicTableConstants.CONTRACT_DATA_INFO_SERVICE).storageTabelData(tableName,
+            storageServices.get(DBDynamicTableConstants.CONTRACT_DATA_INFO_SERVICE).storeTableData(tableName,
                     tableDataInfo);
         } else if (tableName.startsWith(DBDynamicTableConstants.CONTRAACT_PARAFUNC_FIX)) {
-            storageServices.get(DBDynamicTableConstants.CONTRACT_PARAFUNC_INFO_SERVICE).storageTabelData(tableName,
+            storageServices.get(DBDynamicTableConstants.CONTRACT_PARAFUNC_INFO_SERVICE).storeTableData(tableName,
                     tableDataInfo);
         } else {
-            storageServices.get(DBDynamicTableConstants.DYLAMIC_TABLE_INFO_SERVICE).storageTabelData(tableName,
+            storageServices.get(DBDynamicTableConstants.DYLAMIC_TABLE_INFO_SERVICE).storeTableData(tableName,
                     tableDataInfo);
         }
     }

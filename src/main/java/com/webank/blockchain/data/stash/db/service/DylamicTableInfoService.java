@@ -44,7 +44,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class DylamicTableInfoService extends DBBaseOperation implements StorageService {
-	
+
 	@Autowired
 	private DylamicTableInfoMapper mapper;
 	
@@ -54,7 +54,7 @@ public class DylamicTableInfoService extends DBBaseOperation implements StorageS
     @SuppressWarnings("unchecked")
     @Override
     @Transactional
-    public void storageTabelData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
+    public void storeTableData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
         storage(tableName, tableDataInfo, DylamicTableInfo.class);
     }       
 
