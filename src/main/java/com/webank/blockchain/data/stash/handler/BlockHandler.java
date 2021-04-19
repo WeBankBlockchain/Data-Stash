@@ -22,6 +22,7 @@ import com.webank.blockchain.data.stash.entity.BinlogBlockInfo;
 import com.webank.blockchain.data.stash.enums.BlockTaskPoolSyncStatusEnum;
 import com.webank.blockchain.data.stash.manager.CheckPointManager;
 import com.webank.blockchain.data.stash.parser.BlockBytesParser;
+import com.webank.blockchain.data.stash.thread.DataStashThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -59,21 +60,22 @@ public class BlockHandler {
     @Autowired
     private BlockTaskPoolMapper blockTaskPoolMapper;
 
-    ExecutorService computePool;
+    ExecutorService parserPool;
     ExecutorService sqlPool;
 
     @PostConstruct
     private void init(){
         //Dont use unbound arrays, otherwise OOM will happen!
-        computePool = new ThreadPoolExecutor(this.config.getParseThreads(), this.config.getParseThreads(),
-                0, TimeUnit.DAYS, new LinkedBlockingQueue<>(config.getQueuedSize()), (r, executor) -> r.run());
+        parserPool = new ThreadPoolExecutor(this.config.getParseThreads(), this.config.getParseThreads(),
+                0, TimeUnit.DAYS, new LinkedBlockingQueue<>(config.getQueuedSize()), new DataStashThreadFactory("parserPool"),
+                (r, executor) -> r.run());
         sqlPool = new ThreadPoolExecutor(this.config.getSqlThreads(), this.config.getSqlThreads(),
-                0, TimeUnit.DAYS, new LinkedBlockingQueue<>(config.getQueuedSize()), (r, executor) -> r.run());
+                0, TimeUnit.DAYS, new LinkedBlockingQueue<>(config.getQueuedSize()), new DataStashThreadFactory("sqlPool"), (r, executor) -> r.run());
     }
 
     public CompletableFuture<Void> handleAsync(List<byte[]> blockBytesList) {
         return CompletableFuture
-                .supplyAsync(() -> parseBinlogThenVerify(blockBytesList), computePool)
+                .supplyAsync(() -> parseBinlogThenVerify(blockBytesList), parserPool)
                 .thenAcceptAsync(blockInfo -> storeBlockData(blockInfo), sqlPool);
     }
 
