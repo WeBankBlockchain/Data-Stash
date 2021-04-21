@@ -46,7 +46,7 @@ public interface BlockTaskPoolMapper {
 
     @Insert("insert into block_task_pool(block_height, certainty ,block_timestamp, updatetime, sync_status)\n"
             + "values(#{blockHeight}, #{certainty}, #{blockTime}, #{updatetime}, #{syncStatus})")
-    int insertIgnoreInto(BlockTaskPool blockTaskPool);
+    int insertInto(BlockTaskPool blockTaskPool);
 
     @Select("SELECT * FROM block_task_pool WHERE block_height = #{blockHeight}")
     @Results({ @Result(property = "pkId", column = "pk_id"), @Result(property = "blockHeight", column = "block_height"),
