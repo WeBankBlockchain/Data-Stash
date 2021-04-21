@@ -73,5 +73,5 @@ public abstract class DBBaseOperation<T extends BaseInfo> {
     public abstract void batchSave(String tableName, List<T> list);
     
     public abstract void batchSaveDetail(String tableName, List<T> list);
-    
+
 }

@@ -53,15 +53,12 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @Slf4j
-public class BlockValidation {
+public class ComparisonValidation {
 
     @Autowired
     private BlockBytesParser parser;
-    @Autowired
-    private ValidatorController validatorController;
-
     @UseTime
-    public boolean vaildBlocks(BinlogBlockInfo blockInfo, List<byte[]> blockBytesList){
+    public boolean compareValidate(BinlogBlockInfo blockInfo, List<byte[]> blockBytesList){
         try{
             for (int i = 1; i < blockBytesList.size(); i++) {
                 if (!compare(blockInfo, blockBytesList.get(i))) {
@@ -181,10 +178,6 @@ public class BlockValidation {
                 return false;
             }
 
-            if (!validatorController.validateBlockRlp(CommonUtil.getValueColumn(entry1.getColumns(), "value"))) {
-                log.error("Validate block rlp error.");
-                return false;
-            }
         }
         else if (tableName.equalsIgnoreCase(DBStaticTableConstants.SYS_TX_HASH_2_BLOCK_TABLE)) {
             // the id of SYS_TX_HASH_2_BLOCK_TABLE is not equal in different binlog file since from 2.2

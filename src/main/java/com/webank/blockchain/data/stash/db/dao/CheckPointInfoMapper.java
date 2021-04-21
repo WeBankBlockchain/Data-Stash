@@ -63,4 +63,5 @@ public interface CheckPointInfoMapper {
 	
 	void rollbackByBlockNum(long num);
 
+	Long nextCheckpoint();
 }

@@ -29,7 +29,7 @@ import org.springframework.stereotype.Service;
 import com.webank.blockchain.data.stash.config.SystemPropertyConfig;
 import com.webank.blockchain.data.stash.enums.DataStashExceptionCodeEnums;
 import com.webank.blockchain.data.stash.exception.DataStashException;
-import com.webank.blockchain.data.stash.verify.BlockValidation;
+import com.webank.blockchain.data.stash.verify.ComparisonValidation;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,7 +50,7 @@ public class BlockHandler {
     @Autowired
     private BlockBytesParser parser;
     @Autowired
-    private BlockValidation validator;
+    private ComparisonValidation validator;
     @Autowired
     private DataStorage dataStorage;
     @Autowired
@@ -67,15 +67,17 @@ public class BlockHandler {
     private void init(){
         //Dont use unbound arrays, otherwise OOM will happen!
         parserPool = new ThreadPoolExecutor(this.config.getParseThreads(), this.config.getParseThreads(),
-                0, TimeUnit.DAYS, new LinkedBlockingQueue<>(config.getQueuedSize()), new DataStashThreadFactory("parserPool"),
+                0, TimeUnit.DAYS, new LinkedBlockingQueue<>(config.getParseQueueSize()), new DataStashThreadFactory("parserPool"),
                 (r, executor) -> r.run());
         sqlPool = new ThreadPoolExecutor(this.config.getSqlThreads(), this.config.getSqlThreads(),
-                0, TimeUnit.DAYS, new LinkedBlockingQueue<>(config.getQueuedSize()), new DataStashThreadFactory("sqlPool"), (r, executor) -> r.run());
+                0, TimeUnit.DAYS, new LinkedBlockingQueue<>(config.getSqlQueueSize()), new DataStashThreadFactory("sqlPool"), (r, executor) -> r.run());
     }
 
     public CompletableFuture<Void> handleAsync(List<byte[]> blockBytesList) {
         return CompletableFuture
+                //Parse
                 .supplyAsync(() -> parseBinlogThenVerify(blockBytesList), parserPool)
+                //Store
                 .thenAcceptAsync(blockInfo -> storeBlockData(blockInfo), sqlPool);
     }
 
@@ -87,21 +89,20 @@ public class BlockHandler {
         log.debug("===============end binlog parse===================");
 
         // 2. Verify
-        if (blockBytesList.size() != 1 && config.getBinlogVerify() == 1) {
-            if (!validator.vaildBlocks(blockInfo, blockBytesList)){
+        if (config.getBinlogVerify() == 1 && blockBytesList.size() > 1) {
+            if (!validator.compareValidate(blockInfo, blockBytesList)){
                 throw new DataStashException(DataStashExceptionCodeEnums.DATA_STASH_BINLOG_VERIFY_ERROR);
             }
             log.debug("===============end binlog verify===================");
         }
-        // 3. By pass submit to checkpoint service
-        checkPointManager.futureCreateCheckPoint(blockInfo);
         return blockInfo;
     }
 
-    private void storeBlockData(BinlogBlockInfo blockInfo) {
+    private BinlogBlockInfo storeBlockData(BinlogBlockInfo blockInfo) {
         blockTaskPoolMapper.updateSyncStatusByBlockHeight(BlockTaskPoolSyncStatusEnum.DOING.getSyncStatus(),
                 blockInfo.getBlockNum());
         dataStorage.storeBlock(blockInfo);
         log.debug("===============end block data store===================");
+        return blockInfo;
     }
 }

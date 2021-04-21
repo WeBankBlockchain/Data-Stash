@@ -51,9 +51,10 @@ public class CleanManager {
     private ReadPropertyConfig readPropertyConfig;
 
     public void clean() {
-        BlockTaskPool latest =
-                blockTaskPoolMapper.getLastFinishedBlock();
-        if(latest == null) return;
+        BlockTaskPool latest = blockTaskPoolMapper.getLastFinishedBlock();
+        if(latest == null) {
+            return;
+        }
         for (RemoteServerInfo server : sources) {
             TreeSet<Long> localFiles =
                     BinlogFileUtils.getFileIds(server.getLocalFilePath(), systemPropertyConfig.getBinlogSuffix());

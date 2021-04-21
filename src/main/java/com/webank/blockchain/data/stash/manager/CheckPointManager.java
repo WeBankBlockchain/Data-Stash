@@ -13,40 +13,35 @@
  */
 package com.webank.blockchain.data.stash.manager;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.concurrent.*;
 
 import com.webank.blockchain.data.stash.config.SystemPropertyConfig;
-import com.webank.blockchain.data.stash.db.model.CheckPointInfo;
-import com.webank.blockchain.data.stash.db.model.SysTablesInfo;
+import com.webank.blockchain.data.stash.db.dao.SysHash2BlockInfoMapper;
+import com.webank.blockchain.data.stash.db.mapper.BlockTaskPoolMapper;
+import com.webank.blockchain.data.stash.db.model.*;
 import com.webank.blockchain.data.stash.db.service.CheckPointInfoService;
-import com.webank.blockchain.data.stash.entity.BinlogBlockInfo;
+import com.webank.blockchain.data.stash.db.service.SysHash2BlockInfoService;
+import com.webank.blockchain.data.stash.exception.DataStashException;
 import com.webank.blockchain.data.stash.handler.TreeMapComparator;
+import com.webank.blockchain.data.stash.verify.ValidatorService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 
 import org.fisco.bcos.sdk.crypto.hash.Hash;
 import org.fisco.bcos.sdk.crypto.hash.Keccak256;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import com.webank.blockchain.data.stash.aspect.UseTime;
 import com.webank.blockchain.data.stash.constants.DBStaticTableConstants;
 import com.webank.blockchain.data.stash.db.model.CheckPointInfo;
 import com.webank.blockchain.data.stash.db.model.SysTablesInfo;
-import com.webank.blockchain.data.stash.db.service.CheckPointInfoService;
 import com.webank.blockchain.data.stash.db.service.SysTablesInfoService;
-import com.webank.blockchain.data.stash.entity.BinlogBlockInfo;
-import com.webank.blockchain.data.stash.entity.ColumnInfo;
-import com.webank.blockchain.data.stash.entity.EntryInfo;
-import com.webank.blockchain.data.stash.entity.TableDataInfo;
-import com.webank.blockchain.data.stash.handler.TreeMapComparator;
 import com.webank.blockchain.data.stash.utils.CommonUtil;
 import com.webank.blockchain.data.stash.utils.JsonUtils;
 
@@ -61,6 +56,8 @@ import javax.annotation.PostConstruct;
  *
  */
 @Service
+@ConditionalOnProperty(prefix = "system",name = "checkPointVerify", havingValue = "1")
+@Slf4j
 public class CheckPointManager {
 
     private Hash keccak = new Keccak256();
@@ -69,69 +66,62 @@ public class CheckPointManager {
     @Autowired
     private SysTablesInfoService sysTablesInfoService;
     @Autowired
+    private ValidatorService validatorService;
+    @Autowired
     private SystemPropertyConfig config;
-    private ExecutorService executor;
+    @Autowired
+    private BlockTaskPoolMapper blockTaskPoolMapper;
+    @Autowired
+    private SysHash2BlockInfoMapper hash2BlockInfoMapper;
+
+    private ScheduledExecutorService executor;
+    private long nextCheckpoint;
 
     @PostConstruct
     private void init(){
-        this.executor = new ThreadPoolExecutor(1,1,0, TimeUnit.DAYS,new LinkedBlockingQueue<>(config.getQueuedSize()));
+        this.nextCheckpoint = checkPointService.nextCheckpoint();
+        this.executor = Executors.newScheduledThreadPool(1);
+        this.executor.scheduleAtFixedRate(this::verifyThenCheckpoint, 0, 30, TimeUnit.SECONDS);
     }
 
-    public Future<Boolean> futureCreateCheckPoint(BinlogBlockInfo blockInfo) {
-        return (Future<Boolean>) executor.submit(() -> {
-            return createCheckPoint(blockInfo);
-        });
+    private void verifyThenCheckpoint() {
+        BlockTaskPool lastFinishedBlock = blockTaskPoolMapper.getLastFinishedBlock();
+        if (!shouldDoCheckpoint(lastFinishedBlock)) {
+            return;
+        }
+        long end = lastFinishedBlock.getBlockHeight();
+        for(;nextCheckpoint <= end; nextCheckpoint++){
+            if(!doVerify(nextCheckpoint)){
+                throw new DataStashException("verify block failed for block "+nextCheckpoint);
+            }
+            doCheckpoint(nextCheckpoint);
+            this.nextCheckpoint++;
+        }
+
     }
 
-    @UseTime
-    public boolean createCheckPoint(BinlogBlockInfo blockInfo) {
-        StringBuffer buffer = new StringBuffer();
-        long blockNum = blockInfo.getBlockNum();
-        // 1. get pre block data hash
-        if (blockNum > 0) {
-            CheckPointInfo preCheckPoint = checkPointService.getByBlockNum(blockNum - 1);
-            buffer.append(preCheckPoint.getBlockDataHash());
+    private boolean shouldDoCheckpoint(BlockTaskPool lastFinishedBlock) {
+        return lastFinishedBlock == null || lastFinishedBlock.getBlockHeight() < this.nextCheckpoint;
+    }
+
+    private boolean doVerify(long block){
+        SysHash2BlockInfo blockInfo = this.hash2BlockInfoMapper.selectByBlockNumber(block);
+        try{
+            return validatorService.validateBlockRlp(blockInfo.getValue());
         }
-        // 2. create check point
-        Map<String, TableDataInfo> map = blockInfo.getTables();
-        Map<String, List<TreeMap<String, String>>> result = new TreeMap<>();
-        for (Entry<String, TableDataInfo> e : map.entrySet()) {
-            String tableName = e.getKey();
-            if (tableName.equalsIgnoreCase(DBStaticTableConstants.SYS_TABLES_TABLE)) {
-                continue;
-            }
-            List<TreeMap<String, String>> columns = new ArrayList<>();
-            TableDataInfo t = e.getValue();
-            TreeSet<EntryInfo> all = new TreeSet<>();
-            all.addAll(t.getDirtyEntrys());
-            all.addAll(t.getNewEntrys());
-            for (EntryInfo ei : all) {
-                TreeMap<String, String> columnsMap = new TreeMap<>();
-                List<ColumnInfo> list = ei.getColumns();
-                if (ei.getHash() == null) {
-                    columnsMap.put("_hash_", "0x00");
-                } else {
-                    columnsMap.put("_hash_", ei.getHash());
-                }
-                columnsMap.put("_num_", ei.getNum() + "");
-                columnsMap.put("_status_", ei.getStatus() + "");
-                columnsMap.put("_id_", ei.getId() + "");
-                list.forEach(l -> {
-                    columnsMap.put(l.getColumnName(), l.getColumnValue());
-                });
-                columns.add(columnsMap);
-            }
-            Collections.sort(columns, new TreeMapComparator());
-            result.put(tableName, columns);
+        catch (Exception ex){
+            log.error("block verify failed",ex);
+            return false;
         }
-        buffer.append(JsonUtils.toJson(result));
-        String checkpoint = Hex.encodeHexString(keccak.hash(buffer.toString().getBytes()));
+    }
+
+
+    private void doCheckpoint(long block){
+        String blockHash = exportCheckPoint(block);
         CheckPointInfo checkPoint = new CheckPointInfo();
-        checkPoint.setBlockNum(blockInfo.getBlockNum());
-        checkPoint.setBlockDataHash(checkpoint);
-        // 3. save check point
+        checkPoint.setBlockNum(block);
+        checkPoint.setBlockDataHash(blockHash);
         checkPointService.save(checkPoint);
-        return true;
     }
 
     public String exportCheckPoint(Long blockNum) {

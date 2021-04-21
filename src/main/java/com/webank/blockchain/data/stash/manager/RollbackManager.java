@@ -30,7 +30,7 @@ public class RollbackManager {
     private DynamicTableInfoService dynamicTableInfoService;
 
     @Autowired
-    private RecoverSnapshotManager recoverSnapshotManager;
+    private RecoverSnapshotService recoverSnapshotService;
 
     public void rollbackUnfinished(){
         /**
@@ -78,7 +78,7 @@ public class RollbackManager {
     }
 
     private void rebuildCurrentTable() {
-        recoverSnapshotManager.recoverSnapshotFromDetailTables();
+        recoverSnapshotService.recoverSnapshotFromDetailTables();
 
     }
 
