@@ -16,12 +16,9 @@
 package com.webank.blockchain.data.stash.db.service;
 
 import com.webank.blockchain.data.stash.BaseTest;
-import com.webank.blockchain.data.stash.db.model.DylamicTableInfo;
+import com.webank.blockchain.data.stash.db.model.DynamicTableInfo;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.webank.blockchain.data.stash.BaseTest;
-import com.webank.blockchain.data.stash.db.model.DylamicTableInfo;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,11 +34,11 @@ import lombok.extern.slf4j.Slf4j;
 public class UserTableInfoServiceTest extends BaseTest {
     
     @Autowired
-    private DylamicTableInfoService userTableInfoService;
+    private DynamicTableInfoService userTableInfoService;
     
     @Test
     public void testSave(){
-        DylamicTableInfo userTableInfo = new DylamicTableInfo();
+        DynamicTableInfo userTableInfo = new DynamicTableInfo();
         userTableInfo.setId(123L);
         userTableInfo.setStatus(0);
         userTableInfo.setNum(0L);

@@ -78,7 +78,7 @@ public class SysTablesInfoService extends DBBaseOperation implements StorageServ
     @SuppressWarnings("unchecked")
     @Override
     @Transactional
-    public void storageTabelData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
+    public void storeTableData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
         storage(tableName, tableDataInfo, SysTablesInfo.class);
         for (EntryInfo entry : tableDataInfo.getNewEntrys()) {
             createTableByTableName(CommonUtil.getValueColumn(entry.getColumns(), "table_name"));
@@ -140,11 +140,15 @@ public class SysTablesInfoService extends DBBaseOperation implements StorageServ
         return mapper.selectTableDataByNum(tableName, blockNum);
     } 
     
-    public List<Map<String, Object>> selectTopOneById(String tableName, long id){
-        return mapper.selectTopByEntryId(tableName, id);
+    public List<Map<String, Object>> selectDataForTopBlock(String tableName){
+        return mapper.selectDataForTopBlock(tableName);
     }
     
     public void deleteById(String tableName, long id){
         mapper.deleteByPrimaryKey(tableName, id);
+    }
+
+    public void rollbackFrom(String table, long block){
+        this.mapper.rollbackTableFromBlock(table, block);
     }
 }

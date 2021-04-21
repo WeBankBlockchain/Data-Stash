@@ -41,6 +41,7 @@
 		#{item.num,jdbcType=BIGINT},
 		#{item.key,jdbcType=VARCHAR}, #{item.value,jdbcType=VARCHAR})
     	</foreach>
+
 	</insert>
 	
 	<insert id="batchInsertDetail" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="pkId">

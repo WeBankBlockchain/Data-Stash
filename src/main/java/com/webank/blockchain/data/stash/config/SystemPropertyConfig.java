@@ -44,6 +44,12 @@ public class SystemPropertyConfig {
     private int batchCount = 5;
     private int encryptType = 0;
 
+    private int parseThreads = Runtime.getRuntime().availableProcessors();
+    private int sqlThreads = 100;
+    private int parseQueueSize = 500;
+    private int sqlQueueSize = 500;
+
+
     public String getLocalBinlogPath() {
         if (StringUtils.isEmpty(this.localBinlogPath)) {
             this.localBinlogPath = "binlogcache" + File.separator;

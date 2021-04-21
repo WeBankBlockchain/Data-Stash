@@ -30,6 +30,6 @@ public interface StorageService {
     
     public void createSchema() throws SQLException; 
     
-    public void storageTabelData(String tableName, TableDataInfo tableDataInfo) throws DataStashException;
+    public void storeTableData(String tableName, TableDataInfo tableDataInfo) throws DataStashException;
 
 }

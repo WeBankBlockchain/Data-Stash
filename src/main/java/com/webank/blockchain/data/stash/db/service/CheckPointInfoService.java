@@ -41,7 +41,8 @@ public class CheckPointInfoService extends DBBaseOperation {
 	
 	@Autowired
 	private CheckPointInfoMapper mapper;
-	
+
+
     @PostConstruct
     public void createSchema() {
         mapper.createTable();
@@ -71,7 +72,11 @@ public class CheckPointInfoService extends DBBaseOperation {
         
     }
     
-    public void deleteByBlockNum(long num){
-        mapper.deleteByBlockNum(num);
+    public void rollbackByBlockNum(long num){
+        mapper.rollbackByBlockNum(num);
+    }
+
+    public long nextCheckpoint(){
+        return mapper.nextCheckpoint();
     }
 }

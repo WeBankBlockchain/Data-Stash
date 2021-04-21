@@ -17,8 +17,10 @@ package com.webank.blockchain.data.stash.db.service;
 import java.util.List;
 
 import com.webank.blockchain.data.stash.db.dao.SysCurrentStateInfoMapper;
+import org.apache.ibatis.session.TransactionIsolationLevel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.webank.blockchain.data.stash.config.SystemPropertyConfig;
@@ -60,14 +62,14 @@ public class SysCurrentStateInfoService extends DBBaseOperation implements Stora
 	@SuppressWarnings("unchecked")
     @Override
     @Transactional
-    public void storageTabelData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
+    public void storeTableData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
         storage(tableName, tableDataInfo, SysCurrentStateInfo.class);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void batchSave(String tableName, List list) {
-        
+        /*
         int batchLastIndex = systemPropertyConfig.getBatchCount();
 
         for (int index = 0; index < list.size();) {
@@ -81,7 +83,9 @@ public class SysCurrentStateInfoService extends DBBaseOperation implements Stora
                 index = batchLastIndex;
                 batchLastIndex = index + (systemPropertyConfig.getBatchCount() - 1);
             }
-        }    
+        }
+
+         */
     }
     
     @SuppressWarnings("unchecked")

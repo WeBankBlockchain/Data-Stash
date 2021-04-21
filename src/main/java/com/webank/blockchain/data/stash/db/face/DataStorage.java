@@ -27,8 +27,8 @@ import com.webank.blockchain.data.stash.exception.DataStashException;
  */
 public interface DataStorage {  
     
-    void storageBlock(BinlogBlockInfo blockInfo) throws DataStashException;
+    void storeBlock(BinlogBlockInfo blockInfo) throws DataStashException;
     
-    void storageData(String tableName, TableDataInfo tableDataInfo) throws DataStashException;
+    void storeData(String tableName, TableDataInfo tableDataInfo) throws DataStashException;
 
 }

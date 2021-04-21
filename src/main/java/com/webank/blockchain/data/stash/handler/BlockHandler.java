@@ -14,7 +14,7 @@
 package com.webank.blockchain.data.stash.handler;
 
 import java.util.List;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 import com.webank.blockchain.data.stash.db.face.DataStorage;
 import com.webank.blockchain.data.stash.db.mapper.BlockTaskPoolMapper;
@@ -22,15 +22,18 @@ import com.webank.blockchain.data.stash.entity.BinlogBlockInfo;
 import com.webank.blockchain.data.stash.enums.BlockTaskPoolSyncStatusEnum;
 import com.webank.blockchain.data.stash.manager.CheckPointManager;
 import com.webank.blockchain.data.stash.parser.BlockBytesParser;
+import com.webank.blockchain.data.stash.thread.DataStashThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.webank.blockchain.data.stash.config.SystemPropertyConfig;
 import com.webank.blockchain.data.stash.enums.DataStashExceptionCodeEnums;
 import com.webank.blockchain.data.stash.exception.DataStashException;
-import com.webank.blockchain.data.stash.verify.BlockValidation;
+import com.webank.blockchain.data.stash.verify.ComparisonValidation;
 
 import lombok.extern.slf4j.Slf4j;
+
+import javax.annotation.PostConstruct;
 
 /**
  * BlockHandler
@@ -47,7 +50,7 @@ public class BlockHandler {
     @Autowired
     private BlockBytesParser parser;
     @Autowired
-    private BlockValidation validator;
+    private ComparisonValidation validator;
     @Autowired
     private DataStorage dataStorage;
     @Autowired
@@ -57,34 +60,49 @@ public class BlockHandler {
     @Autowired
     private BlockTaskPoolMapper blockTaskPoolMapper;
 
-    public boolean handler(List<byte[]> blockBytesList) throws Exception {
+    ExecutorService parserPool;
+    ExecutorService sqlPool;
 
-        if (blockBytesList == null || blockBytesList.size() == 0) {
-            throw new DataStashException(DataStashExceptionCodeEnums.DATA_STASH_BLOCK_BYTES_LIST_IS_NULL);
-        }
+    @PostConstruct
+    private void init(){
+        //Dont use unbound arrays, otherwise OOM will happen!
+        parserPool = new ThreadPoolExecutor(this.config.getParseThreads(), this.config.getParseThreads(),
+                0, TimeUnit.DAYS, new LinkedBlockingQueue<>(config.getParseQueueSize()), new DataStashThreadFactory("parserPool"),
+                (r, executor) -> r.run());
+        sqlPool = new ThreadPoolExecutor(this.config.getSqlThreads(), this.config.getSqlThreads(),
+                0, TimeUnit.DAYS, new LinkedBlockingQueue<>(config.getSqlQueueSize()), new DataStashThreadFactory("sqlPool"), (r, executor) -> r.run());
+    }
 
-        // 1. parse block data
+    public CompletableFuture<Void> handleAsync(List<byte[]> blockBytesList) {
+        return CompletableFuture
+                //Parse
+                .supplyAsync(() -> parseBinlogThenVerify(blockBytesList), parserPool)
+                //Store
+                .thenAcceptAsync(blockInfo -> storeBlockData(blockInfo), sqlPool);
+    }
+
+
+    private BinlogBlockInfo parseBinlogThenVerify(List<byte[]> blockBytesList) {
+        // 1. Parse binlog
         byte[] firstBlockBytes = blockBytesList.get(0);
         BinlogBlockInfo blockInfo = parser.getBinlogBlockInfo(firstBlockBytes);
         log.debug("===============end binlog parse===================");
 
-        // 2. verify block data
-        if (blockBytesList.size() != 1 && config.getBinlogVerify() == 1) {
-            if (!validator.vaildBlocks(blockInfo, blockBytesList))
-                return false;
+        // 2. Verify
+        if (config.getBinlogVerify() == 1 && blockBytesList.size() > 1) {
+            if (!validator.compareValidate(blockInfo, blockBytesList)){
+                throw new DataStashException(DataStashExceptionCodeEnums.DATA_STASH_BINLOG_VERIFY_ERROR);
+            }
+            log.debug("===============end binlog verify===================");
         }
-        log.debug("===============end block validation===================");
+        return blockInfo;
+    }
 
-        // set task pool status
+    private BinlogBlockInfo storeBlockData(BinlogBlockInfo blockInfo) {
         blockTaskPoolMapper.updateSyncStatusByBlockHeight(BlockTaskPoolSyncStatusEnum.DOING.getSyncStatus(),
                 blockInfo.getBlockNum());
-        Future<Boolean> f = checkPointManager.futureCreateCheckPoint(blockInfo);
-        dataStorage.storageBlock(blockInfo);
+        dataStorage.storeBlock(blockInfo);
         log.debug("===============end block data store===================");
-
-        f.get();
-        log.debug("===============end create check point===================");
-
-        return true;
+        return blockInfo;
     }
 }

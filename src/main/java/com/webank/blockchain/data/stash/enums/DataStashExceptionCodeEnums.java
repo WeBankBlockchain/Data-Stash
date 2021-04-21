@@ -37,10 +37,10 @@ public enum DataStashExceptionCodeEnums {
     DATA_STASH_ENTRY_TYPE_ERROR(2001, "system entry type error"),
     DATA_STASH_ENCRYPT_TYPE(2002, "encrypt type error"),
     DATA_STASH_LOCAL_BINLOG_DIR_CREATE_FAILED(2003, "binlog dir create failed"),
+    DATA_STASH_BINLOG_VERIFY_ERROR(2004, "binlog verify error"),
     DATA_STASH_ENTRY_NOT_MATCH_TABLE_ERROR(3000, "entry doesn't match any tables"),
     DATA_STASH_ENTRY_NO_TABLE_ERROR(3001, "table does not exist in sys_tables"),
     DATA_STASH_BLOCK_BYTES_LIST_IS_NULL(4000,"block bytes list is empty");
-
     private int code;
     
     @Setter

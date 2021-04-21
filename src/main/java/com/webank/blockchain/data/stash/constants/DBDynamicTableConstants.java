@@ -36,6 +36,6 @@ public class DBDynamicTableConstants {
     public static final String DB_SERVICE_POST_FIX = "InfoService";
     public static final String CONTRACT_DATA_INFO_SERVICE = "contractDataInfoService";
     public static final String CONTRACT_PARAFUNC_INFO_SERVICE = "contractParaFuncInfoService";
-    public static final String DYLAMIC_TABLE_INFO_SERVICE = "dylamicTableInfoService";
+    public static final String DYNAMIC_TABLE_INFO_SERVICE = "dynamicTableInfoService";
 
 }

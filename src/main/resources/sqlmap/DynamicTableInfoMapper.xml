@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.webank.blockchain.data.stash.db.dao.DylamicTableInfoMapper">
+<mapper namespace="com.webank.blockchain.data.stash.db.dao.DynamicTableInfoMapper">
 
-	<insert id="insertOrUpdate" parameterType="com.webank.blockchain.data.stash.db.model.DylamicTableInfo"
+	<insert id="insertOrUpdate" parameterType="com.webank.blockchain.data.stash.db.model.DynamicTableInfo"
 		statementType="STATEMENT">
 		replace into ${tableName} (_id_, _hash_, _status_,
-		_num_${dylamicTableInfo.fields}) values
-		(${dylamicTableInfo.values})
+		_num_${dynamicTableInfo.fields}) values
+		(${dynamicTableInfo.values})
 	</insert>
 
 	<select id="existTable" parameterType="String" resultType="Integer">
@@ -16,12 +16,12 @@
 		table_name=#{tableName}
 	</select>
 
-	<insert id="insertDetail" parameterType="com.webank.blockchain.data.stash.db.model.DylamicTableInfo"
-		useGeneratedKeys="true" keyProperty="dylamicTableInfo.pkId"
+	<insert id="insertDetail" parameterType="com.webank.blockchain.data.stash.db.model.DynamicTableInfo"
+		useGeneratedKeys="true" keyProperty="dynamicTableInfo.pkId"
 		statementType="STATEMENT">
 		insert into ${tableName} (_id_, _hash_, _status_,
-		_num_${dylamicTableInfo.fields}) values
-		(${dylamicTableInfo.values})
+		_num_${dynamicTableInfo.fields}) values
+		(${dynamicTableInfo.values})
 	</insert>
 
 	<insert id="batchInsert" parameterType="java.util.List"

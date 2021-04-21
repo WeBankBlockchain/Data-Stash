@@ -37,7 +37,7 @@ public class SysCommitteeVotesInfoService extends DBBaseOperation implements Sto
     }
 
     @Override
-    public void storageTabelData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
+    public void storeTableData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
         storage(tableName, tableDataInfo, SysCommitteeVotesInfo.class);
     }
 

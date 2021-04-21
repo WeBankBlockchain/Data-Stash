@@ -51,7 +51,7 @@ public class SysHash2HeaderInfoService extends DBBaseOperation implements Storag
     }
 
     @Override
-    public void storageTabelData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
+    public void storeTableData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
         storage(tableName, tableDataInfo, SysHash2HeaderInfo.class);
     }
 

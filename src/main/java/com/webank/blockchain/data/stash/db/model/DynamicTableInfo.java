@@ -28,7 +28,7 @@ import lombok.ToString;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class DylamicTableInfo extends BaseInfo{
+public class DynamicTableInfo extends BaseInfo{
     
     private String fields;
     private String values; 

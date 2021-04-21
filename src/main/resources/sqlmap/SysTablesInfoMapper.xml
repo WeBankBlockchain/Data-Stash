@@ -44,6 +44,7 @@
 			(#{item.id,jdbcType=BIGINT}, #{item.hash,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER},#{item.num,jdbcType=BIGINT},#{item.tableName,jdbcType=VARCHAR}, #{item.keyField,jdbcType=VARCHAR}, #{item.valueField,jdbcType=VARCHAR})
     	</foreach>
 	</insert>
+
 	
 	<select id="selectTables" resultMap="BaseResultMap">
 		select
@@ -127,7 +128,7 @@
 	
 	<delete id="deleteByBlockNum" parameterType="java.lang.Long">
 		delete from ${tableName}
-		where _num_ = #{blockNum,jdbcType=BIGINT}
+		where _num_ >= #{blockNum,jdbcType=BIGINT}
 	</delete>
 	
 	<select id="selectTableDataByNum" parameterType="java.lang.Long"
@@ -136,9 +137,14 @@
 		where _num_ = #{blockNum,jdbcType=BIGINT}
 	</select>
 	
-	<select id="selectTopByEntryId" parameterType="java.lang.Long"
+	<select id="selectDataForTopBlock"
 		resultType="java.util.Map">
 		select * from ${tableName}
-		where _id_ = #{id,jdbcType=BIGINT} order by _num_ desc limit 1
-	</select>	
+		where _num_ = (select  max(_num_)  from  ${tableName})
+	</select>
+
+	<select id="rollbackTableFromBlock">
+		delete from ${tableName}
+		where _num_ >= #{blockNum,jdbcType=BIGINT}
+	</select>
 </mapper>

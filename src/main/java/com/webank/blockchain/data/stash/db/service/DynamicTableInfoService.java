@@ -16,9 +16,9 @@ package com.webank.blockchain.data.stash.db.service;
 
 import java.util.List;
 
-import com.webank.blockchain.data.stash.db.dao.DylamicTableInfoMapper;
+import com.webank.blockchain.data.stash.db.dao.DynamicTableInfoMapper;
 import com.webank.blockchain.data.stash.db.face.StorageService;
-import com.webank.blockchain.data.stash.db.model.DylamicTableInfo;
+import com.webank.blockchain.data.stash.db.model.DynamicTableInfo;
 import com.webank.blockchain.data.stash.utils.SQLUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,9 +33,9 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 
- * DylamicTableInfoService
+ * DynamicTableInfoService
  *
- * @Description: DylamicTableInfoService
+ * @Description: DynamicTableInfoService
  * @author graysonzhang
  * @data 2019-09-24 16:44:12
  *
@@ -43,10 +43,10 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings("rawtypes")
 @Service
 @Slf4j
-public class DylamicTableInfoService extends DBBaseOperation implements StorageService {
-	
+public class DynamicTableInfoService extends DBBaseOperation implements StorageService {
+
 	@Autowired
-	private DylamicTableInfoMapper mapper;
+	private DynamicTableInfoMapper mapper;
 	
 	@Autowired
     private SystemPropertyConfig systemPropertyConfig;
@@ -54,8 +54,8 @@ public class DylamicTableInfoService extends DBBaseOperation implements StorageS
     @SuppressWarnings("unchecked")
     @Override
     @Transactional
-    public void storageTabelData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
-        storage(tableName, tableDataInfo, DylamicTableInfo.class);
+    public void storeTableData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
+        storage(tableName, tableDataInfo, DynamicTableInfo.class);
     }       
 
     @Override
@@ -69,7 +69,7 @@ public class DylamicTableInfoService extends DBBaseOperation implements StorageS
         
         int batchLastIndex = systemPropertyConfig.getBatchCount();
         
-        DylamicTableInfo entry = (DylamicTableInfo)list.get(0);
+        DynamicTableInfo entry = (DynamicTableInfo)list.get(0);
         String fields = entry.getFields();
         log.debug("list size: {}", list.size());
 
@@ -78,11 +78,11 @@ public class DylamicTableInfoService extends DBBaseOperation implements StorageS
             
             if (systemPropertyConfig.getBatchCount() >= list.size() - index) {
                 batchLastIndex = list.size();
-                log.debug("list:{}", JsonUtils.toJson((List<DylamicTableInfo>)list.subList(index, batchLastIndex)));
-                mapper.batchInsert(SQLUtil.convertStr(tableName), (List<DylamicTableInfo>)list.subList(index, batchLastIndex), fields);
+                log.debug("list:{}", JsonUtils.toJson((List<DynamicTableInfo>)list.subList(index, batchLastIndex)));
+                mapper.batchInsert(SQLUtil.convertStr(tableName), (List<DynamicTableInfo>)list.subList(index, batchLastIndex), fields);
                 break;
             } else {
-                mapper.batchInsert(SQLUtil.convertStr(tableName), (List<DylamicTableInfo>)list.subList(index, batchLastIndex), fields);
+                mapper.batchInsert(SQLUtil.convertStr(tableName), (List<DynamicTableInfo>)list.subList(index, batchLastIndex), fields);
                 index = batchLastIndex;
                 batchLastIndex = index + (systemPropertyConfig.getBatchCount() - 1);
             }
@@ -94,24 +94,24 @@ public class DylamicTableInfoService extends DBBaseOperation implements StorageS
     public void batchSaveDetail(String tableName, List list) {
         int batchLastIndex = systemPropertyConfig.getBatchCount();
 
-        DylamicTableInfo entry = (DylamicTableInfo)list.get(0);
+        DynamicTableInfo entry = (DynamicTableInfo)list.get(0);
         String fields = entry.getFields();
         
         String detailTableName = CommonUtil.getDetailTableName(tableName);
         for (int index = 0; index < list.size();) {
             log.debug("index : {}", index);
             if (systemPropertyConfig.getBatchCount() >= list.size() - index) {
-                mapper.batchInsertDetail(SQLUtil.convertStr(detailTableName), (List<DylamicTableInfo>)list.subList(index, list.size()), fields);
+                mapper.batchInsertDetail(SQLUtil.convertStr(detailTableName), (List<DynamicTableInfo>)list.subList(index, list.size()), fields);
                 break;
             } else {
-                mapper.batchInsertDetail(SQLUtil.convertStr(detailTableName), (List<DylamicTableInfo>)list.subList(index, batchLastIndex), fields);
+                mapper.batchInsertDetail(SQLUtil.convertStr(detailTableName), (List<DynamicTableInfo>)list.subList(index, batchLastIndex), fields);
                 index = batchLastIndex;
                 batchLastIndex = index + (systemPropertyConfig.getBatchCount() - 1);
             }
         }
     } 
     
-    public void save(String tableName, DylamicTableInfo record){
+    public void save(String tableName, DynamicTableInfo record){
         mapper.insertOrUpdate(SQLUtil.convertStr(tableName), record);
     }
     
