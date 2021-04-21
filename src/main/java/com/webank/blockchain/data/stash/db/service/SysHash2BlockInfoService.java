@@ -16,6 +16,7 @@ package com.webank.blockchain.data.stash.db.service;
 
 import java.util.List;
 
+import com.webank.blockchain.data.stash.config.SystemPropertyConfig;
 import com.webank.blockchain.data.stash.db.dao.SysHash2BlockInfoMapper;
 import com.webank.blockchain.data.stash.db.face.StorageService;
 import com.webank.blockchain.data.stash.db.model.SysHash2BlockInfo;
@@ -28,6 +29,8 @@ import com.webank.blockchain.data.stash.exception.DataStashException;
 import com.webank.blockchain.data.stash.utils.JsonUtils;
 
 import lombok.extern.slf4j.Slf4j;
+
+import javax.annotation.PostConstruct;
 
 /**
  * 
@@ -45,9 +48,16 @@ public class SysHash2BlockInfoService extends DBBaseOperation implements Storage
 	
 	@Autowired
 	private SysHash2BlockInfoMapper mapper;
-	
-	private static final int SYS_HASH_2_BLOCK_BATCH = 2; 
-	
+
+	@Autowired
+	private SystemPropertyConfig config;
+	private int SYS_HASH_2_BLOCK_BATCH;
+
+	@PostConstruct
+	private void init(){
+	    SYS_HASH_2_BLOCK_BATCH = config.getBatchCount();
+    }
+
 	@Override
 	@Transactional
 	public void createSchema() {
