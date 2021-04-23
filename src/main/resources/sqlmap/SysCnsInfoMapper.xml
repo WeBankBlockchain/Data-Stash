@@ -35,13 +35,22 @@
   </insert>
   
   <insert id="batchInsert" parameterType="java.util.List" >
-		replace into _sys_cns_ (_id_, _hash_, _status_, _num_, name, version, address, abi) values
+		insert into _sys_cns_ (_id_, _hash_, _status_, _num_, name, version, address, abi) values
 		<foreach collection="list" item="item" index="index" separator="," >
 			(#{item.id,jdbcType=BIGINT}, #{item.hash,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER},
 		#{item.num,jdbcType=BIGINT}, #{item.name,jdbcType=BIGINT},
       #{item.version,jdbcType=VARCHAR}, #{item.address,jdbcType=VARCHAR}, #{item.abi,jdbcType=VARCHAR}
       )
     	</foreach>
+	  on duplicate key update
+	  _id_=VALUES(_id_),
+	  _hash_=VALUES(_hash_),
+	  _status_=VALUES(_status_),
+	  _num_=VALUES(_num_),
+	  `name`=VALUES(`name`),
+	  version=VALUES(version),
+	  address=VALUES(address),
+	  abi=VALUES(abi)
 	</insert>
 	
 	<insert id="batchInsertDetail" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="pkId">

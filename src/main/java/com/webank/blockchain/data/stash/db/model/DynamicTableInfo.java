@@ -31,6 +31,7 @@ import lombok.ToString;
 public class DynamicTableInfo extends BaseInfo{
     
     private String fields;
-    private String values; 
+    private String values;
+    private String fieldsOnDuplicateKeyUpdates;
 
 }

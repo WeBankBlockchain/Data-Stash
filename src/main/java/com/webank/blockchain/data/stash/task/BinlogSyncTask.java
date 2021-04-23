@@ -15,6 +15,7 @@ package com.webank.blockchain.data.stash.task;
 
 import com.webank.blockchain.data.stash.config.ReadPropertyConfig;
 import com.webank.blockchain.data.stash.manager.*;
+import org.apache.shardingsphere.api.hint.HintManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
