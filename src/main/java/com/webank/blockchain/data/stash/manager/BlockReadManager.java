@@ -53,8 +53,6 @@ public class BlockReadManager {
     private List<RemoteServerInfo> sources;
     @Autowired
     private RecoverSnapshotService recoverSerivce;
-    @Autowired
-    private CheckPointManager checkPointManager;
 
     public void read() throws IORuntimeException, InterruptedException, Exception {
         //Determine the block to start
@@ -124,7 +122,7 @@ public class BlockReadManager {
         BlockTaskPool bp = new BlockTaskPool();
         bp.setBlockHeight(todoNumber);
         log.info("begin to insert block {}", todoNumber);
-        blockTaskPoolMapper.insertInto(bp);
+        blockTaskPoolMapper.upsert(bp);
         return bp;
     }
 
