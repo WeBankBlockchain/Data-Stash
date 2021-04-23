@@ -35,7 +35,7 @@ public class RecoverSnapshotService {
         add(DBStaticTableConstants.SYS_HASH_2_HEADER_TABLE);
     }};
     public void recoverSnapshotFromDetailTables() {
-        log.debug("Start rebuilding current table from detail table");
+        log.info("Start rebuilding current table from detail table");
         List<SysTablesInfo> tables = sysTableInfoService.selectAllTables();
         for (SysTablesInfo table : tables) {
             if(ledgerTables.contains(table.getTableName())){
@@ -62,7 +62,7 @@ public class RecoverSnapshotService {
                 dynamicTableInfoService.save(table.getTableName(), dynamicTableInfo);
             }
         }
-        log.debug("Rebuilding current table from detail table complete");
+        log.info("Rebuilding current table from detail table complete");
     }
 
     private EntryInfo copyDefaultFields(EntryInfo entryInfo, Map<String, Object> columnMap){

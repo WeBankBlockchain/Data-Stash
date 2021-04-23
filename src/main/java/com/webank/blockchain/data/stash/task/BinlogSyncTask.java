@@ -27,6 +27,8 @@ import com.webank.blockchain.data.stash.manager.DownloadManager;
 
 import lombok.Data;
 
+import javax.annotation.PostConstruct;
+
 /**
  * BinlogSyncTask
  *

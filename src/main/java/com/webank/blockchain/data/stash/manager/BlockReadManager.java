@@ -76,6 +76,9 @@ public class BlockReadManager {
         if(!all.isEmpty()){
             recoverSerivce.recoverSnapshotFromDetailTables();
         }
+        else{
+            log.info("empty batch");
+        }
         log.info("{} blocks saved. Start next batch",all.size());
         return all.size();
     }

@@ -10,6 +10,7 @@ import com.webank.blockchain.data.stash.utils.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -37,7 +38,8 @@ public class RollbackManager {
          * 1. Find last finished data
          */
         BlockTaskPool blockTaskPool = this.blockTaskPoolMapper.getLastFinishedBlock();
-        long rollbackFrom = blockTaskPool == null?0: blockTaskPool.getBlockHeight()+1;
+        //to prevent kill sys tables init data(init data use block 0)
+        long rollbackFrom = blockTaskPool == null?1: blockTaskPool.getBlockHeight()+1;
         /**
          * 2. Find block tables(_sys_, c_,cp_,u_...)
          */
@@ -61,6 +63,7 @@ public class RollbackManager {
 
 
 
+
     private List<SysTablesInfo> findTablesToRollback() {
         return this.sysTableInfoService.selectAllTables();
     }
@@ -68,7 +71,7 @@ public class RollbackManager {
 
     private void rollbackTables(List<SysTablesInfo> tables, long rollbackFrom) {
         for (SysTablesInfo t : tables) {
-            log.info("start rolling back {}..", t.getTableName());
+            log.info("start rolling back {} from {}..", t.getTableName(), rollbackFrom);
             this.sysTableInfoService.rollbackFrom(t.getTableName(), rollbackFrom);
             this.sysTableInfoService.rollbackFrom(CommonUtil.getDetailTableName(t.getTableName()), rollbackFrom);
             log.info("table {} rolled back.", t);
