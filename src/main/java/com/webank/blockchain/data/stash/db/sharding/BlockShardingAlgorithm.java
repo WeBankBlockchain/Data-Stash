@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 @Slf4j
-public final class BlockShardingDatabaseAlgorithm implements PreciseShardingAlgorithm<Long>, RangeShardingAlgorithm<Long> {
+public final class BlockShardingAlgorithm implements PreciseShardingAlgorithm<Long>, RangeShardingAlgorithm<Long> {
 
     @Override
     public String doSharding(final Collection<String> databaseNames, final PreciseShardingValue<Long> shardingValue) {
