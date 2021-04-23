@@ -122,7 +122,7 @@ public class BlockReadManager {
         BlockTaskPool bp = new BlockTaskPool();
         bp.setBlockHeight(todoNumber);
         log.info("begin to insert block {}", todoNumber);
-        blockTaskPoolMapper.upsert(bp);
+        blockTaskPoolMapper.insertInto(bp);
         return bp;
     }
 
