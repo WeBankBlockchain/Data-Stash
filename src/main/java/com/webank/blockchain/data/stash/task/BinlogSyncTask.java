@@ -63,7 +63,7 @@ public class BinlogSyncTask implements ApplicationRunner {
         }
         this.rollbackManager.rollbackUnfinished();
         while (true) {
-           // downloadManager.download();
+            downloadManager.download();
             checkManager.check();
             int blocks = blockReadManager.read();
             cleanManager.clean();
