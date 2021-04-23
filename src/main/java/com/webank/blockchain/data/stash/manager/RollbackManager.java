@@ -37,9 +37,7 @@ public class RollbackManager {
          * 1. Find last finished data
          */
         BlockTaskPool blockTaskPool = this.blockTaskPoolMapper.getLastFinishedBlock();
-        if(blockTaskPool == null) return;
-        long lastFinishedBlock = blockTaskPool.getBlockHeight();
-        long rollbackFrom = lastFinishedBlock + 1;
+        long rollbackFrom = blockTaskPool == null?0: blockTaskPool.getBlockHeight()+1;
         /**
          * 2. Find block tables(_sys_, c_,cp_,u_...)
          */
