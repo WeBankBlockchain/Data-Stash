@@ -13,6 +13,7 @@
  */
 package com.webank.blockchain.data.stash.manager;
 
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -107,7 +108,7 @@ public class CheckPointManager {
     private boolean doVerify(long block){
         SysHash2BlockInfo blockInfo = this.hash2BlockInfoMapper.selectByBlockNumber(block);
         try{
-            return validatorService.validateBlockRlp(blockInfo.getValue());
+            return validatorService.validateBlockRlp(BigInteger.valueOf(block), blockInfo.getValue());
         }
         catch (Exception ex){
             log.error("block verify failed",ex);
