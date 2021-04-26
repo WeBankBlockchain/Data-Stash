@@ -15,6 +15,7 @@ package com.webank.blockchain.data.stash.task;
 
 import com.webank.blockchain.data.stash.config.ReadPropertyConfig;
 import com.webank.blockchain.data.stash.manager.*;
+import org.apache.shardingsphere.api.hint.HintManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -25,6 +26,8 @@ import com.webank.blockchain.data.stash.manager.CleanManager;
 import com.webank.blockchain.data.stash.manager.DownloadManager;
 
 import lombok.Data;
+
+import javax.annotation.PostConstruct;
 
 /**
  * BinlogSyncTask
@@ -64,13 +67,23 @@ public class BinlogSyncTask implements ApplicationRunner {
         while (true) {
             downloadManager.download();
             checkManager.check();
-            blockReadManager.read();
+            int blocks = blockReadManager.read();
             cleanManager.clean();
-
+            if(blocks == 0) {
+                //No new blocks, then wait 10 seconds
+                tryWaitNewBlocks(10000);
+            }
             if (!button) {
                 break;
             }
         }
+    }
+
+    private void tryWaitNewBlocks(long waitMilSeconds){
+        try{
+            Thread.sleep(waitMilSeconds);
+        }
+        catch (Exception ex){}
     }
 
 }

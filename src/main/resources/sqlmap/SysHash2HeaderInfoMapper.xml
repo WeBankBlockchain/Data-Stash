@@ -71,7 +71,7 @@
     </update>
 
     <insert id="batchInsert" parameterType="java.util.List" >
-        replace into _sys_hash_2_header_ (_id_, _hash_, _status_, _num_, hash, value, `sigs`) values
+        insert into _sys_hash_2_header_ (_id_, _hash_, _status_, _num_, hash, value, `sigs`) values
         <foreach collection="list" item="item" index="index" separator="," >
             (#{item.id,jdbcType=BIGINT}, #{item.hash,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER}, #{item.num,jdbcType=BIGINT}, #{item.hash,jdbcType=VARCHAR}, #{item.value,jdbcType=VARCHAR}, #{item.sigs,jdbcType=VARCHAR})
         </foreach>

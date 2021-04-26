@@ -80,7 +80,7 @@
 	</update>
 	
 	<insert id="batchInsert" parameterType="java.util.List" >
-		replace into _sys_hash_2_block_ (_id_, _hash_, _status_, _num_, hash, value) values
+		insert into _sys_hash_2_block_ (_id_, _hash_, _status_, _num_, hash, value) values
 		<foreach collection="list" item="item" index="index" separator="," >
 			(#{item.id,jdbcType=BIGINT}, #{item.hash,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER},
 		#{item.num,jdbcType=BIGINT}, #{item.hash,jdbcType=VARCHAR}, #{item.value,jdbcType=VARCHAR})

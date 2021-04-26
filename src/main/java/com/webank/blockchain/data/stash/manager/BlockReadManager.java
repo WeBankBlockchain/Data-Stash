@@ -53,10 +53,8 @@ public class BlockReadManager {
     private List<RemoteServerInfo> sources;
     @Autowired
     private RecoverSnapshotService recoverSerivce;
-    @Autowired
-    private CheckPointManager checkPointManager;
 
-    public void read() throws IORuntimeException, InterruptedException, Exception {
+    public int read() throws IORuntimeException, InterruptedException, Exception {
         //Determine the block to start
         BlockTaskPool blockTaskPool = blockTaskPoolMapper.getLastFinishedBlock();
         long todoNumber = prepare(blockTaskPool);
@@ -78,7 +76,11 @@ public class BlockReadManager {
         if(!all.isEmpty()){
             recoverSerivce.recoverSnapshotFromDetailTables();
         }
-        log.info("Start next batch");
+        else{
+            log.info("empty batch");
+        }
+        log.info("{} blocks saved. Start next batch",all.size());
+        return all.size();
     }
 
     private List<byte[]> toBlockBodyDatas(long blockNumber, List<byte[]> blockPackage){

@@ -60,23 +60,30 @@ public class ObjectBuildUtil {
         
         StringBuffer fields = new StringBuffer();
         StringBuffer values = new StringBuffer();
-        
+        StringBuffer fieldsOnDuplicateKeyUpdates = new StringBuffer("on duplicate key update\n");
+
         if(entry.getHash() == null){
             entry.setHash(DataStorageTypeConstants.DEFALT_HASH);
         }
         
         values.append(entry.getId()).append(",'").append(entry.getHash()).append("',").append(entry.getStatus()).append(",").append(entry.getNum());
-        
+        fieldsOnDuplicateKeyUpdates.append("`_id_`=VALUES(`_id_`),`_num_`=VALUES(`_num_`),`_hash_`=VALUES(`_hash_`),`_status_`=VALUES(`_status_`)");
         for(ColumnInfo columnInfo : columns){
-            fields.append(", ").append("`").append(columnInfo.getColumnName()).append("`");
+            String columnName = columnInfo.getColumnName();
+            fields.append(", ").append("`").append(columnName).append("`");
             values.append(", '").append(columnInfo.getColumnValue()).append("'");
+            fieldsOnDuplicateKeyUpdates.append(",").append("`").append(columnName).append("`")
+                    .append("=")
+                    .append("VALUES(`").append(columnName).append("`)");
         }
         try {
             fieldList[0].setAccessible(true);
             fieldList[1].setAccessible(true);
-            
+            fieldList[2].setAccessible(true);
+
             fieldList[0].set(obj, fields.toString());
             fieldList[1].set(obj, values.toString());
+            fieldList[2].set(obj, fieldsOnDuplicateKeyUpdates.toString());
         } catch (IllegalArgumentException | IllegalAccessException e) {
             log.error("the column params is error");
             e.printStackTrace();

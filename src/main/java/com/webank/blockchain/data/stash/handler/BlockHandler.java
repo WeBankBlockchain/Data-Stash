@@ -20,7 +20,6 @@ import com.webank.blockchain.data.stash.db.face.DataStorage;
 import com.webank.blockchain.data.stash.db.mapper.BlockTaskPoolMapper;
 import com.webank.blockchain.data.stash.entity.BinlogBlockInfo;
 import com.webank.blockchain.data.stash.enums.BlockTaskPoolSyncStatusEnum;
-import com.webank.blockchain.data.stash.manager.CheckPointManager;
 import com.webank.blockchain.data.stash.parser.BlockBytesParser;
 import com.webank.blockchain.data.stash.thread.DataStashThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,8 +52,6 @@ public class BlockHandler {
     private ComparisonValidation validator;
     @Autowired
     private DataStorage dataStorage;
-    @Autowired
-    private CheckPointManager checkPointManager;
     @Autowired
     private SystemPropertyConfig config;
     @Autowired
