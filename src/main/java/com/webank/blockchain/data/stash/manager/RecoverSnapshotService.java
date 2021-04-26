@@ -1,5 +1,14 @@
 package com.webank.blockchain.data.stash.manager;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.webank.blockchain.data.stash.constants.DBStaticTableConstants;
 import com.webank.blockchain.data.stash.db.model.DynamicTableInfo;
 import com.webank.blockchain.data.stash.db.model.SysTablesInfo;
@@ -9,11 +18,8 @@ import com.webank.blockchain.data.stash.entity.ColumnInfo;
 import com.webank.blockchain.data.stash.entity.EntryInfo;
 import com.webank.blockchain.data.stash.utils.CommonUtil;
 import com.webank.blockchain.data.stash.utils.ObjectBuildUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.util.*;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * cucurrent replace into will cause deadlock
