@@ -17,15 +17,28 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 @SpringBootApplication
 public class DataStashApplication {
 
 	public static void main(String[] args) throws Exception{
-		SpringApplication.run(DataStashApplication.class, args);
+//		SpringApplication.run(DataStashApplication.class, args);
+		ThreadPoolExecutor executor = new ThreadPoolExecutor(5,5,0,TimeUnit.SECONDS, new ArrayBlockingQueue<>(5), new ThreadPoolExecutor.CallerRunsPolicy()){
+
+		};
+
+		for(int i=0;i<5;i++){
+			executor.submit(()->new Runnable() {
+				@Override
+				public void run() {
+					try{
+						Thread.sleep(10);
+					}
+					catch (Exception ex){
+					}
+				}
+			});
+		}
 	}
 }

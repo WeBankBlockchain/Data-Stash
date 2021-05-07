@@ -16,6 +16,7 @@ package com.webank.blockchain.data.stash.handler;
 import java.util.List;
 import java.util.concurrent.*;
 
+import com.webank.blockchain.data.stash.constants.DBStaticTableConstants;
 import com.webank.blockchain.data.stash.db.face.DataStorage;
 import com.webank.blockchain.data.stash.db.mapper.BlockTaskPoolMapper;
 import com.webank.blockchain.data.stash.entity.BinlogBlockInfo;
@@ -57,8 +58,8 @@ public class BlockHandler {
     @Autowired
     private BlockTaskPoolMapper blockTaskPoolMapper;
 
-    ExecutorService parserPool;
-    ExecutorService sqlPool;
+    ThreadPoolExecutor parserPool;
+    ThreadPoolExecutor sqlPool;
 
     @PostConstruct
     private void init(){
@@ -66,33 +67,57 @@ public class BlockHandler {
         parserPool = new ThreadPoolExecutor(1, 1,
                 0, TimeUnit.DAYS, new LinkedBlockingQueue<>(config.getParseQueueSize()), new DataStashThreadFactory("parserPool"),
                 (r, executor) -> r.run());
-        sqlPool = new ThreadPoolExecutor(1,1,
+        sqlPool = new ThreadPoolExecutor(config.getSqlThreads(),config.getSqlThreads(),
                 0, TimeUnit.DAYS, new LinkedBlockingQueue<>(config.getSqlQueueSize()), new DataStashThreadFactory("sqlPool"), (r, executor) -> r.run());
     }
 
-    public CompletableFuture<Void> handleAsync(List<byte[]> blockBytesList) {
-        return CompletableFuture
-                //Parse
-                .supplyAsync(() -> parseBinlogThenVerify(blockBytesList), parserPool)
-                //Store
-                .thenAcceptAsync(blockInfo -> storeBlockData(blockInfo), sqlPool);
+    public CompletableFuture<BinlogBlockInfo> handleAsync(long block, List<byte[]> blockBytesList) {
+        BinlogBlockInfo blockInfo = parseBinlogThenVerify(block, blockBytesList);
+        //Make sure table creation always happen first
+        if(blockInfo.getTables().containsKey(DBStaticTableConstants.SYS_TABLES_TABLE)){
+            //1. wait for all io tasks complete
+            //2. Execute now
+            return CompletableFuture.completedFuture(storeBlockData(blockInfo));
+        }else{
+            return CompletableFuture.supplyAsync(()->storeBlockData(blockInfo), sqlPool);
+        }
     }
 
 
-    private BinlogBlockInfo parseBinlogThenVerify(List<byte[]> blockBytesList) {
-        // 1. Parse binlog
-        byte[] firstBlockBytes = blockBytesList.get(0);
-        BinlogBlockInfo blockInfo = parser.getBinlogBlockInfo(firstBlockBytes);
-        log.debug("===============end binlog parse===================");
+    private BinlogBlockInfo parseBinlogThenVerify(long block, List<byte[]> blockBytesList) {
+        try{
+            // 1. Parse binlog
+            byte[] firstBlockBytes = blockBytesList.get(0);
+            BinlogBlockInfo blockInfo = parser.getBinlogBlockInfo(firstBlockBytes);
+            log.debug("===============end binlog parse===================");
 
-        // 2. Verify
-        if (config.getBinlogVerify() == 1 && blockBytesList.size() > 1) {
-            if (!validator.compareValidate(blockInfo, blockBytesList)){
-                throw new DataStashException(DataStashExceptionCodeEnums.DATA_STASH_BINLOG_VERIFY_ERROR);
+            // 2. Verify
+            if(blockInfo == null){
+                throw new DataStashException(DataStashExceptionCodeEnums.DATA_STASH_BINLOG_NULL);
             }
-            log.debug("===============end binlog verify===================");
+            if(block != blockInfo.getBlockNum())
+                throw new DataStashException(DataStashExceptionCodeEnums.DATA_STASH_BINLOG_BLOCKNUM_NOT_MATCH);
+
+            if (config.getBinlogVerify() == 1 && blockBytesList.size() > 1) {
+                if (!validator.compareValidate(blockInfo, blockBytesList)){
+                    throw new DataStashException(DataStashExceptionCodeEnums.DATA_STASH_BINLOG_VERIFY_ERROR);
+                }
+                log.debug("===============end binlog verify===================");
+            }
+
+            return blockInfo;
         }
-        return blockInfo;
+        catch (Exception ex){
+            onException(block, ex);
+            return null;
+        }
+    }
+
+    private void onException(long blockNumber, Exception ex){
+        blockTaskPoolMapper.updateSyncStatusByBlockHeight(BlockTaskPoolSyncStatusEnum.ERROR.getSyncStatus(),
+                blockNumber);
+        log.error("Exception encounted: ", ex);
+        System.exit(-1);
     }
 
     private BinlogBlockInfo storeBlockData(BinlogBlockInfo blockInfo) {
