@@ -142,7 +142,7 @@ public class BlockBytesParser {
         entry.setNum(blockNum);
 
         // 4. handle usedFlags
-        int usedFlagBytesCount = (int)(Math.ceil((allFields.length - 3)/8.0));
+        int usedFlagBytesCount = (allFields.length - 3)/8 + 1;
         byte[] usedFlags = new byte[usedFlagBytesCount];
         for(int i=0;i<usedFlagBytesCount;i++){
             usedFlags[i] = binlogBytes[entryIndex + 9 + i];

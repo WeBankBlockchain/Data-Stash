@@ -71,7 +71,7 @@ public class BinlogSyncTask implements ApplicationRunner {
             cleanManager.clean();
             if(blocks == 0) {
                 //No new blocks, then wait 10 seconds
-                tryWaitNewBlocks(10000);
+                tryWaitNewBlocks(60000);
             }
             if (!button) {
                 break;

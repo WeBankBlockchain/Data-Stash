@@ -63,10 +63,10 @@ public class BlockHandler {
     @PostConstruct
     private void init(){
         //Dont use unbound arrays, otherwise OOM will happen!
-        parserPool = new ThreadPoolExecutor(this.config.getParseThreads(), this.config.getParseThreads(),
+        parserPool = new ThreadPoolExecutor(1, 1,
                 0, TimeUnit.DAYS, new LinkedBlockingQueue<>(config.getParseQueueSize()), new DataStashThreadFactory("parserPool"),
                 (r, executor) -> r.run());
-        sqlPool = new ThreadPoolExecutor(this.config.getSqlThreads(), this.config.getSqlThreads(),
+        sqlPool = new ThreadPoolExecutor(1,1,
                 0, TimeUnit.DAYS, new LinkedBlockingQueue<>(config.getSqlQueueSize()), new DataStashThreadFactory("sqlPool"), (r, executor) -> r.run());
     }
 
