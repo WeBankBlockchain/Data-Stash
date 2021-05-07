@@ -63,9 +63,13 @@ public class SysBeanConfig {
         }
         List<RemoteServerInfo> list = Lists.newArrayListWithCapacity(tokens.length);
         for (int i = 0; i < tokens.length; i++) {
+            String token = tokens[i];
+            if(!token.endsWith("/")){
+                token+="/";
+            }
             RemoteServerInfo info = new RemoteServerInfo();
             String dir = systemPropertyConfig.getLocalBinlogPath() + i + File.separator;
-            info.setUrl(tokens[i]).setIp(StringUtils.substringAfter(StringUtils.substringBefore(tokens[i], ":"), "//"))
+            info.setUrl(token).setIp(StringUtils.substringAfter(StringUtils.substringBefore(token, ":"), "//"))
                     .setItem(i).setLocalFilePath(dir);
             File dirFile = new File(dir);
             if(!dirFile.exists() && !new File(dir).mkdirs()){
