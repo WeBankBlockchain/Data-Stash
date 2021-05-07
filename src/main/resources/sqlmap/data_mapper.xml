@@ -20,30 +20,11 @@
         select value from _sys_current_state_ where `key`="current_number"
 	</select>
 	
-	<select id="selectTableDataByNum" parameterType="java.lang.Long"
-		resultType="java.util.Map">				
-		select * from `${tableName}` where (_id_, _num_) in ( select _id_, num from (
-		select _id_, max(_num_) as num from `${tableName}` where _id_ > #{preIndex} and _num_ &lt;= #{num} group by _id_ order by _id_ limit #{pageSize}) as tmp) 
-	</select>
-	
 	<select id="queryData" resultType="map">
 		<!--  select * from ${table} where _num_ &lt; #{num} and ${key_field} = #{key_value} ${query_condition} -->
 		select * from ${table} where 1=1 ${query_condition}
 	</select>
-	
-	<select id="queryAllData" resultType="map">
-		select * from ${table} where _num_ &lt;= #{num}
-	</select>
-	 
-	<insert id="commitData" parameterType="java.util.List">
-	        replace into ${table}(${fields}`_hash_`,`_num_`)
-	        values
-	        <foreach collection="list" item="item" index="index" separator=",">
-	            (${item.values}#{item.hash},#{item.num})
-	        </foreach>
-    </insert>
-    
-    
+
     <update id="setMaxAllowedPacket" >
     	set global max_allowed_packet = 1073741824;
 	</update>
