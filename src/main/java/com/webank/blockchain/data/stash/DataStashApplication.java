@@ -13,32 +13,18 @@
  */
 package com.webank.blockchain.data.stash;
 
+import com.webank.blockchain.data.stash.thread.CallerRunOldestPolicy;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.util.Date;
 import java.util.concurrent.*;
 
 @SpringBootApplication
 public class DataStashApplication {
 
 	public static void main(String[] args) throws Exception{
-//		SpringApplication.run(DataStashApplication.class, args);
-		ThreadPoolExecutor executor = new ThreadPoolExecutor(5,5,0,TimeUnit.SECONDS, new ArrayBlockingQueue<>(5), new ThreadPoolExecutor.CallerRunsPolicy()){
-
-		};
-
-		for(int i=0;i<5;i++){
-			executor.submit(()->new Runnable() {
-				@Override
-				public void run() {
-					try{
-						Thread.sleep(10);
-					}
-					catch (Exception ex){
-					}
-				}
-			});
-		}
+		SpringApplication.run(DataStashApplication.class, args);
 	}
 }

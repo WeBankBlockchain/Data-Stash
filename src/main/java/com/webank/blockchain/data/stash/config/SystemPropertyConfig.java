@@ -44,8 +44,7 @@ public class SystemPropertyConfig {
     private int batchCount = 5;
     private int encryptType = 0;
 
-    private int sqlThreads = 100;
-    private int parseQueueSize = 500;
+    private int sqlThreads = 50;
     private int sqlQueueSize = 500;
 
 

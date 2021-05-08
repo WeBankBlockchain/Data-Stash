@@ -22,6 +22,7 @@ import com.webank.blockchain.data.stash.db.mapper.BlockTaskPoolMapper;
 import com.webank.blockchain.data.stash.entity.BinlogBlockInfo;
 import com.webank.blockchain.data.stash.enums.BlockTaskPoolSyncStatusEnum;
 import com.webank.blockchain.data.stash.parser.BlockBytesParser;
+import com.webank.blockchain.data.stash.thread.CallerRunOldestPolicy;
 import com.webank.blockchain.data.stash.thread.DataStashThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,26 +58,20 @@ public class BlockHandler {
     private SystemPropertyConfig config;
     @Autowired
     private BlockTaskPoolMapper blockTaskPoolMapper;
-
-    ThreadPoolExecutor parserPool;
     ThreadPoolExecutor sqlPool;
 
     @PostConstruct
     private void init(){
         //Dont use unbound arrays, otherwise OOM will happen!
-        parserPool = new ThreadPoolExecutor(1, 1,
-                0, TimeUnit.DAYS, new LinkedBlockingQueue<>(config.getParseQueueSize()), new DataStashThreadFactory("parserPool"),
-                (r, executor) -> r.run());
         sqlPool = new ThreadPoolExecutor(config.getSqlThreads(),config.getSqlThreads(),
-                0, TimeUnit.DAYS, new LinkedBlockingQueue<>(config.getSqlQueueSize()), new DataStashThreadFactory("sqlPool"), (r, executor) -> r.run());
+                0, TimeUnit.DAYS, new LinkedBlockingQueue<>(config.getSqlQueueSize()), new DataStashThreadFactory("sqlPool"),
+                new CallerRunOldestPolicy());
     }
 
     public CompletableFuture<BinlogBlockInfo> handleAsync(long block, List<byte[]> blockBytesList) {
         BinlogBlockInfo blockInfo = parseBinlogThenVerify(block, blockBytesList);
         //Make sure table creation always happen first
         if(blockInfo.getTables().containsKey(DBStaticTableConstants.SYS_TABLES_TABLE)){
-            //1. wait for all io tasks complete
-            //2. Execute now
             return CompletableFuture.completedFuture(storeBlockData(blockInfo));
         }else{
             return CompletableFuture.supplyAsync(()->storeBlockData(blockInfo), sqlPool);
@@ -121,9 +116,9 @@ public class BlockHandler {
     }
 
     private BinlogBlockInfo storeBlockData(BinlogBlockInfo blockInfo) {
-        blockTaskPoolMapper.updateSyncStatusByBlockHeight(BlockTaskPoolSyncStatusEnum.DOING.getSyncStatus(),
-                blockInfo.getBlockNum());
         dataStorage.storeBlock(blockInfo);
+        blockTaskPoolMapper.updateSyncStatusByBlockHeight(BlockTaskPoolSyncStatusEnum.Done.getSyncStatus(),
+                blockInfo.getBlockNum());
         log.debug("===============end block data store===================");
         return blockInfo;
     }
