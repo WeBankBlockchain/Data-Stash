@@ -65,7 +65,7 @@ public class BlockReadManager {
                 //Extract body and verify crc
                 List<byte[]> blockDatas = toBlockBodyDatas(todoNumber, blocks);
                 //Handle block body
-                all.add(handleBlockBodyAsync(todoNumber, blockDatas));
+                all.add(blockHandler.handleAsync(todoNumber, blockDatas));
                 //Start next task
                 todoNumber++;
                 initTaskStatus(todoNumber);
@@ -98,19 +98,6 @@ public class BlockReadManager {
             }
         }
         return blockDatas;
-    }
-
-    private CompletableFuture handleBlockBodyAsync(long todoNumber, List<byte[]> blockBodys){
-        return blockHandler.handleAsync(blockBodys)
-                .thenAccept(__ -> blockTaskPoolMapper.updateSyncStatusByBlockHeight(BlockTaskPoolSyncStatusEnum.Done.getSyncStatus(),
-                        todoNumber))
-                .exceptionally(e -> {
-                    blockTaskPoolMapper.updateSyncStatusByBlockHeight(BlockTaskPoolSyncStatusEnum.ERROR.getSyncStatus(),
-                            todoNumber);
-                    log.error("Exception encounted: ", e);
-                    System.exit(-1);
-                    return null;
-                });
     }
 
     public long prepare(BlockTaskPool blockTaskPool) {
