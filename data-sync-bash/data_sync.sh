@@ -28,10 +28,10 @@ current="`pwd`"
 
 # shellcheck disable=SC2164
 cd ${NODEPATH}
-mv ${current}/data-sync/fisco-sync .
+mv ${current}/data-sync-bash/data-sync/fisco-sync .
 
 ./fisco-sync -n ${ENDBLOCKNUMBER} -i ${STASH_IP} -t ${STASH_PORT} -d ${STASH_DBNAME} -u ${STASH_USERNAME} -p ${STASH_PASSWORD} -l ${PAGECOUNT} -s ${TABLEPAGECOUNT} -g ${GROUPID}
 
-cd ${current}
+cd ${current}/data-sync-bash
 
 
