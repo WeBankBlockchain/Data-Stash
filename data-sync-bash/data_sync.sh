@@ -9,7 +9,6 @@ elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
     tar -zxvf data-sync_linux.tar.gz
 fi
 
-current="`pwd`"
 #read the param from config.conf and execute
 CONFIGPATH="./config.conf"
 
@@ -23,6 +22,9 @@ PAGECOUNT=`awk -F '=' '/\[more\]/{a=1}a==1&&$1~/sync.pageCount/{print $2;exit}' 
 TABLEPAGECOUNT=`awk -F '=' '/\[more\]/{a=1}a==1&&$1~/sync.bigTablePageCount/{print $2;exit}' ${CONFIGPATH}`
 GROUPID=`awk -F '=' '/\[node\]/{a=1}a==1&&$1~/node.groupId/{print $2;exit}' ${CONFIGPATH}`
 NODEPATH=`awk -F '=' '/\[node\]/{a=1}a==1&&$1~/node.path/{print $2;exit}' ${CONFIGPATH}`
+
+cd ..
+current="`pwd`"
 
 # shellcheck disable=SC2164
 cd ${NODEPATH}
