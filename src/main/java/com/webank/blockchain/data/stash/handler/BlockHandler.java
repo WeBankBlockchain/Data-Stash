@@ -16,12 +16,13 @@ package com.webank.blockchain.data.stash.handler;
 import java.util.List;
 import java.util.concurrent.*;
 
+import com.webank.blockchain.data.stash.constants.DBStaticTableConstants;
 import com.webank.blockchain.data.stash.db.face.DataStorage;
 import com.webank.blockchain.data.stash.db.mapper.BlockTaskPoolMapper;
 import com.webank.blockchain.data.stash.entity.BinlogBlockInfo;
 import com.webank.blockchain.data.stash.enums.BlockTaskPoolSyncStatusEnum;
-import com.webank.blockchain.data.stash.manager.CheckPointManager;
 import com.webank.blockchain.data.stash.parser.BlockBytesParser;
+import com.webank.blockchain.data.stash.thread.CallerRunOldestPolicy;
 import com.webank.blockchain.data.stash.thread.DataStashThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,54 +55,70 @@ public class BlockHandler {
     @Autowired
     private DataStorage dataStorage;
     @Autowired
-    private CheckPointManager checkPointManager;
-    @Autowired
     private SystemPropertyConfig config;
     @Autowired
     private BlockTaskPoolMapper blockTaskPoolMapper;
-
-    ExecutorService parserPool;
-    ExecutorService sqlPool;
+    ThreadPoolExecutor sqlPool;
 
     @PostConstruct
     private void init(){
         //Dont use unbound arrays, otherwise OOM will happen!
-        parserPool = new ThreadPoolExecutor(this.config.getParseThreads(), this.config.getParseThreads(),
-                0, TimeUnit.DAYS, new LinkedBlockingQueue<>(config.getParseQueueSize()), new DataStashThreadFactory("parserPool"),
-                (r, executor) -> r.run());
-        sqlPool = new ThreadPoolExecutor(this.config.getSqlThreads(), this.config.getSqlThreads(),
-                0, TimeUnit.DAYS, new LinkedBlockingQueue<>(config.getSqlQueueSize()), new DataStashThreadFactory("sqlPool"), (r, executor) -> r.run());
+        sqlPool = new ThreadPoolExecutor(config.getSqlThreads(),config.getSqlThreads(),
+                0, TimeUnit.DAYS, new LinkedBlockingQueue<>(config.getSqlQueueSize()), new DataStashThreadFactory("sqlPool"),
+                new CallerRunOldestPolicy());
     }
 
-    public CompletableFuture<Void> handleAsync(List<byte[]> blockBytesList) {
-        return CompletableFuture
-                //Parse
-                .supplyAsync(() -> parseBinlogThenVerify(blockBytesList), parserPool)
-                //Store
-                .thenAcceptAsync(blockInfo -> storeBlockData(blockInfo), sqlPool);
-    }
-
-
-    private BinlogBlockInfo parseBinlogThenVerify(List<byte[]> blockBytesList) {
-        // 1. Parse binlog
-        byte[] firstBlockBytes = blockBytesList.get(0);
-        BinlogBlockInfo blockInfo = parser.getBinlogBlockInfo(firstBlockBytes);
-        log.debug("===============end binlog parse===================");
-
-        // 2. Verify
-        if (config.getBinlogVerify() == 1 && blockBytesList.size() > 1) {
-            if (!validator.compareValidate(blockInfo, blockBytesList)){
-                throw new DataStashException(DataStashExceptionCodeEnums.DATA_STASH_BINLOG_VERIFY_ERROR);
-            }
-            log.debug("===============end binlog verify===================");
+    public CompletableFuture<BinlogBlockInfo> handleAsync(long block, List<byte[]> blockBytesList) {
+        BinlogBlockInfo blockInfo = parseBinlogThenVerify(block, blockBytesList);
+        //Make sure table creation always happen first
+        if(blockInfo.getTables().containsKey(DBStaticTableConstants.SYS_TABLES_TABLE)){
+            return CompletableFuture.completedFuture(storeBlockData(blockInfo));
+        }else{
+            return CompletableFuture.supplyAsync(()->storeBlockData(blockInfo), sqlPool);
         }
-        return blockInfo;
+    }
+
+
+    private BinlogBlockInfo parseBinlogThenVerify(long block, List<byte[]> blockBytesList) {
+        try{
+            // 1. Parse binlog
+            byte[] firstBlockBytes = blockBytesList.get(0);
+            BinlogBlockInfo blockInfo = parser.getBinlogBlockInfo(firstBlockBytes);
+            log.debug("===============end binlog parse===================");
+
+            // 2. Verify
+            if(blockInfo == null){
+                throw new DataStashException(DataStashExceptionCodeEnums.DATA_STASH_BINLOG_NULL);
+            }
+            if(block != blockInfo.getBlockNum())
+                throw new DataStashException(DataStashExceptionCodeEnums.DATA_STASH_BINLOG_BLOCKNUM_NOT_MATCH);
+
+            if (config.getBinlogVerify() == 1 && blockBytesList.size() > 1) {
+                if (!validator.compareValidate(blockInfo, blockBytesList)){
+                    throw new DataStashException(DataStashExceptionCodeEnums.DATA_STASH_BINLOG_VERIFY_ERROR);
+                }
+                log.debug("===============end binlog verify===================");
+            }
+
+            return blockInfo;
+        }
+        catch (Exception ex){
+            onException(block, ex);
+            return null;
+        }
+    }
+
+    private void onException(long blockNumber, Exception ex){
+        blockTaskPoolMapper.updateSyncStatusByBlockHeight(BlockTaskPoolSyncStatusEnum.ERROR.getSyncStatus(),
+                blockNumber);
+        log.error("Exception encounted: ", ex);
+        System.exit(-1);
     }
 
     private BinlogBlockInfo storeBlockData(BinlogBlockInfo blockInfo) {
-        blockTaskPoolMapper.updateSyncStatusByBlockHeight(BlockTaskPoolSyncStatusEnum.DOING.getSyncStatus(),
-                blockInfo.getBlockNum());
         dataStorage.storeBlock(blockInfo);
+        blockTaskPoolMapper.updateSyncStatusByBlockHeight(BlockTaskPoolSyncStatusEnum.Done.getSyncStatus(),
+                blockInfo.getBlockNum());
         log.debug("===============end block data store===================");
         return blockInfo;
     }

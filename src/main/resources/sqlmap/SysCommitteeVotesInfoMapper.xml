@@ -58,7 +58,7 @@
     </select>
 
     <insert id="batchInsert" parameterType="java.util.List" >
-        replace into _sys_committee_votes_ (
+        insert into _sys_committee_votes_ (
         <include refid="Base_Column_List" />
         )
         values
@@ -67,6 +67,15 @@
             <include refid="Base_Batch_Value_List" />
             )
         </foreach>
+        on duplicate key update
+        _id_=VALUES(_id_),
+        _hash_=VALUES(_hash_),
+        _status_=VALUES(_status_),
+        _num_=VALUES(_num_),
+        `key`=VALUES(`key`),
+        value=VALUES(value),
+        origin=VALUES(origin),
+        block_limit=VALUES(block_limit)
     </insert>
 
     <insert id="batchInsertDetail" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="pkId">

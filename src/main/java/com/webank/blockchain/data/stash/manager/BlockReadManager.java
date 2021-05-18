@@ -53,10 +53,8 @@ public class BlockReadManager {
     private List<RemoteServerInfo> sources;
     @Autowired
     private RecoverSnapshotService recoverSerivce;
-    @Autowired
-    private CheckPointManager checkPointManager;
 
-    public void read() throws IORuntimeException, InterruptedException, Exception {
+    public int read() throws IORuntimeException, InterruptedException, Exception {
         //Determine the block to start
         BlockTaskPool blockTaskPool = blockTaskPoolMapper.getLastFinishedBlock();
         long todoNumber = prepare(blockTaskPool);
@@ -67,7 +65,7 @@ public class BlockReadManager {
                 //Extract body and verify crc
                 List<byte[]> blockDatas = toBlockBodyDatas(todoNumber, blocks);
                 //Handle block body
-                all.add(handleBlockBodyAsync(todoNumber, blockDatas));
+                all.add(blockHandler.handleAsync(todoNumber, blockDatas));
                 //Start next task
                 todoNumber++;
                 initTaskStatus(todoNumber);
@@ -78,7 +76,11 @@ public class BlockReadManager {
         if(!all.isEmpty()){
             recoverSerivce.recoverSnapshotFromDetailTables();
         }
-        log.info("Start next batch");
+        else{
+            log.info("empty batch");
+        }
+        log.info("{} blocks saved. Start next batch",all.size());
+        return all.size();
     }
 
     private List<byte[]> toBlockBodyDatas(long blockNumber, List<byte[]> blockPackage){
@@ -96,19 +98,6 @@ public class BlockReadManager {
             }
         }
         return blockDatas;
-    }
-
-    private CompletableFuture handleBlockBodyAsync(long todoNumber, List<byte[]> blockBodys){
-        return blockHandler.handleAsync(blockBodys)
-                .thenAccept(__ -> blockTaskPoolMapper.updateSyncStatusByBlockHeight(BlockTaskPoolSyncStatusEnum.Done.getSyncStatus(),
-                        todoNumber))
-                .exceptionally(e -> {
-                    blockTaskPoolMapper.updateSyncStatusByBlockHeight(BlockTaskPoolSyncStatusEnum.ERROR.getSyncStatus(),
-                            todoNumber);
-                    log.error("Exception encounted: ", e);
-                    System.exit(-1);
-                    return null;
-                });
     }
 
     public long prepare(BlockTaskPool blockTaskPool) {

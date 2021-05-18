@@ -41,13 +41,21 @@
 	</insert>
 	
 	<insert id="batchInsert" parameterType="java.util.List" >
-		replace into _sys_config_
+		insert into _sys_config_
 		(_id_, _hash_, _status_, _num_, `key`, value, enable_num) values
 		<foreach collection="list" item="item" index="index" separator="," >
 			(#{item.id,jdbcType=BIGINT}, #{item.hash,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER},
 		#{item.num,jdbcType=BIGINT},#{item.key,jdbcType=VARCHAR},
 		#{item.value,jdbcType=VARCHAR}, #{item.enableNum,jdbcType=VARCHAR})
     	</foreach>
+		on duplicate key update
+		_id_=VALUES(_id_),
+		_hash_=VALUES(_hash_),
+		_status_=VALUES(_status_),
+		_num_=VALUES(_num_),
+		`key`=VALUES(`key`),
+		value=VALUES(value),
+		enable_num=VALUES(enable_num)
 	</insert>
 	
 	<insert id="batchInsertDetail" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="pkId">

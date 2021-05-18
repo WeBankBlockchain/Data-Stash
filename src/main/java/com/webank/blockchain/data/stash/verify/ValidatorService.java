@@ -58,10 +58,9 @@ public class ValidatorService {
     private TransationReceiptValidator transationReceiptValidator;
 
     @UseTime
-    public boolean validateBlockRlp(String blockRlp) throws Exception {
+    public boolean validateBlockRlp(BigInteger blockNumber, String blockRlp) throws Exception {
 
         BlockV2RC2 block = new BlockV2RC2(blockRlp);
-        BigInteger blockNumber = BigInteger.valueOf(blockTaskPoolMapper.getLatestOne().getBlockHeight());
         BigInteger parentBlockNumber = blockNumber.subtract(BigInteger.ONE);
 
         if (!blockValidator.validateSigList(block)) {

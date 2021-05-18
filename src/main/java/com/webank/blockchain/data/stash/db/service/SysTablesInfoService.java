@@ -149,6 +149,12 @@ public class SysTablesInfoService extends DBBaseOperation implements StorageServ
     }
 
     public void rollbackFrom(String table, long block){
-        this.mapper.rollbackTableFromBlock(table, block);
+        try{
+            this.mapper.rollbackTableFromBlock(table, block);
+        }
+        catch (Exception ex){
+            log.debug("error rolling back {}, reason:{}",table, ex.getMessage());
+        }
+
     }
 }

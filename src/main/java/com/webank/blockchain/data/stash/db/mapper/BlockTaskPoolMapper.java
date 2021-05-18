@@ -44,7 +44,7 @@ public interface BlockTaskPoolMapper {
             + ") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;")
     public void createTable();
 
-    @Insert("insert into block_task_pool(block_height, certainty ,block_timestamp, updatetime, sync_status)\n"
+    @Insert("insert ignore into block_task_pool(block_height, certainty ,block_timestamp, updatetime, sync_status)\n"
             + "values(#{blockHeight}, #{certainty}, #{blockTime}, #{updatetime}, #{syncStatus})")
     int insertInto(BlockTaskPool blockTaskPool);
 
@@ -79,6 +79,6 @@ public interface BlockTaskPoolMapper {
     void updateSyncStatusByBlockHeight(@Param("sync_status") int syncStatus, @Param("block_height") long blockHeight);
 
     @Update("delete from block_task_pool where block_height >= #{block}")
-    void rollbackByBlockNumber(@Param("block") long block);
+    int rollbackByBlockNumber(@Param("block") long block);
 
 }

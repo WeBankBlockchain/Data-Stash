@@ -13,13 +13,13 @@
  */
 package com.webank.blockchain.data.stash;
 
+import com.webank.blockchain.data.stash.thread.CallerRunOldestPolicy;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.RejectedExecutionHandler;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.Date;
+import java.util.concurrent.*;
 
 @SpringBootApplication
 public class DataStashApplication {

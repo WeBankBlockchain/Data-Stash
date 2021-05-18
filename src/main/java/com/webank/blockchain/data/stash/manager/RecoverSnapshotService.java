@@ -1,5 +1,15 @@
 package com.webank.blockchain.data.stash.manager;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.webank.blockchain.data.stash.constants.DBStaticTableConstants;
 import com.webank.blockchain.data.stash.db.model.DynamicTableInfo;
 import com.webank.blockchain.data.stash.db.model.SysTablesInfo;
 import com.webank.blockchain.data.stash.db.service.DynamicTableInfoService;
@@ -8,13 +18,8 @@ import com.webank.blockchain.data.stash.entity.ColumnInfo;
 import com.webank.blockchain.data.stash.entity.EntryInfo;
 import com.webank.blockchain.data.stash.utils.CommonUtil;
 import com.webank.blockchain.data.stash.utils.ObjectBuildUtil;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * cucurrent replace into will cause deadlock
@@ -29,11 +34,19 @@ public class RecoverSnapshotService {
     @Autowired
     private DynamicTableInfoService dynamicTableInfoService;
 
-
+    private Set<String> ledgerTables = new HashSet<String>(){{
+        add(DBStaticTableConstants.SYS_BLOCK_2_NONCES_TABLE);
+        add(DBStaticTableConstants.SYS_TX_HASH_2_BLOCK_TABLE);
+        add(DBStaticTableConstants.SYS_HASH_2_BLOCK_TABLE);
+        add(DBStaticTableConstants.SYS_HASH_2_HEADER_TABLE);
+    }};
     public void recoverSnapshotFromDetailTables() {
-        log.debug("Start rebuilding current table from detail table");
+        log.info("Start rebuilding current table from detail table");
         List<SysTablesInfo> tables = sysTableInfoService.selectAllTables();
         for (SysTablesInfo table : tables) {
+            if(ledgerTables.contains(table.getTableName())){
+                continue;
+            }
             log.info("table name : {} in sys tables", table.getTableName());
             // 1. delete detail entry info
             String detailTableName = CommonUtil.getDetailTableName(table.getTableName());
@@ -55,7 +68,7 @@ public class RecoverSnapshotService {
                 dynamicTableInfoService.save(table.getTableName(), dynamicTableInfo);
             }
         }
-        log.debug("Rebuilding current table from detail table complete");
+        log.info("Rebuilding current table from detail table complete");
     }
 
     private EntryInfo copyDefaultFields(EntryInfo entryInfo, Map<String, Object> columnMap){
