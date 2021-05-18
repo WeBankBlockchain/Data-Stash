@@ -41,9 +41,14 @@
 		where _num_ = #{blockNum,jdbcType=BIGINT} order by _id_
 	</select>
 	
-	<delete id="deleteByBlockNum" parameterType="java.lang.Long">
+	<delete id="rollbackByBlockNum" parameterType="java.lang.Long">
 		delete from check_point
-		where block_num = #{num,jdbcType=BIGINT}
+		where block_num >= #{num,jdbcType=BIGINT}
 	</delete>
-	
+
+	<select id="nextCheckpoint" resultType="java.lang.Long">
+		select IFNULL(block_num,0) from check_point
+		order by 1 desc
+		limit 1
+	</select>
 </mapper>

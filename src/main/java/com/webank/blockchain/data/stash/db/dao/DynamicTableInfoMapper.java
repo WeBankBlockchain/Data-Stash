@@ -15,30 +15,29 @@ package com.webank.blockchain.data.stash.db.dao;
 
 import java.util.List;
 
-import com.webank.blockchain.data.stash.db.model.DylamicTableInfo;
+import com.webank.blockchain.data.stash.db.model.DynamicTableInfo;
 import org.apache.ibatis.annotations.Param;
-import com.webank.blockchain.data.stash.db.model.DylamicTableInfo;
 
 /**
  * 
- * DylamicTableInfoMapper
+ * DynamicTableInfoMapper
  *
- * @Description: DylamicTableInfoMapper
+ * @Description: DynamicTableInfoMapper
  * @author graysonzhang
  * @data 2019-09-24 16:45:42
  *
  */
-public interface DylamicTableInfoMapper extends BaseMapper {   
+public interface DynamicTableInfoMapper extends BaseMapper {
     
-    void insertOrUpdate(@Param("tableName")String tableName, @Param("dylamicTableInfo") DylamicTableInfo record);
+    void insertOrUpdate(@Param("tableName")String tableName, @Param("dynamicTableInfo") DynamicTableInfo record);
     
-    int insertDetail(@Param("tableName")String tableName, @Param("dylamicTableInfo")DylamicTableInfo record);
+    int insertDetail(@Param("tableName")String tableName, @Param("dynamicTableInfo") DynamicTableInfo record);
     
     int existTable(String tableName);
     
-    int batchInsert(@Param("tableName")String tableName, @Param("list")List<DylamicTableInfo> list, @Param("fields")String fields);
+    int batchInsert(@Param("tableName")String tableName, @Param("list")List<DynamicTableInfo> list, @Param("fields")String fields);
 
-    int batchInsertDetail(@Param("tableName")String tableName, @Param("list")List<DylamicTableInfo> list, @Param("fields")String fields);
+    int batchInsertDetail(@Param("tableName")String tableName, @Param("list")List<DynamicTableInfo> list, @Param("fields")String fields);
 
     void deleteDetailByBlockNum(long blockNum);
 

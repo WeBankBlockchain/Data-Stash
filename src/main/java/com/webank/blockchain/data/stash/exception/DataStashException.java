@@ -23,7 +23,7 @@ import com.webank.blockchain.data.stash.enums.DataStashExceptionCodeEnums;
  * @data 2019-07-10 15:23:35
  *
  */
-public class DataStashException extends Exception {
+public class DataStashException extends RuntimeException {
     
     /** @Fields serialVersionUID : TODO */
     private static final long serialVersionUID = 893822168485972751L;
@@ -37,6 +37,10 @@ public class DataStashException extends Exception {
     public DataStashException(String msg) {
         super(msg);
         this.codeEnum.setMessage(msg);
+    }
+
+    public DataStashException(Throwable cause) {
+        super(cause);
     }
 
     public DataStashExceptionCodeEnums getCodeMessageEnums() {

@@ -24,6 +24,7 @@ import com.webank.blockchain.data.stash.constants.DBStaticTableConstants;
 import com.webank.blockchain.data.stash.entity.BinlogBlockInfo;
 import com.webank.blockchain.data.stash.entity.EntryInfo;
 import com.webank.blockchain.data.stash.entity.TableDataInfo;
+import com.webank.blockchain.data.stash.exception.DataStashException;
 import com.webank.blockchain.data.stash.parser.BlockBytesParser;
 import com.webank.blockchain.data.stash.utils.CommonUtil;
 import com.webank.blockchain.data.stash.utils.JsonUtils;
@@ -52,22 +53,25 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @Slf4j
-public class BlockValidation {
+public class ComparisonValidation {
 
     @Autowired
     private BlockBytesParser parser;
-    @Autowired
-    private ValidatorController validatorController;
-
     @UseTime
-    public boolean vaildBlocks(BinlogBlockInfo blockInfo, List<byte[]> blockBytesList) throws Exception {
-        for (int i = 1; i < blockBytesList.size(); i++) {
-            if (!compare(blockInfo, blockBytesList.get(i))) {
-                log.error("Compare binlog 0 and binlog of {}, something error", i);
-                return false;
+    public boolean compareValidate(BinlogBlockInfo blockInfo, List<byte[]> blockBytesList){
+        try{
+            for (int i = 1; i < blockBytesList.size(); i++) {
+                if (!compare(blockInfo, blockBytesList.get(i))) {
+                    log.error("Compare binlog 0 and binlog of {}, something error", i);
+                    return false;
+                }
             }
+            return true;
         }
-        return true;
+        catch (Exception ex){
+            throw new DataStashException(ex);
+        }
+
     }
 
     private boolean compare(BinlogBlockInfo blockInfo, byte[] blockBytes) throws Exception {
@@ -94,8 +98,7 @@ public class BlockValidation {
     }
 
     @UseTime
-    private boolean compareTableDatas(Map<String, TableDataInfo> tables1, Map<String, TableDataInfo> tables2)
-            throws Exception {
+    private boolean compareTableDatas(Map<String, TableDataInfo> tables1, Map<String, TableDataInfo> tables2) throws Exception{
 
         for (Map.Entry<String, TableDataInfo> table : tables1.entrySet()) {
 
@@ -122,8 +125,8 @@ public class BlockValidation {
         return true;
     }
 
-    private boolean compareEntrys(String tableName, TreeSet<EntryInfo> entries1, TreeSet<EntryInfo> entries2)
-            throws Exception {
+    private boolean compareEntrys(String tableName, TreeSet<EntryInfo> entries1, TreeSet<EntryInfo> entries2) throws Exception
+              {
         log.debug("Begin to compare entries of {}", tableName);
         log.debug("entry1 : {}", JsonUtils.toJson(entries1));
         log.debug("entry2 : {}", JsonUtils.toJson(entries2));
@@ -175,10 +178,6 @@ public class BlockValidation {
                 return false;
             }
 
-            if (!validatorController.validateBlockRlp(CommonUtil.getValueColumn(entry1.getColumns(), "value"))) {
-                log.error("Validate block rlp error.");
-                return false;
-            }
         }
         else if (tableName.equalsIgnoreCase(DBStaticTableConstants.SYS_TX_HASH_2_BLOCK_TABLE)) {
             // the id of SYS_TX_HASH_2_BLOCK_TABLE is not equal in different binlog file since from 2.2

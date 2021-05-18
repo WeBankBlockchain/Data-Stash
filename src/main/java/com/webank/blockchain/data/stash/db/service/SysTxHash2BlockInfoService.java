@@ -60,7 +60,7 @@ public class SysTxHash2BlockInfoService extends DBBaseOperation implements Stora
 	@SuppressWarnings("unchecked")
     @Override
     @Transactional
-    public void storageTabelData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
+    public void storeTableData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
 	    storage(tableName, tableDataInfo, SysTxHash2BlockInfo.class);
     }
 

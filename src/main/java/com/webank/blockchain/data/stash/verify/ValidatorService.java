@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Service
 @Slf4j
-public class ValidatorController {
+public class ValidatorService {
     @Autowired
     private SealerListValidator sealerListValidator;
     @Autowired
@@ -58,10 +58,9 @@ public class ValidatorController {
     private TransationReceiptValidator transationReceiptValidator;
 
     @UseTime
-    public boolean validateBlockRlp(String blockRlp) throws Exception {
+    public boolean validateBlockRlp(BigInteger blockNumber, String blockRlp) throws Exception {
 
         BlockV2RC2 block = new BlockV2RC2(blockRlp);
-        BigInteger blockNumber = BigInteger.valueOf(blockTaskPoolMapper.getLatestOne().getBlockHeight());
         BigInteger parentBlockNumber = blockNumber.subtract(BigInteger.ONE);
 
         if (!blockValidator.validateSigList(block)) {

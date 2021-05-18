@@ -58,7 +58,7 @@ public class SysCnsInfoService extends DBBaseOperation implements StorageService
 	@SuppressWarnings("unchecked")
     @Override
     @Transactional
-    public void storageTabelData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
+    public void storeTableData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
 	    storage(tableName, tableDataInfo, SysCnsInfo.class);
     }
 

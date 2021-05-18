@@ -44,9 +44,9 @@ public interface BlockTaskPoolMapper {
             + ") ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4;")
     public void createTable();
 
-    @Insert("insert into block_task_pool(block_height, certainty ,block_timestamp, updatetime, sync_status)\n"
+    @Insert("insert ignore into block_task_pool(block_height, certainty ,block_timestamp, updatetime, sync_status)\n"
             + "values(#{blockHeight}, #{certainty}, #{blockTime}, #{updatetime}, #{syncStatus})")
-    int insert(BlockTaskPool blockTaskPool);
+    int insertInto(BlockTaskPool blockTaskPool);
 
     @Select("SELECT * FROM block_task_pool WHERE block_height = #{blockHeight}")
     @Results({ @Result(property = "pkId", column = "pk_id"), @Result(property = "blockHeight", column = "block_height"),
@@ -62,17 +62,23 @@ public interface BlockTaskPoolMapper {
             @Result(property = "syncStatus", column = "sync_status") })
     BlockTaskPool getLatestOne();
 
-    @Select("SELECT * FROM block_task_pool WHERE sync_status = #{syncStatus} order by block_height desc limit 1;")
+    @Select("SELECT * FROM block_task_pool t1 WHERE sync_status = 2 \n" +
+            "AND block_height < (SELECT IFNULL(min(block_height), ~0) FROM block_task_pool WHERE sync_status < 2)\n" +
+            "order by block_height desc limit 1;")
     @Results({ @Result(property = "pkId", column = "pk_id"), @Result(property = "blockHeight", column = "block_height"),
             @Result(property = "blockTime", column = "block_timestamp"),
             @Result(property = "syncStatus", column = "sync_status") })
-    BlockTaskPool getLatestOneBySyncStatus(int syncStatus);
-    
+    BlockTaskPool getLastFinishedBlock();
+
+
     @Update("update block_task_pool set block_timestamp=#{block_timestamp} where block_height=#{block_height}")
     void updateBlockTimestampByBlockHeight(@Param("block_timestamp") Date blockTimeStamp,
             @Param("block_height") long blockHeight);
 
     @Update("update block_task_pool set sync_status=#{sync_status} where block_height=#{block_height}")
     void updateSyncStatusByBlockHeight(@Param("sync_status") int syncStatus, @Param("block_height") long blockHeight);
+
+    @Update("delete from block_task_pool where block_height >= #{block}")
+    int rollbackByBlockNumber(@Param("block") long block);
 
 }

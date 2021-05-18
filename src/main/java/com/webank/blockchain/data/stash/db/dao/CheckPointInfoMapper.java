@@ -61,6 +61,7 @@ public interface CheckPointInfoMapper {
      */
 	List<TreeMap<String, String>> selectBlockDataByBlockNum(@Param("tableName")String tableName, @Param("blockNum")Long blockNum);
 	
-	void deleteByBlockNum(long num);
+	void rollbackByBlockNum(long num);
 
+	Long nextCheckpoint();
 }

@@ -14,21 +14,20 @@
 package com.webank.blockchain.data.stash.task;
 
 import com.webank.blockchain.data.stash.config.ReadPropertyConfig;
-import com.webank.blockchain.data.stash.manager.CheckManager;
-import com.webank.blockchain.data.stash.manager.CleanManager;
-import com.webank.blockchain.data.stash.manager.DownloadManager;
+import com.webank.blockchain.data.stash.manager.*;
+import org.apache.shardingsphere.api.hint.HintManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import com.webank.blockchain.data.stash.config.ReadPropertyConfig;
-import com.webank.blockchain.data.stash.manager.BlockReadManager;
 import com.webank.blockchain.data.stash.manager.CheckManager;
 import com.webank.blockchain.data.stash.manager.CleanManager;
 import com.webank.blockchain.data.stash.manager.DownloadManager;
 
 import lombok.Data;
+
+import javax.annotation.PostConstruct;
 
 /**
  * BinlogSyncTask
@@ -41,7 +40,8 @@ import lombok.Data;
 @Component
 @Data
 public class BinlogSyncTask implements ApplicationRunner {
-
+    @Autowired
+    private RollbackManager rollbackManager;
     @Autowired
     private DownloadManager downloadManager;
     @Autowired
@@ -50,6 +50,10 @@ public class BinlogSyncTask implements ApplicationRunner {
     private CheckManager checkManager;
     @Autowired
     private CleanManager cleanManager;
+
+    @Autowired
+    private RecoverSnapshotService recoverSnapshotService;
+
     @Autowired
     private ReadPropertyConfig readConfig;
     private boolean button = true;
@@ -59,16 +63,27 @@ public class BinlogSyncTask implements ApplicationRunner {
         if (readConfig.getFiles() < 3) {
             readConfig.setFiles(3);
         }
-
+        this.rollbackManager.rollbackUnfinished();
         while (true) {
             downloadManager.download();
             checkManager.check();
-            blockReadManager.read();
+            int blocks = blockReadManager.read();
             cleanManager.clean();
+            if(blocks == 0) {
+                //No new blocks, then wait 10 seconds
+                tryWaitNewBlocks(60000);
+            }
             if (!button) {
                 break;
             }
         }
+    }
+
+    private void tryWaitNewBlocks(long waitMilSeconds){
+        try{
+            Thread.sleep(waitMilSeconds);
+        }
+        catch (Exception ex){}
     }
 
 }
