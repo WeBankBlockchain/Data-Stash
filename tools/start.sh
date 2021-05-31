@@ -38,4 +38,6 @@ echo "copy Data-Stash.jar success..."
 
 echo "run Data-Stash.jar"
 
+cd tools
+
 java -jar Data-Stash.jar --spring.config.location=./config/application.properties
