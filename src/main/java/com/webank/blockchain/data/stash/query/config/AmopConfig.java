@@ -21,6 +21,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author aaronchu
@@ -48,32 +50,41 @@ public class AmopConfig {
 
     private Amop amop;
 
+    public static ExecutorService executor = Executors.newSingleThreadExecutor();
+
     @PostConstruct
     private void initSDK() throws ConfigException {
         if (!enable){
             return;
         }
-        ConfigProperty configProperty = new ConfigProperty();
-        setPeers(configProperty);
-        setCertPath(configProperty);
-        ConfigOption option = new ConfigOption(configProperty);
-        new Thread(() -> {
-            while(true) {
-                try {
-                    bcosSDK = new BcosSDK(option);
-                    initAmop();
-                    log.info("bcosSDK connect success ... ...");
-                    break;
-                } catch (Exception e) {
-                    log.warn("bcosSDK connect failed, try again after 5 s ... ...");
-                }
-                try {
-                    Thread.sleep(5000L);
-                } catch (InterruptedException ignored) {
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                while(true) {
+                    try {
+                        ConfigProperty configProperty = new ConfigProperty();
+                        setPeers(configProperty);
+                        setCertPath(configProperty);
+                        ConfigOption option = new ConfigOption(configProperty);
+                        bcosSDK = new BcosSDK(option);
+                        initAmop();
+                        log.info("bcosSDK connect success ... ...");
+                        break;
+                    } catch (Exception e) {
+                        log.warn("bcosSDK connect failed, try again after 5 s ... ...");
+                    }
+                    while(true) {
+                        try {
+                            Thread.sleep(5000);
+                            break;
+                        } catch(InterruptedException ie) {}
+                    }
                 }
             }
         });
+
     }
+
 
     public void setPeers(ConfigProperty configProperty) {
         String[] nodes = StringUtils.split(this.nodeStr, ";");

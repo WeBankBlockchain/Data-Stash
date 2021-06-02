@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.webank.datalink.query.dao.DataMapper">
+<mapper namespace="com.webank.blockchain.data.stash.db.mapper.DataMapper">
 
 	<select id="getTable" resultType="map">
 		select key_field, value_field from _sys_tables_ where table_name = #{table_name}
