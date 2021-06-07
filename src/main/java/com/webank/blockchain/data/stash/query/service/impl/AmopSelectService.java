@@ -60,8 +60,6 @@ public class AmopSelectService implements SelectService<AmopMsgIn, AmopMsgOut> {
         response.setResult(resultData);
 
         String out = objectMapper.writeValueAsString(response);
-        System.out.println("result string  :" + out);
-
         AmopMsgOut msgOut = new AmopMsgOut();
         msgOut.setContent(out.getBytes());
         msgOut.setTopic(msgIn.getTopic());
