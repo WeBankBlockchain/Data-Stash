@@ -41,9 +41,7 @@ dependencies {
     testAnnotationProcessor "org.projectlombok:lombok"
     testCompileOnly "org.projectlombok:lombok"
     compile 'org.apache.shardingsphere:sharding-jdbc-spring-boot-starter:4.1.1'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-
-    implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation "org.springframework.boot:spring-boot-starter-aop"
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
