@@ -71,7 +71,7 @@ public class ObjectBuildUtil {
         for(ColumnInfo columnInfo : columns){
             String columnName = columnInfo.getColumnName();
             fields.append(", ").append("`").append(columnName).append("`");
-            values.append(columnInfo.getColumnValue());
+            values.append(", ").append(columnInfo.getColumnValue());
             fieldsOnDuplicateKeyUpdates.append(",").append("`").append(columnName).append("`")
                     .append("=")
                     .append("VALUES(`").append(columnName).append("`)");
