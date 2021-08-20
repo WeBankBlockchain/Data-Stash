@@ -19,9 +19,6 @@ import java.util.List;
 import com.webank.blockchain.data.stash.constants.DataStorageTypeConstants;
 import com.webank.blockchain.data.stash.entity.ColumnInfo;
 import com.webank.blockchain.data.stash.entity.EntryInfo;
-import com.webank.blockchain.data.stash.constants.DataStorageTypeConstants;
-import com.webank.blockchain.data.stash.entity.ColumnInfo;
-import com.webank.blockchain.data.stash.entity.EntryInfo;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -71,7 +68,7 @@ public class ObjectBuildUtil {
         for(ColumnInfo columnInfo : columns){
             String columnName = columnInfo.getColumnName();
             fields.append(", ").append("`").append(columnName).append("`");
-            values.append(", '").append(columnInfo.getColumnValue()).append("'");
+            values.append(", '").append(convertEscapeChar(columnInfo.getColumnValue())).append("'");
             fieldsOnDuplicateKeyUpdates.append(",").append("`").append(columnName).append("`")
                     .append("=")
                     .append("VALUES(`").append(columnName).append("`)");
@@ -89,6 +86,13 @@ public class ObjectBuildUtil {
             e.printStackTrace();
         }
         return obj; 
+    }
+
+    //If value contains single quote, it should be add escape char. For example, 'aaa'->\'aaa\', while aaa->aaa
+    public static String convertEscapeChar(String value){
+        if(value == null) return value;
+        if(!value.contains("'")) return value;
+        return value.replace("'","\\'");
     }
 
 }
