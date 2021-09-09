@@ -69,7 +69,7 @@ public class ObjectBuildUtil {
         
         for(ColumnInfo columnInfo : columns){
             fields.append(", ").append("`").append(columnInfo.getColumnName()).append("`");
-            values.append(", '").append(columnInfo.getColumnValue()).append("'");
+            values.append(", '").append(columnInfo.getColumnValue().replace("'","&apos;")).append("'");
         }
         try {
             fieldList[0].setAccessible(true);
