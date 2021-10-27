@@ -61,7 +61,7 @@ public class BlockReadManager {
         List<CompletableFuture> all = new ArrayList<>();
         try(MultiSourceBlockReader blockReader = new MultiSourceBlockReader(sources, todoNumber,config.getBinlogSuffix())){
             List<byte[]> blocks;
-            while ((blocks = blockReader.read()) != null){
+            while ((blocks = blockReader.read()) != null && all.size() <= config.getBatchCount()){
                 //Extract body and verify crc
                 List<byte[]> blockDatas = toBlockBodyDatas(todoNumber, blocks);
                 //Handle block body
