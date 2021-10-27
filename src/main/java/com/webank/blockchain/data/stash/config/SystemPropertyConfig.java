@@ -41,11 +41,11 @@ public class SystemPropertyConfig {
     private int binlogVerify= 1;
     private int checkPointVerify = 1;
 
-    private int batchCount = 5;
+    private int batchCount = 1000;
     private int encryptType = 0;
 
-    private int sqlThreads = 50;
-    private int sqlQueueSize = 500;
+    private int sqlThreads = 10;
+    private int sqlQueueSize = 10;
 
 
     public String getLocalBinlogPath() {
