@@ -58,6 +58,8 @@ public class BlockHandler {
     private SystemPropertyConfig config;
     @Autowired
     private BlockTaskPoolMapper blockTaskPoolMapper;
+    @Autowired
+    private TaskCounterHandler taskCounterHandler;
     ThreadPoolExecutor sqlPool;
 
     @PostConstruct
@@ -68,8 +70,9 @@ public class BlockHandler {
                 new CallerRunOldestPolicy());
     }
 
-    public CompletableFuture<BinlogBlockInfo> handleAsync(long block, List<byte[]> blockBytesList) {
+    public CompletableFuture<BinlogBlockInfo> handleAsync(long block, List<byte[]> blockBytesList ) {
         BinlogBlockInfo blockInfo = parseBinlogThenVerify(block, blockBytesList);
+        taskCounterHandler.increase();
         //Make sure table creation always happen first
         if(blockInfo.getTables().containsKey(DBStaticTableConstants.SYS_TABLES_TABLE)){
             return CompletableFuture.completedFuture(storeBlockData(blockInfo));
@@ -78,6 +81,9 @@ public class BlockHandler {
         }
     }
 
+    public void awaitSubmittedBlockTasksFinished(){
+        this.taskCounterHandler.await();
+    }
 
     private BinlogBlockInfo parseBinlogThenVerify(long block, List<byte[]> blockBytesList) {
         try{
@@ -120,6 +126,7 @@ public class BlockHandler {
         blockTaskPoolMapper.updateSyncStatusByBlockHeight(BlockTaskPoolSyncStatusEnum.Done.getSyncStatus(),
                 blockInfo.getBlockNum());
         log.debug("===============end block data store===================");
+        taskCounterHandler.decrease();
         return blockInfo;
     }
 }
