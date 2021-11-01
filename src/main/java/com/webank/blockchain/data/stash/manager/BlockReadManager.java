@@ -80,19 +80,6 @@ public class BlockReadManager {
             recoverSerivce.recoverSnapshotFromDetailTables();
         }
         return blockHandled;
-//        CompletableFuture.allOf(all.toArray(new CompletableFuture[0])).get();
-//        int size = all.size();
-//        if(!all.isEmpty()){
-//            recoverSerivce.recoverSnapshotFromDetailTables();
-//        }
-//        else{
-//            log.info("empty batch");
-//        }
-//        log.info("{} blocks saved. Start next batch",size);
-//        all = null;
-//        Thread.sleep(1000);
-//        System.gc();
-//        return size;
     }
 
     private List<byte[]> toBlockBodyDatas(long blockNumber, List<byte[]> blockPackage){
