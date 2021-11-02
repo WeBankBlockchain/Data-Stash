@@ -67,7 +67,7 @@ public class BinlogSyncTask implements ApplicationRunner {
         while (true) {
             downloadManager.download();
             checkManager.check();
-            int blocks = blockReadManager.read();
+            long blocks = blockReadManager.read();
             cleanManager.clean();
             if(blocks == 0) {
                 //No new blocks, then wait 10 seconds
