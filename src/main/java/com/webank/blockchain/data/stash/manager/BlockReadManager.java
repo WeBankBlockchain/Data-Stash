@@ -14,7 +14,6 @@
 package com.webank.blockchain.data.stash.manager;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 
 import com.webank.blockchain.data.stash.config.SystemPropertyConfig;
 import com.webank.blockchain.data.stash.constants.BinlogConstants;
@@ -54,33 +53,33 @@ public class BlockReadManager {
     @Autowired
     private RecoverSnapshotService recoverSerivce;
 
-    public int read() throws IORuntimeException, InterruptedException, Exception {
+    public long read() throws IORuntimeException, InterruptedException, Exception {
         //Determine the block to start
         BlockTaskPool blockTaskPool = blockTaskPoolMapper.getLastFinishedBlock();
         long todoNumber = prepare(blockTaskPool);
-        List<CompletableFuture> all = new ArrayList<>();
+//        List<CompletableFuture> all = new ArrayList<>();
+        long initNum = todoNumber;
+
         try(MultiSourceBlockReader blockReader = new MultiSourceBlockReader(sources, todoNumber,config.getBinlogSuffix())){
             List<byte[]> blocks;
             while ((blocks = blockReader.read()) != null){
                 //Extract body and verify crc
                 List<byte[]> blockDatas = toBlockBodyDatas(todoNumber, blocks);
                 //Handle block body
-                all.add(blockHandler.handleAsync(todoNumber, blockDatas));
+                blockHandler.handleAsync(todoNumber, blockDatas);
                 //Start next task
                 todoNumber++;
                 initTaskStatus(todoNumber);
             }
         }
 
-        CompletableFuture.allOf(all.toArray(new CompletableFuture[0])).get();
-        if(!all.isEmpty()){
+        this.blockHandler.awaitSubmittedBlockTasksFinished();
+        long blockHandled = todoNumber - initNum;
+        log.info("Batch handle completed {}",blockHandled);
+        if(blockHandled != 0){
             recoverSerivce.recoverSnapshotFromDetailTables();
         }
-        else{
-            log.info("empty batch");
-        }
-        log.info("{} blocks saved. Start next batch",all.size());
-        return all.size();
+        return blockHandled;
     }
 
     private List<byte[]> toBlockBodyDatas(long blockNumber, List<byte[]> blockPackage){
