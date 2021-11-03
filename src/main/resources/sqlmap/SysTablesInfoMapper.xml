@@ -27,27 +27,19 @@
 	</delete>
 	
 	<insert id="insert" parameterType="com.webank.blockchain.data.stash.db.model.SysTablesInfo">
-		insert into _sys_tables_ (_id_, _hash_, _status_, _num_,table_name, key_field, value_field) values 
+		replace into _sys_tables_ (_id_, _hash_, _status_, _num_,table_name, key_field, value_field) values
 		(#{id,jdbcType=BIGINT}, #{hash,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER},#{num,jdbcType=BIGINT},#{tableName,jdbcType=VARCHAR}, #{keyField,jdbcType=VARCHAR}, #{valueField,jdbcType=VARCHAR})
 	</insert>
 	
 	<insert id="batchInsert" parameterType="java.util.List" >
-		insert into _sys_tables_ (_id_, _hash_, _status_, _num_,table_name, key_field, value_field) values
+		replace into _sys_tables_ (_id_, _hash_, _status_, _num_,table_name, key_field, value_field) values
 		<foreach collection="list" item="item" index="index" separator="," >
 			(#{item.id,jdbcType=BIGINT}, #{item.hash,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER},#{item.num,jdbcType=BIGINT},#{item.tableName,jdbcType=VARCHAR}, #{item.keyField,jdbcType=VARCHAR}, #{item.valueField,jdbcType=VARCHAR})
     	</foreach>
-		on duplicate key update
-		_id_=VALUES(_id_),
-		_hash_=VALUES(_hash_),
-		_status_=VALUES(_status_),
-		_num_=VALUES(_num_),
-		table_name=VALUES(table_name),
-		key_field=VALUES(key_field),
-		value_field=VALUES(value_field)
 	</insert>
 	
 	<insert id="batchInsertDetail" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="pkId">
-		insert into _sys_tables_d_ (_id_, _hash_, _status_, _num_,table_name, key_field, value_field) values
+		insert ignore into _sys_tables_d_ (_id_, _hash_, _status_, _num_,table_name, key_field, value_field) values
 		<foreach collection="list" item="item" index="index" separator="," >
 			(#{item.id,jdbcType=BIGINT}, #{item.hash,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER},#{item.num,jdbcType=BIGINT},#{item.tableName,jdbcType=VARCHAR}, #{item.keyField,jdbcType=VARCHAR}, #{item.valueField,jdbcType=VARCHAR})
     	</foreach>
