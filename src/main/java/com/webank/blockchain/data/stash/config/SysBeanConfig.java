@@ -55,16 +55,15 @@ public class SysBeanConfig {
     @Autowired
     private SystemPropertyConfig systemPropertyConfig;
 
-    private static final Set<Class> LEDGER_SERVICE_CLASSES = new HashSet<Class>(){
+    private static final Set<String> LEDGER_SERVICE_CLASSES = new HashSet<String>(){
         {
-            add(SysBlock2NoncesInfoService.class);
-            add(SysHash2BlockInfoService.class);
-            add(SysHash2HeaderInfoService.class);
-            add(SysNumber2HashInfoService.class);
-            add(SysTxHash2BlockInfoService.class);
+            add(SysBlock2NoncesInfoService.class.getSimpleName().toLowerCase());
+            add(SysHash2BlockInfoService.class.getSimpleName().toLowerCase());
+            add(SysHash2HeaderInfoService.class.getSimpleName().toLowerCase());
+            add(SysNumber2HashInfoService.class.getSimpleName().toLowerCase());
+            add(SysTxHash2BlockInfoService.class.getSimpleName().toLowerCase());
         }
     };
-
     @Bean
     public LedgerDBStorage ledgerDBStorage(Map<String, StorageService> services) throws DataStashException {
         return new LedgerDBStorage(extractLedgerServices(services));
@@ -134,7 +133,8 @@ public class SysBeanConfig {
     private Map<String, StorageService> extractLedgerServices(Map<String, StorageService> allServices){
         Map<String, StorageService> services = new HashMap<>();
         for(Map.Entry<String, StorageService> serviceEntry: allServices.entrySet()){
-            if(LEDGER_SERVICE_CLASSES.contains(serviceEntry.getValue().getClass())){
+            String bean = serviceEntry.getKey().toLowerCase();
+            if(LEDGER_SERVICE_CLASSES.contains(bean)){
                 services.put(serviceEntry.getKey(), serviceEntry.getValue());
             }
         }
@@ -144,7 +144,8 @@ public class SysBeanConfig {
     private Map<String, StorageService> extractStateServices(Map<String, StorageService> allServices){
         Map<String, StorageService> services = new HashMap<>();
         for(Map.Entry<String, StorageService> serviceEntry: allServices.entrySet()){
-            if(!LEDGER_SERVICE_CLASSES.contains(serviceEntry.getValue().getClass())){
+            String bean = serviceEntry.getKey().toLowerCase();
+            if(!LEDGER_SERVICE_CLASSES.contains(bean)){
                 services.put(serviceEntry.getKey(), serviceEntry.getValue());
             }
         }
