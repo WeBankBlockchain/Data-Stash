@@ -73,7 +73,7 @@ public class BlockReadManager {
         }
 
         long blockHandled = todoNumber - initNum;
-        blockHandler.awaitAllTasksFinished();
+        blockHandler.awaitSubmitedTasksFinished();
         log.info("Batch handle completed {}",blockHandled);
         return blockHandled;
     }

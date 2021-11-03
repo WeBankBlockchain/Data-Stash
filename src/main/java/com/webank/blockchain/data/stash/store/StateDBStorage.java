@@ -10,13 +10,17 @@ import com.webank.blockchain.data.stash.entity.TableDataInfo;
 import com.webank.blockchain.data.stash.exception.DataStashException;
 import com.webank.blockchain.data.stash.utils.StringStyleUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 /**
  * Only process state data inside
@@ -31,10 +35,13 @@ public class StateDBStorage implements DataStorage {
     private Map<String, StorageService> ledgerServices;
     private Map<String, StorageService> stateServices;
 
+    private ThreadPoolExecutor stateThreadPool;
 
-    public StateDBStorage(Map<String, StorageService> ledgerServices, Map<String, StorageService> stateServices){
+    public StateDBStorage(Map<String, StorageService> ledgerServices, Map<String, StorageService> stateServices, int poolSize){
         this.ledgerServices = ledgerServices;
         this.stateServices = stateServices;
+        this.stateThreadPool = new ThreadPoolExecutor(poolSize,poolSize, 0, TimeUnit.DAYS,
+                new LinkedBlockingQueue<>(), new ThreadPoolExecutor.CallerRunsPolicy());
     }
 
     @PostConstruct
@@ -58,7 +65,36 @@ public class StateDBStorage implements DataStorage {
             stateServices.get(serviceName).storeTableData(DBStaticTableConstants.SYS_TABLES_TABLE, sysTableData);
             blockInfo.getTables().remove(DBStaticTableConstants.SYS_TABLES_TABLE);
         }
-        blockInfo.getTables().entrySet().forEach(e -> storeData(e.getKey(), e.getValue()));
+        //Extract all stata tables
+        Map<String, TableDataInfo> stateTables = blockInfo.getTables().entrySet().stream().filter(e->{
+            String serviceName = StringStyleUtils.underline2upper(e.getKey()) + DBDynamicTableConstants.DB_SERVICE_POST_FIX;
+            return !this.ledgerServices.containsKey(serviceName);
+        }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        //Executing them concurrently
+        AtomicReference<Exception> err = new AtomicReference<>();
+        try {
+
+            CountDownLatch countDownLatch = new CountDownLatch(stateTables.size());
+            stateTables.entrySet().forEach(e -> {
+                this.stateThreadPool.execute(() -> {
+                    try {
+                        storeData(e.getKey(), e.getValue());
+                    } catch (Exception ex) {
+                        err.set(ex);
+                        log.error("Error handling state table", ex);
+                    } finally {
+                        countDownLatch.countDown();
+                    }
+                });
+            });
+            countDownLatch.await();
+        }
+        catch (Exception ex){}
+
+        //Propagate possible exceptions to stop the process
+        if(err.get() != null){
+            throw new RuntimeException("Exception happen during state tables", err.get());
+        }
     }
 
     @Override

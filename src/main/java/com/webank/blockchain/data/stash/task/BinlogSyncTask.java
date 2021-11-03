@@ -59,12 +59,13 @@ public class BinlogSyncTask implements ApplicationRunner {
             readConfig.setFiles(3);
         }
         while (true) {
-            downloadManager.download();
-            checkManager.check();
+//            downloadManager.download();
+//            checkManager.check();
             long blocks = blockReadManager.read();
             cleanManager.clean();
             if(blocks == 0) {
                 //No new blocks, then wait 10 seconds
+                System.exit(0);
                 tryWaitNewBlocks(60000);
             }
             if (!button) {

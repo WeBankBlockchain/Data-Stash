@@ -71,7 +71,7 @@ public class SysBeanConfig {
 
     @Bean
     public StateDBStorage stateDBStorage(Map<String, StorageService> services) throws DataStashException{
-        return new StateDBStorage(extractLedgerServices(services), extractStateServices(services));
+        return new StateDBStorage(extractLedgerServices(services), extractStateServices(services), systemPropertyConfig.getSqlThreads());
     }
 
     @Bean

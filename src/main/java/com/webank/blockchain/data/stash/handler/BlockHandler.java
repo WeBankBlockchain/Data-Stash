@@ -111,7 +111,7 @@ public class BlockHandler {
         });
     }
 
-    public void awaitAllTasksFinished(){
+    public void awaitSubmitedTasksFinished(){
         this.taskCounterHandler.await();
     }
 
