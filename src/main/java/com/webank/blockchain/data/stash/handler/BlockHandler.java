@@ -55,8 +55,6 @@ public class BlockHandler {
     @Autowired
     private ComparisonValidation validator;
     @Autowired
-    private DataStorage dataStorage;
-    @Autowired
     private SystemPropertyConfig config;
     @Autowired
     private BlockTaskPoolMapper blockTaskPoolMapper;

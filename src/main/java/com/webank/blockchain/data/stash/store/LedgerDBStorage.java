@@ -10,7 +10,10 @@ import com.webank.blockchain.data.stash.utils.StringStyleUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
+import java.sql.SQLException;
 import java.util.Map;
 
 /**
@@ -27,6 +30,14 @@ public class LedgerDBStorage implements DataStorage {
 
     public LedgerDBStorage(Map<String, StorageService> ledgerTableServices){
         this.ledgerTableServices = ledgerTableServices;
+    }
+
+    @PostConstruct
+    @Transactional
+    public void initSchema() throws SQLException {
+        for(Map.Entry<String, StorageService> entry : ledgerTableServices.entrySet()){
+            entry.getValue().createSchema();
+        }
     }
 
     @Override
