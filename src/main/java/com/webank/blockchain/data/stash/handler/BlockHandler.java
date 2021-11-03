@@ -111,7 +111,7 @@ public class BlockHandler {
         });
     }
 
-    public void awaitSubmitedTasksFinished(){
+    public void awaitSubmittedTasksFinished(){
         this.taskCounterHandler.await();
     }
 
@@ -143,7 +143,7 @@ public class BlockHandler {
     private void onException(long blockNumber, Exception ex){
         blockTaskPoolMapper.updateSyncStatusByBlockHeight(BlockTaskPoolSyncStatusEnum.ERROR.getSyncStatus(),
                 blockNumber);
-        log.error("Exception encounted: ", ex);
+        log.error("Exception occur: ", ex);
         System.exit(-1);
     }
 

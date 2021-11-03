@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -35,12 +36,12 @@ public class StateDBStorage implements DataStorage {
     private Map<String, StorageService> ledgerServices;
     private Map<String, StorageService> stateServices;
 
-    private ThreadPoolExecutor stateThreadPool;
+    private ThreadPoolExecutor stateInsertionThreadPool;
 
     public StateDBStorage(Map<String, StorageService> ledgerServices, Map<String, StorageService> stateServices, int poolSize){
         this.ledgerServices = ledgerServices;
         this.stateServices = stateServices;
-        this.stateThreadPool = new ThreadPoolExecutor(poolSize,poolSize, 0, TimeUnit.DAYS,
+        this.stateInsertionThreadPool = new ThreadPoolExecutor(poolSize,poolSize, 0, TimeUnit.DAYS,
                 new LinkedBlockingQueue<>(), new ThreadPoolExecutor.CallerRunsPolicy());
     }
 
@@ -63,10 +64,13 @@ public class StateDBStorage implements DataStorage {
             String serviceName = StringStyleUtils.underline2upper(DBStaticTableConstants.SYS_TABLES_TABLE)
                     + DBDynamicTableConstants.DB_SERVICE_POST_FIX;
             stateServices.get(serviceName).storeTableData(DBStaticTableConstants.SYS_TABLES_TABLE, sysTableData);
-            blockInfo.getTables().remove(DBStaticTableConstants.SYS_TABLES_TABLE);
+       //     blockInfo.getTables().remove(DBStaticTableConstants.SYS_TABLES_TABLE);
         }
         //Extract all stata tables
         Map<String, TableDataInfo> stateTables = blockInfo.getTables().entrySet().stream().filter(e->{
+            if(Objects.equals(e.getKey(), DBStaticTableConstants.SYS_TABLES_TABLE)){
+                return false;
+            }
             String serviceName = StringStyleUtils.underline2upper(e.getKey()) + DBDynamicTableConstants.DB_SERVICE_POST_FIX;
             return !this.ledgerServices.containsKey(serviceName);
         }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
@@ -76,7 +80,7 @@ public class StateDBStorage implements DataStorage {
 
             CountDownLatch countDownLatch = new CountDownLatch(stateTables.size());
             stateTables.entrySet().forEach(e -> {
-                this.stateThreadPool.execute(() -> {
+                this.stateInsertionThreadPool.execute(() -> {
                     try {
                         storeData(e.getKey(), e.getValue());
                     } catch (Exception ex) {
