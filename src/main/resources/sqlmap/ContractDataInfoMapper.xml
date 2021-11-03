@@ -24,7 +24,7 @@
 		where _id_ = #{id,jdbcType=BIGINT}
 	</delete>
 	<insert id="insert" parameterType="com.webank.blockchain.data.stash.db.model.ContractDataInfo">
-		insert into ${tableName} (_id_, _hash_, _status_, _num_, `key`, value)
+		replace into ${tableName} (_id_, _hash_, _status_, _num_, `key`, value)
 		values (#{contractDataInfo.id,jdbcType=BIGINT},
 		#{contractDataInfo.hash,jdbcType=VARCHAR},
 		#{contractDataInfo.status,jdbcType=INTEGER},
@@ -34,7 +34,7 @@
 	</insert>
 	
 	<insert id="batchInsert" parameterType="java.util.List" >
-		insert into ${tableName} (_id_, _hash_, _status_, _num_, `key`, value) values
+		replace into ${tableName} (_id_, _hash_, _status_, _num_, `key`, value) values
 		<foreach collection="list" item="item" index="index" separator="," >
 			(#{item.id,jdbcType=BIGINT},
 		#{item.hash,jdbcType=VARCHAR},
@@ -43,17 +43,10 @@
 		#{item.key,jdbcType=VARCHAR},
 		#{item.value,jdbcType=VARCHAR})
     	</foreach>
-		on duplicate key update
-		_id_=VALUES(_id_),
-		_hash_=VALUES(_hash_),
-		_status_=VALUES(_status_),
-		_num_=VALUES(_num_),
-		`key`=VALUES(`key`),
-		value=VALUES(value)
 	</insert>
 	
 	<insert id="batchInsertDetail" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="list.pkId">
-		insert into ${tableName} (_id_, _hash_, _status_, _num_, `key`, value) values
+		insert ignore into ${tableName} (_id_, _hash_, _status_, _num_, `key`, value) values
 		<foreach collection="list" item="item" index="index" separator="," >
 			(#{item.id,jdbcType=BIGINT},
 		#{item.hash,jdbcType=VARCHAR},
@@ -105,12 +98,12 @@
 		PRIMARY KEY (`pk_id`),
 		KEY (_id_),
 		KEY (_num_),
-		KEY(`_id_`, `_num_`)
+		UNIQUE KEY(`_id_`, `_num_`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 	</update>
 	<insert id="insertDetail" parameterType="com.webank.blockchain.data.stash.db.model.ContractDataInfo"
 		useGeneratedKeys="true" keyProperty="contractDataInfo.pkId">
-		insert into ${tableName} (_id_, _hash_, _status_, _num_, `key`, value)
+		insert ignore into ${tableName} (_id_, _hash_, _status_, _num_, `key`, value)
 		values (#{contractDataInfo.id,jdbcType=BIGINT},
 		#{contractDataInfo.hash,jdbcType=VARCHAR},
 		#{contractDataInfo.status,jdbcType=INTEGER},

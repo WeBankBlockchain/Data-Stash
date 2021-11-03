@@ -53,7 +53,7 @@ public class SQLUtil {
         }else if(tableType == DBTableTypeConstants.NEW_DETAIL){
             sql.append(" PRIMARY KEY( `pk_id` ),\n");
         }
-        sql.append(" KEY(`").append(key).append("`),\n").append(" KEY(`_id_`),\n").append(" KEY(`_num_`),\n").append(" KEY(`_id_`, `_num_`)\n")
+        sql.append(" KEY(`").append(key).append("`),\n").append(" KEY(`_id_`),\n").append(" KEY(`_num_`),\n").append(" UNIQUE KEY(`_id_`, `_num_`)\n")
                 .append(")ENGINE=InnoDB default charset=utf8;");
         return sql.toString();
     }

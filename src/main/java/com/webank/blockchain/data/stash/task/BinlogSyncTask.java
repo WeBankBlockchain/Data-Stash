@@ -41,8 +41,6 @@ import javax.annotation.PostConstruct;
 @Data
 public class BinlogSyncTask implements ApplicationRunner {
     @Autowired
-    private RollbackManager rollbackManager;
-    @Autowired
     private DownloadManager downloadManager;
     @Autowired
     private BlockReadManager blockReadManager;
@@ -50,9 +48,6 @@ public class BinlogSyncTask implements ApplicationRunner {
     private CheckManager checkManager;
     @Autowired
     private CleanManager cleanManager;
-
-    @Autowired
-    private RecoverSnapshotService recoverSnapshotService;
 
     @Autowired
     private ReadPropertyConfig readConfig;
@@ -63,7 +58,6 @@ public class BinlogSyncTask implements ApplicationRunner {
         if (readConfig.getFiles() < 3) {
             readConfig.setFiles(3);
         }
-        this.rollbackManager.rollbackUnfinished();
         while (true) {
             downloadManager.download();
             checkManager.check();

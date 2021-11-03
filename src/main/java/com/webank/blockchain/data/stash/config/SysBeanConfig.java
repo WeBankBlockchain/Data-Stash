@@ -14,17 +14,24 @@
 package com.webank.blockchain.data.stash.config;
 
 import java.io.File;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import com.webank.blockchain.data.stash.crypto.CyptoInterface;
-import com.webank.blockchain.data.stash.db.face.DataStorage;
+import com.webank.blockchain.data.stash.db.face.StorageService;
+import com.webank.blockchain.data.stash.db.service.*;
 import com.webank.blockchain.data.stash.entity.RemoteServerInfo;
 import com.webank.blockchain.data.stash.enums.DataStashExceptionCodeEnums;
 import com.webank.blockchain.data.stash.exception.DataStashException;
-import com.webank.blockchain.data.stash.store.DBDataStorage;
 import com.webank.blockchain.data.stash.constants.CyptoConstants;
 import com.webank.blockchain.data.stash.crypto.StandardCryptoService;
 import com.webank.blockchain.data.stash.crypto.sm.SMCryptoService;
+import com.webank.blockchain.data.stash.store.LedgerDBStorage;
+import com.webank.blockchain.data.stash.store.StateDBStorage;
+import com.webank.blockchain.data.stash.thread.CallerRunOldestPolicy;
+import com.webank.blockchain.data.stash.thread.DataStashThreadFactory;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,10 +55,41 @@ public class SysBeanConfig {
     @Autowired
     private SystemPropertyConfig systemPropertyConfig;
 
+    private static final Set<Class> LEDGER_SERVICE_CLASSES = new HashSet<Class>(){
+        {
+            add(SysBlock2NoncesInfoService.class);
+            add(SysHash2BlockInfoService.class);
+            add(SysHash2HeaderInfoService.class);
+            add(SysNumber2HashInfoService.class);
+            add(SysTxHash2BlockInfoService.class);
+        }
+    };
+
     @Bean
-    public DataStorage initDataStorage() throws DataStashException {
-        return new DBDataStorage();
+    public LedgerDBStorage ledgerDBStorage(Map<String, StorageService> services) throws DataStashException {
+        return new LedgerDBStorage(extractLedgerServices(services));
     }
+
+    @Bean
+    public StateDBStorage stateDBStorage(Map<String, StorageService> services) throws DataStashException{
+        return new StateDBStorage(extractLedgerServices(services), extractStateServices(services));
+    }
+
+    @Bean
+    public ThreadPoolExecutor ledgerPool(){
+        //Dont use unbound arrays, otherwise OOM will happen!
+        return new ThreadPoolExecutor(systemPropertyConfig.getSqlThreads(),systemPropertyConfig.getSqlThreads(),
+                0, TimeUnit.DAYS, new LinkedBlockingQueue<>(systemPropertyConfig.getSqlQueueSize()), new DataStashThreadFactory("ledgerPool"),
+                new CallerRunOldestPolicy());
+    }
+
+    @Bean
+    public ThreadPoolExecutor statePool(){
+        return new ThreadPoolExecutor(1,1,
+                0, TimeUnit.DAYS, new LinkedBlockingQueue<>(systemPropertyConfig.getSqlQueueSize()), new DataStashThreadFactory("statePool"),
+                new CallerRunOldestPolicy());
+    }
+
 
     @Bean
     public List<RemoteServerInfo> getRemoteServerInfoList() throws DataStashException {
@@ -93,4 +131,23 @@ public class SysBeanConfig {
         }
     }
 
+    private Map<String, StorageService> extractLedgerServices(Map<String, StorageService> allServices){
+        Map<String, StorageService> services = new HashMap<>();
+        for(Map.Entry<String, StorageService> serviceEntry: allServices.entrySet()){
+            if(LEDGER_SERVICE_CLASSES.contains(serviceEntry.getValue().getClass())){
+                services.put(serviceEntry.getKey(), serviceEntry.getValue());
+            }
+        }
+        return services;
+    }
+
+    private Map<String, StorageService> extractStateServices(Map<String, StorageService> allServices){
+        Map<String, StorageService> services = new HashMap<>();
+        for(Map.Entry<String, StorageService> serviceEntry: allServices.entrySet()){
+            if(!LEDGER_SERVICE_CLASSES.contains(serviceEntry.getValue().getClass())){
+                services.put(serviceEntry.getKey(), serviceEntry.getValue());
+            }
+        }
+        return services;
+    }
 }

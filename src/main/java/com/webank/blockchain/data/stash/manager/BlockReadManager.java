@@ -19,6 +19,7 @@ import com.webank.blockchain.data.stash.config.SystemPropertyConfig;
 import com.webank.blockchain.data.stash.constants.BinlogConstants;
 import com.webank.blockchain.data.stash.db.mapper.BlockTaskPoolMapper;
 import com.webank.blockchain.data.stash.db.model.BlockTaskPool;
+import com.webank.blockchain.data.stash.entity.BinlogBlockInfo;
 import com.webank.blockchain.data.stash.entity.RemoteServerInfo;
 import com.webank.blockchain.data.stash.enums.BlockTaskPoolSyncStatusEnum;
 import com.webank.blockchain.data.stash.handler.BlockHandler;
@@ -50,9 +51,6 @@ public class BlockReadManager {
     private BlockHandler blockHandler;
     @Autowired
     private List<RemoteServerInfo> sources;
-    @Autowired
-    private RecoverSnapshotService recoverSerivce;
-
     public long read() throws IORuntimeException, InterruptedException, Exception {
         //Determine the block to start
         BlockTaskPool blockTaskPool = blockTaskPoolMapper.getLastFinishedBlock();
@@ -65,20 +63,18 @@ public class BlockReadManager {
             while ((blocks = blockReader.read()) != null){
                 //Extract body and verify crc
                 List<byte[]> blockDatas = toBlockBodyDatas(todoNumber, blocks);
-                //Handle block body
-                blockHandler.handleAsync(todoNumber, blockDatas);
+                //Parse
+                BinlogBlockInfo parseBlock = blockHandler.parseBinlogThenVerify(todoNumber, blockDatas);
+                blockHandler.submitStorageTask(parseBlock);
                 //Start next task
                 todoNumber++;
                 initTaskStatus(todoNumber);
             }
         }
 
-        this.blockHandler.awaitSubmittedBlockTasksFinished();
         long blockHandled = todoNumber - initNum;
+        blockHandler.awaitAllTasksFinished();
         log.info("Batch handle completed {}",blockHandled);
-        if(blockHandled != 0){
-            recoverSerivce.recoverSnapshotFromDetailTables();
-        }
         return blockHandled;
     }
 
