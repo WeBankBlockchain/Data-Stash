@@ -24,8 +24,6 @@ import com.webank.blockchain.data.stash.enums.BlockTaskPoolSyncStatusEnum;
 import com.webank.blockchain.data.stash.parser.BlockBytesParser;
 import com.webank.blockchain.data.stash.store.LedgerDBStorage;
 import com.webank.blockchain.data.stash.store.StateDBStorage;
-import com.webank.blockchain.data.stash.thread.CallerRunOldestPolicy;
-import com.webank.blockchain.data.stash.thread.DataStashThreadFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,8 +33,6 @@ import com.webank.blockchain.data.stash.exception.DataStashException;
 import com.webank.blockchain.data.stash.verify.ComparisonValidation;
 
 import lombok.extern.slf4j.Slf4j;
-
-import javax.annotation.PostConstruct;
 
 /**
  * BlockHandler
@@ -129,22 +125,6 @@ public class BlockHandler {
             onException(blockInfo.getBlockNum(), ex);
         }
     }
-
-
-    /**
-     *
-     * @return
-     */
-//    public CompletableFuture<BinlogBlockInfo> handleBlock(long block, List<byte[]> blockBytesList ) {
-//        BinlogBlockInfo blockInfo = parseBinlogThenVerify(block, blockBytesList);
-//        //Make sure table creation always happen first
-//        if(blockInfo.getTables().containsKey(DBStaticTableConstants.SYS_TABLES_TABLE)){
-//            return CompletableFuture.completedFuture(storeBlockData(blockInfo));
-//        }else{
-//            return CompletableFuture.supplyAsync(()->storeBlockData(blockInfo), sqlPool);
-//        }
-//    }
-
 
     private void onPartDone(MultiPartsTask storeTask){
         boolean allPartsFinished = storeTask.finishPart();

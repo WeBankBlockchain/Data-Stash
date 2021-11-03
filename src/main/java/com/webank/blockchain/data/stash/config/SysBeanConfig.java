@@ -30,7 +30,7 @@ import com.webank.blockchain.data.stash.crypto.StandardCryptoService;
 import com.webank.blockchain.data.stash.crypto.sm.SMCryptoService;
 import com.webank.blockchain.data.stash.store.LedgerDBStorage;
 import com.webank.blockchain.data.stash.store.StateDBStorage;
-import com.webank.blockchain.data.stash.thread.CallerRunOldestPolicy;
+import com.webank.blockchain.data.stash.thread.WaitToPutHandler;
 import com.webank.blockchain.data.stash.thread.DataStashThreadFactory;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -79,14 +79,14 @@ public class SysBeanConfig {
         //Dont use unbound arrays, otherwise OOM will happen!
         return new ThreadPoolExecutor(systemPropertyConfig.getSqlThreads(),systemPropertyConfig.getSqlThreads(),
                 0, TimeUnit.DAYS, new LinkedBlockingQueue<>(systemPropertyConfig.getSqlQueueSize()), new DataStashThreadFactory("ledgerPool"),
-                new CallerRunOldestPolicy());
+                new WaitToPutHandler());
     }
 
     @Bean
     public ThreadPoolExecutor statePool(){
         return new ThreadPoolExecutor(1,1,
                 0, TimeUnit.DAYS, new LinkedBlockingQueue<>(systemPropertyConfig.getSqlQueueSize()), new DataStashThreadFactory("statePool"),
-                new CallerRunOldestPolicy());
+                new WaitToPutHandler());
     }
 
 
