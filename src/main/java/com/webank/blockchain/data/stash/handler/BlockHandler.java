@@ -14,16 +14,15 @@
 package com.webank.blockchain.data.stash.handler;
 
 import java.util.List;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.webank.blockchain.data.stash.db.face.DataStorage;
 import com.webank.blockchain.data.stash.db.mapper.BlockTaskPoolMapper;
 import com.webank.blockchain.data.stash.entity.BinlogBlockInfo;
 import com.webank.blockchain.data.stash.enums.BlockTaskPoolSyncStatusEnum;
 import com.webank.blockchain.data.stash.parser.BlockBytesParser;
-import com.webank.blockchain.data.stash.store.LedgerDBStorage;
-import com.webank.blockchain.data.stash.store.StateDBStorage;
+import com.webank.blockchain.data.stash.store.LedgerTablesStorage;
+import com.webank.blockchain.data.stash.store.StateTablesStorage;
+import com.webank.blockchain.data.stash.thread.MultiPartsTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -57,16 +56,16 @@ public class BlockHandler {
     @Autowired
     private TaskCounterHandler taskCounterHandler;
 
-    @Autowired
-    private ThreadPoolExecutor ledgerPool;
+//    @Autowired
+//    private ThreadPoolExecutor ledgerPool;
+//
+//    @Autowired
+//    private ThreadPoolExecutor statePool;
 
     @Autowired
-    private ThreadPoolExecutor statePool;
-
+    private LedgerTablesStorage ledgerDBStorage;
     @Autowired
-    private LedgerDBStorage ledgerDBStorage;
-    @Autowired
-    private StateDBStorage stateDBStorage;
+    private StateTablesStorage stateDBStorage;
 
 
     public BinlogBlockInfo parseBinlogThenVerify(long block, List<byte[]> blockBytesList) {
@@ -100,42 +99,21 @@ public class BlockHandler {
 
     public void submitStorageTask(BinlogBlockInfo blockInfo) {
         taskCounterHandler.increase();
-        MultiPartsTask storeTask = new MultiPartsTask(blockInfo, 2);
+        long block = blockInfo.getBlockNum();
+        MultiPartsTask storeTask = new MultiPartsTask( block, 2, b->onTaskFinished(b), (b,e)->onException(b, e));
 
-        this.statePool.execute(()->{
-            doStoreForPart(storeTask, stateDBStorage);
-        });
+        this.ledgerDBStorage.processTables(this.ledgerDBStorage.fetchInterestedTables(blockInfo), storeTask);
+        this.stateDBStorage.processTables(this.stateDBStorage.fetchInterestedTables(blockInfo), storeTask);
 
-        this.ledgerPool.execute(()->{
-            doStoreForPart(storeTask, ledgerDBStorage);
-        });
     }
 
     public void awaitSubmittedTasksFinished(){
         this.taskCounterHandler.await();
     }
 
-    private void doStoreForPart(MultiPartsTask storeTask, DataStorage storage){
-        BinlogBlockInfo blockInfo = storeTask.getBody();
-        try{
-            storage.storeBlock(blockInfo);
-            onPartDone(storeTask);
-        }
-        catch (Exception ex){
-            onException(blockInfo.getBlockNum(), ex);
-        }
-    }
-
-    private void onPartDone(MultiPartsTask storeTask){
-        boolean allPartsFinished = storeTask.finishPart();
-        if(allPartsFinished){
-            onTaskFinished(storeTask);
-        }
-    }
-
-    private void onTaskFinished(MultiPartsTask storeTask){
+    private void onTaskFinished(long block){
         blockTaskPoolMapper.updateSyncStatusByBlockHeight(BlockTaskPoolSyncStatusEnum.Done.getSyncStatus(),
-                storeTask.getBody().getBlockNum());
+                block);
         taskCounterHandler.decrease();
         log.debug("===============end block data store===================");
     }
@@ -149,22 +127,5 @@ public class BlockHandler {
 
 
 
-    public static class MultiPartsTask {
-        private BinlogBlockInfo binlogBlockInfo;
-        private AtomicInteger counter;
 
-        public MultiPartsTask(BinlogBlockInfo binlogBlockInfo, int taskParts){
-            this.binlogBlockInfo = binlogBlockInfo;
-            this.counter = new AtomicInteger(taskParts);
-        }
-
-        public boolean finishPart(){
-            int decreaseVal = this.counter.decrementAndGet();
-            return decreaseVal == 0;
-        }
-
-        public BinlogBlockInfo getBody(){
-            return binlogBlockInfo;
-        }
-    }
 }

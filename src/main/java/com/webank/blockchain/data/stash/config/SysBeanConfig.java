@@ -28,8 +28,8 @@ import com.webank.blockchain.data.stash.exception.DataStashException;
 import com.webank.blockchain.data.stash.constants.CyptoConstants;
 import com.webank.blockchain.data.stash.crypto.StandardCryptoService;
 import com.webank.blockchain.data.stash.crypto.sm.SMCryptoService;
-import com.webank.blockchain.data.stash.store.LedgerDBStorage;
-import com.webank.blockchain.data.stash.store.StateDBStorage;
+import com.webank.blockchain.data.stash.store.LedgerTablesStorage;
+import com.webank.blockchain.data.stash.store.StateTablesStorage;
 import com.webank.blockchain.data.stash.thread.WaitToPutHandler;
 import com.webank.blockchain.data.stash.thread.DataStashThreadFactory;
 import org.apache.commons.lang3.ArrayUtils;
@@ -65,28 +65,28 @@ public class SysBeanConfig {
         }
     };
     @Bean
-    public LedgerDBStorage ledgerDBStorage(Map<String, StorageService> services) throws DataStashException {
-        return new LedgerDBStorage(extractLedgerServices(services));
+    public LedgerTablesStorage ledgerDBStorage(Map<String, StorageService> services) throws DataStashException {
+        return new LedgerTablesStorage(extractLedgerServices(services), ledgerPool());
     }
 
     @Bean
-    public StateDBStorage stateDBStorage(Map<String, StorageService> services) throws DataStashException{
-        return new StateDBStorage(extractLedgerServices(services), extractStateServices(services), systemPropertyConfig.getSqlThreads());
+    public StateTablesStorage stateDBStorage(Map<String, StorageService> services) throws DataStashException{
+        return new StateTablesStorage(extractLedgerServices(services), extractStateServices(services), statePool());
     }
 
-    @Bean
+
     public ThreadPoolExecutor ledgerPool(){
         //Dont use unbound arrays, otherwise OOM will happen!
-        return new ThreadPoolExecutor(systemPropertyConfig.getSqlThreads(),systemPropertyConfig.getSqlThreads(),
-                0, TimeUnit.DAYS, new LinkedBlockingQueue<>(systemPropertyConfig.getSqlQueueSize()), new DataStashThreadFactory("ledgerPool"),
-                new WaitToPutHandler());
+        return new ThreadPoolExecutor(systemPropertyConfig.getLedgerThreads(),systemPropertyConfig.getLedgerThreads(),
+                0, TimeUnit.DAYS, new LinkedBlockingQueue<>(systemPropertyConfig.getLedgerQueueSize()), new DataStashThreadFactory("ledgerPool"),
+                new ThreadPoolExecutor.CallerRunsPolicy());
     }
 
-    @Bean
+
     public ThreadPoolExecutor statePool(){
-        return new ThreadPoolExecutor(1,1,
-                0, TimeUnit.DAYS, new LinkedBlockingQueue<>(systemPropertyConfig.getSqlQueueSize()), new DataStashThreadFactory("statePool"),
-                new WaitToPutHandler());
+        return new ThreadPoolExecutor(systemPropertyConfig.getStateThreads(),systemPropertyConfig.getStateThreads(),
+                0, TimeUnit.DAYS, new LinkedBlockingQueue<>(systemPropertyConfig.getStateQueueSize()), new DataStashThreadFactory("statePool"),
+                new ThreadPoolExecutor.CallerRunsPolicy());
     }
 
 
