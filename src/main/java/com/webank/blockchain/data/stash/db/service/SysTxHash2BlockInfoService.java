@@ -51,7 +51,7 @@ public class SysTxHash2BlockInfoService extends DBBaseOperation implements Stora
 	@Transactional
 	public void createSchema() {
 	    
-	    mapper.createTable(DBStaticTableConstants.SYS_TX_HASH_2_BLOCK_TABLE);
+	   // mapper.createTable(DBStaticTableConstants.SYS_TX_HASH_2_BLOCK_TABLE);
 
 		String detailTableName = DBStaticTableConstants.SYS_TX_HASH_2_BLOCK_TABLE + DBStaticTableConstants.SYS_DETAIL_TABLE_POST_FIX;
 		mapper.createDetailTable(detailTableName);
@@ -68,20 +68,20 @@ public class SysTxHash2BlockInfoService extends DBBaseOperation implements Stora
     @Override
     public void batchSave(String tableName, List list) {
         
-        int batchLastIndex = systemPropertyConfig.getBatchCount();
-
-        for (int index = 0; index < list.size();) {
-            
-            if (systemPropertyConfig.getBatchCount() >= list.size() - index) {
-                batchLastIndex = list.size();
-                mapper.batchInsert((List<SysTxHash2BlockInfo>)list.subList(index, batchLastIndex));
-                break;
-            } else {
-                mapper.batchInsert((List<SysTxHash2BlockInfo>)list.subList(index, batchLastIndex));
-                index = batchLastIndex;
-                batchLastIndex = index + (systemPropertyConfig.getBatchCount() - 1);
-            }
-        }    
+//        int batchLastIndex = systemPropertyConfig.getBatchCount();
+//
+//        for (int index = 0; index < list.size();) {
+//
+//            if (systemPropertyConfig.getBatchCount() >= list.size() - index) {
+//                batchLastIndex = list.size();
+//                mapper.batchInsert((List<SysTxHash2BlockInfo>)list.subList(index, batchLastIndex));
+//                break;
+//            } else {
+//                mapper.batchInsert((List<SysTxHash2BlockInfo>)list.subList(index, batchLastIndex));
+//                index = batchLastIndex;
+//                batchLastIndex = index + (systemPropertyConfig.getBatchCount() - 1);
+//            }
+//        }
     }
     
     @SuppressWarnings("unchecked")
