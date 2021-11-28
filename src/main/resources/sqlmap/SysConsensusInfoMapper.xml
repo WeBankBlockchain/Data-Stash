@@ -56,7 +56,7 @@
 	</insert>
 	
 	<insert id="batchInsertDetail" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="pkId">
-		replace into  _sys_consensus_d_ (_id_, _hash_, _status_, _num_,
+		insert ignore into  _sys_consensus_d_ (_id_, _hash_, _status_, _num_,
 		name, type, node_id,
 		enable_num)
 		values
