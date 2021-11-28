@@ -61,7 +61,7 @@ public class SysHash2BlockInfoService extends DBBaseOperation implements Storage
 	@Override
 	@Transactional
 	public void createSchema() {
-	    mapper.createTable(DBStaticTableConstants.SYS_HASH_2_BLOCK_TABLE);
+	    //mapper.createTable(DBStaticTableConstants.SYS_HASH_2_BLOCK_TABLE);
 
 		String detailTableName = DBStaticTableConstants.SYS_HASH_2_BLOCK_TABLE + DBStaticTableConstants.SYS_DETAIL_TABLE_POST_FIX;
 		mapper.createDetailTable(detailTableName);
@@ -78,22 +78,22 @@ public class SysHash2BlockInfoService extends DBBaseOperation implements Storage
     @Override
     public void batchSave(String tableName, List list) {
         
-        log.debug("list : {}", JsonUtils.toJson(list));
-        
-        int batchLastIndex = SYS_HASH_2_BLOCK_BATCH;
-        
-        for (int index = 0; index < list.size();) {
-            
-            if (SYS_HASH_2_BLOCK_BATCH >= list.size() - index) {
-                batchLastIndex = list.size();
-                mapper.batchInsert((List<SysHash2BlockInfo>)list.subList(index, batchLastIndex));
-                break;
-            } else {
-                mapper.batchInsert((List<SysHash2BlockInfo>)list.subList(index, batchLastIndex));
-                index = batchLastIndex;
-                batchLastIndex = index + (SYS_HASH_2_BLOCK_BATCH - 1);
-            }
-        }    
+//        log.debug("list : {}", JsonUtils.toJson(list));
+//
+//        int batchLastIndex = SYS_HASH_2_BLOCK_BATCH;
+//
+//        for (int index = 0; index < list.size();) {
+//
+//            if (SYS_HASH_2_BLOCK_BATCH >= list.size() - index) {
+//                batchLastIndex = list.size();
+//                mapper.batchInsert((List<SysHash2BlockInfo>)list.subList(index, batchLastIndex));
+//                break;
+//            } else {
+//                mapper.batchInsert((List<SysHash2BlockInfo>)list.subList(index, batchLastIndex));
+//                index = batchLastIndex;
+//                batchLastIndex = index + (SYS_HASH_2_BLOCK_BATCH - 1);
+//            }
+//        }
     }
     
     @SuppressWarnings("unchecked")
