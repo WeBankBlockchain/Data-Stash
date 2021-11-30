@@ -21,6 +21,7 @@ import com.webank.blockchain.data.stash.db.face.StorageService;
 import com.webank.blockchain.data.stash.db.model.SysBlock2NoncesInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import com.webank.blockchain.data.stash.constants.DBStaticTableConstants;
 import com.webank.blockchain.data.stash.entity.TableDataInfo;
@@ -45,7 +46,7 @@ public class SysBlock2NoncesInfoService extends DBBaseOperation implements Stora
 	private static final int SYS_BLOCK_2_NONCE_BATCH = 100;
 	
 	@Override
-	@Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
 	public void createSchema() {
 	    mapper.createTable(DBStaticTableConstants.SYS_BLOCK_2_NONCES_TABLE);
 		

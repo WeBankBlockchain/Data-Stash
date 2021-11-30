@@ -23,6 +23,8 @@ import com.webank.blockchain.data.stash.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -51,6 +53,7 @@ public class SysHash2HeaderInfoService extends DBBaseOperation implements Storag
     }
 
     @Override
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public void storeTableData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
         storage(tableName, tableDataInfo, SysHash2HeaderInfo.class);
     }
