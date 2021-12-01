@@ -14,17 +14,24 @@
 package com.webank.blockchain.data.stash.config;
 
 import java.io.File;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import com.webank.blockchain.data.stash.crypto.CyptoInterface;
-import com.webank.blockchain.data.stash.db.face.DataStorage;
+import com.webank.blockchain.data.stash.db.face.StorageService;
+import com.webank.blockchain.data.stash.db.service.*;
 import com.webank.blockchain.data.stash.entity.RemoteServerInfo;
 import com.webank.blockchain.data.stash.enums.DataStashExceptionCodeEnums;
 import com.webank.blockchain.data.stash.exception.DataStashException;
-import com.webank.blockchain.data.stash.store.DBDataStorage;
 import com.webank.blockchain.data.stash.constants.CyptoConstants;
 import com.webank.blockchain.data.stash.crypto.StandardCryptoService;
 import com.webank.blockchain.data.stash.crypto.sm.SMCryptoService;
+import com.webank.blockchain.data.stash.store.LedgerTablesStorage;
+import com.webank.blockchain.data.stash.store.StateTablesStorage;
+import com.webank.blockchain.data.stash.thread.WaitToPutHandler;
+import com.webank.blockchain.data.stash.thread.DataStashThreadFactory;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,10 +55,40 @@ public class SysBeanConfig {
     @Autowired
     private SystemPropertyConfig systemPropertyConfig;
 
+    private static final Set<String> LEDGER_SERVICE_CLASSES = new HashSet<String>(){
+        {
+            add(SysBlock2NoncesInfoService.class.getSimpleName().toLowerCase());
+            add(SysHash2BlockInfoService.class.getSimpleName().toLowerCase());
+            add(SysHash2HeaderInfoService.class.getSimpleName().toLowerCase());
+            add(SysNumber2HashInfoService.class.getSimpleName().toLowerCase());
+            add(SysTxHash2BlockInfoService.class.getSimpleName().toLowerCase());
+        }
+    };
     @Bean
-    public DataStorage initDataStorage() throws DataStashException {
-        return new DBDataStorage();
+    public LedgerTablesStorage ledgerDBStorage(Map<String, StorageService> services) throws DataStashException {
+        return new LedgerTablesStorage(extractLedgerServices(services), ledgerPool());
     }
+
+    @Bean
+    public StateTablesStorage stateDBStorage(Map<String, StorageService> services) throws DataStashException{
+        return new StateTablesStorage(extractLedgerServices(services), extractStateServices(services), statePool());
+    }
+
+
+    public ThreadPoolExecutor ledgerPool(){
+        //Dont use unbound arrays, otherwise OOM will happen!
+        return new ThreadPoolExecutor(systemPropertyConfig.getLedgerThreads(),systemPropertyConfig.getLedgerThreads(),
+                0, TimeUnit.DAYS, new LinkedBlockingQueue<>(systemPropertyConfig.getLedgerQueueSize()), new DataStashThreadFactory("ledgerPool"),
+                new ThreadPoolExecutor.CallerRunsPolicy());
+    }
+
+
+    public ThreadPoolExecutor statePool(){
+        return new ThreadPoolExecutor(systemPropertyConfig.getStateThreads(),systemPropertyConfig.getStateThreads(),
+                0, TimeUnit.DAYS, new LinkedBlockingQueue<>(systemPropertyConfig.getStateQueueSize()), new DataStashThreadFactory("statePool"),
+                new ThreadPoolExecutor.CallerRunsPolicy());
+    }
+
 
     @Bean
     public List<RemoteServerInfo> getRemoteServerInfoList() throws DataStashException {
@@ -93,4 +130,25 @@ public class SysBeanConfig {
         }
     }
 
+    private Map<String, StorageService> extractLedgerServices(Map<String, StorageService> allServices){
+        Map<String, StorageService> services = new HashMap<>();
+        for(Map.Entry<String, StorageService> serviceEntry: allServices.entrySet()){
+            String bean = serviceEntry.getKey().toLowerCase();
+            if(LEDGER_SERVICE_CLASSES.contains(bean)){
+                services.put(serviceEntry.getKey(), serviceEntry.getValue());
+            }
+        }
+        return services;
+    }
+
+    private Map<String, StorageService> extractStateServices(Map<String, StorageService> allServices){
+        Map<String, StorageService> services = new HashMap<>();
+        for(Map.Entry<String, StorageService> serviceEntry: allServices.entrySet()){
+            String bean = serviceEntry.getKey().toLowerCase();
+            if(!LEDGER_SERVICE_CLASSES.contains(bean)){
+                services.put(serviceEntry.getKey(), serviceEntry.getValue());
+            }
+        }
+        return services;
+    }
 }

@@ -15,6 +15,7 @@ package com.webank.blockchain.data.stash.entity;
 
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -33,5 +34,6 @@ public class BinlogBlockInfo {
     
     private long blockNum;
     private int dataCount;
-    private Map<String, TableDataInfo> tables = new TreeMap<String, TableDataInfo>();   
+    private Map<String, TableDataInfo> tables = new TreeMap<String, TableDataInfo>();
+
 }

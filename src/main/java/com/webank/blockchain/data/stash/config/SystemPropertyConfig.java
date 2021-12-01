@@ -41,12 +41,14 @@ public class SystemPropertyConfig {
     private int binlogVerify= 1;
     private int checkPointVerify = 1;
 
-    private int batchCount = 5;
+    private int batchCount = 50;
     private int encryptType = 0;
 
-    private int sqlThreads = 50;
-    private int sqlQueueSize = 500;
+    private int ledgerThreads = 10;
+    private int ledgerQueueSize = 10;
 
+    private int stateThreads = 10;
+    private int stateQueueSize = 10;
 
     public String getLocalBinlogPath() {
         if (StringUtils.isEmpty(this.localBinlogPath)) {

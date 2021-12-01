@@ -14,12 +14,12 @@
 package com.webank.blockchain.data.stash.manager;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 
 import com.webank.blockchain.data.stash.config.SystemPropertyConfig;
 import com.webank.blockchain.data.stash.constants.BinlogConstants;
 import com.webank.blockchain.data.stash.db.mapper.BlockTaskPoolMapper;
 import com.webank.blockchain.data.stash.db.model.BlockTaskPool;
+import com.webank.blockchain.data.stash.entity.BinlogBlockInfo;
 import com.webank.blockchain.data.stash.entity.RemoteServerInfo;
 import com.webank.blockchain.data.stash.enums.BlockTaskPoolSyncStatusEnum;
 import com.webank.blockchain.data.stash.handler.BlockHandler;
@@ -51,36 +51,31 @@ public class BlockReadManager {
     private BlockHandler blockHandler;
     @Autowired
     private List<RemoteServerInfo> sources;
-    @Autowired
-    private RecoverSnapshotService recoverSerivce;
-
-    public int read() throws IORuntimeException, InterruptedException, Exception {
+    public long read() throws IORuntimeException, InterruptedException, Exception {
         //Determine the block to start
         BlockTaskPool blockTaskPool = blockTaskPoolMapper.getLastFinishedBlock();
         long todoNumber = prepare(blockTaskPool);
-        List<CompletableFuture> all = new ArrayList<>();
+//        List<CompletableFuture> all = new ArrayList<>();
+        long initNum = todoNumber;
+
         try(MultiSourceBlockReader blockReader = new MultiSourceBlockReader(sources, todoNumber,config.getBinlogSuffix())){
             List<byte[]> blocks;
             while ((blocks = blockReader.read()) != null){
                 //Extract body and verify crc
                 List<byte[]> blockDatas = toBlockBodyDatas(todoNumber, blocks);
-                //Handle block body
-                all.add(blockHandler.handleAsync(todoNumber, blockDatas));
+                //Parse
+                BinlogBlockInfo parseBlock = blockHandler.parseBinlogThenVerify(todoNumber, blockDatas);
+                blockHandler.submitStorageTask(parseBlock);
                 //Start next task
                 todoNumber++;
                 initTaskStatus(todoNumber);
             }
         }
 
-        CompletableFuture.allOf(all.toArray(new CompletableFuture[0])).get();
-        if(!all.isEmpty()){
-            recoverSerivce.recoverSnapshotFromDetailTables();
-        }
-        else{
-            log.info("empty batch");
-        }
-        log.info("{} blocks saved. Start next batch",all.size());
-        return all.size();
+        long blockHandled = todoNumber - initNum;
+        blockHandler.awaitSubmittedTasksFinished();
+        log.info("Batch handle completed {}",blockHandled);
+        return blockHandled;
     }
 
     private List<byte[]> toBlockBodyDatas(long blockNumber, List<byte[]> blockPackage){
