@@ -19,6 +19,7 @@ import java.util.List;
 import com.webank.blockchain.data.stash.db.dao.SysNumber2HashInfoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import com.webank.blockchain.data.stash.config.SystemPropertyConfig;
 import com.webank.blockchain.data.stash.constants.DBStaticTableConstants;
@@ -47,7 +48,7 @@ public class SysNumber2HashInfoService extends DBBaseOperation implements Storag
     private SystemPropertyConfig systemPropertyConfig;
 	
 	@Override
-	@Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
 	public void createSchema() {
 	    
 	    mapper.createTable(DBStaticTableConstants.SYS_NUMBER_2_HASH_TABLE);

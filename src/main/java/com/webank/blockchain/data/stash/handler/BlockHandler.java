@@ -14,16 +14,15 @@
 package com.webank.blockchain.data.stash.handler;
 
 import java.util.List;
-import java.util.concurrent.*;
 
-import com.webank.blockchain.data.stash.constants.DBStaticTableConstants;
 import com.webank.blockchain.data.stash.db.face.DataStorage;
 import com.webank.blockchain.data.stash.db.mapper.BlockTaskPoolMapper;
 import com.webank.blockchain.data.stash.entity.BinlogBlockInfo;
 import com.webank.blockchain.data.stash.enums.BlockTaskPoolSyncStatusEnum;
 import com.webank.blockchain.data.stash.parser.BlockBytesParser;
-import com.webank.blockchain.data.stash.thread.CallerRunOldestPolicy;
-import com.webank.blockchain.data.stash.thread.DataStashThreadFactory;
+import com.webank.blockchain.data.stash.store.LedgerTablesStorage;
+import com.webank.blockchain.data.stash.store.StateTablesStorage;
+import com.webank.blockchain.data.stash.thread.MultiPartsTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,8 +32,6 @@ import com.webank.blockchain.data.stash.exception.DataStashException;
 import com.webank.blockchain.data.stash.verify.ComparisonValidation;
 
 import lombok.extern.slf4j.Slf4j;
-
-import javax.annotation.PostConstruct;
 
 /**
  * BlockHandler
@@ -53,33 +50,25 @@ public class BlockHandler {
     @Autowired
     private ComparisonValidation validator;
     @Autowired
-    private DataStorage dataStorage;
-    @Autowired
     private SystemPropertyConfig config;
     @Autowired
     private BlockTaskPoolMapper blockTaskPoolMapper;
-    ThreadPoolExecutor sqlPool;
+    @Autowired
+    private TaskCounterHandler taskCounterHandler;
 
-    @PostConstruct
-    private void init(){
-        //Dont use unbound arrays, otherwise OOM will happen!
-        sqlPool = new ThreadPoolExecutor(config.getSqlThreads(),config.getSqlThreads(),
-                0, TimeUnit.DAYS, new LinkedBlockingQueue<>(config.getSqlQueueSize()), new DataStashThreadFactory("sqlPool"),
-                new CallerRunOldestPolicy());
-    }
+//    @Autowired
+//    private ThreadPoolExecutor ledgerPool;
+//
+//    @Autowired
+//    private ThreadPoolExecutor statePool;
 
-    public CompletableFuture<BinlogBlockInfo> handleAsync(long block, List<byte[]> blockBytesList) {
-        BinlogBlockInfo blockInfo = parseBinlogThenVerify(block, blockBytesList);
-        //Make sure table creation always happen first
-        if(blockInfo.getTables().containsKey(DBStaticTableConstants.SYS_TABLES_TABLE)){
-            return CompletableFuture.completedFuture(storeBlockData(blockInfo));
-        }else{
-            return CompletableFuture.supplyAsync(()->storeBlockData(blockInfo), sqlPool);
-        }
-    }
+    @Autowired
+    private LedgerTablesStorage ledgerDBStorage;
+    @Autowired
+    private StateTablesStorage stateDBStorage;
 
 
-    private BinlogBlockInfo parseBinlogThenVerify(long block, List<byte[]> blockBytesList) {
+    public BinlogBlockInfo parseBinlogThenVerify(long block, List<byte[]> blockBytesList) {
         try{
             // 1. Parse binlog
             byte[] firstBlockBytes = blockBytesList.get(0);
@@ -108,18 +97,35 @@ public class BlockHandler {
         }
     }
 
+    public void submitStorageTask(BinlogBlockInfo blockInfo) {
+        taskCounterHandler.increase();
+        long block = blockInfo.getBlockNum();
+        MultiPartsTask storeTask = new MultiPartsTask( block, 2, b->onTaskFinished(b), (b,e)->onException(b, e));
+
+        this.ledgerDBStorage.processTables(this.ledgerDBStorage.fetchInterestedTables(blockInfo), storeTask);
+        this.stateDBStorage.processTables(this.stateDBStorage.fetchInterestedTables(blockInfo), storeTask);
+
+    }
+
+    public void awaitSubmittedTasksFinished(){
+        this.taskCounterHandler.await();
+    }
+
+    private void onTaskFinished(long block){
+        blockTaskPoolMapper.updateSyncStatusByBlockHeight(BlockTaskPoolSyncStatusEnum.Done.getSyncStatus(),
+                block);
+        taskCounterHandler.decrease();
+        log.debug("===============end block data store===================");
+    }
+
     private void onException(long blockNumber, Exception ex){
         blockTaskPoolMapper.updateSyncStatusByBlockHeight(BlockTaskPoolSyncStatusEnum.ERROR.getSyncStatus(),
                 blockNumber);
-        log.error("Exception encounted: ", ex);
+        log.error("Exception occur: ", ex);
         System.exit(-1);
     }
 
-    private BinlogBlockInfo storeBlockData(BinlogBlockInfo blockInfo) {
-        dataStorage.storeBlock(blockInfo);
-        blockTaskPoolMapper.updateSyncStatusByBlockHeight(BlockTaskPoolSyncStatusEnum.Done.getSyncStatus(),
-                blockInfo.getBlockNum());
-        log.debug("===============end block data store===================");
-        return blockInfo;
-    }
+
+
+
 }

@@ -18,6 +18,7 @@ import java.util.List;
 import com.webank.blockchain.data.stash.db.dao.SysTxHash2BlockInfoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.webank.blockchain.data.stash.config.SystemPropertyConfig;
@@ -51,7 +52,7 @@ public class SysTxHash2BlockInfoService extends DBBaseOperation implements Stora
 	@Transactional
 	public void createSchema() {
 	    
-	    mapper.createTable(DBStaticTableConstants.SYS_TX_HASH_2_BLOCK_TABLE);
+	   // mapper.createTable(DBStaticTableConstants.SYS_TX_HASH_2_BLOCK_TABLE);
 
 		String detailTableName = DBStaticTableConstants.SYS_TX_HASH_2_BLOCK_TABLE + DBStaticTableConstants.SYS_DETAIL_TABLE_POST_FIX;
 		mapper.createDetailTable(detailTableName);
@@ -59,7 +60,7 @@ public class SysTxHash2BlockInfoService extends DBBaseOperation implements Stora
 	
 	@SuppressWarnings("unchecked")
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public void storeTableData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
 	    storage(tableName, tableDataInfo, SysTxHash2BlockInfo.class);
     }
@@ -68,20 +69,20 @@ public class SysTxHash2BlockInfoService extends DBBaseOperation implements Stora
     @Override
     public void batchSave(String tableName, List list) {
         
-        int batchLastIndex = systemPropertyConfig.getBatchCount();
-
-        for (int index = 0; index < list.size();) {
-            
-            if (systemPropertyConfig.getBatchCount() >= list.size() - index) {
-                batchLastIndex = list.size();
-                mapper.batchInsert((List<SysTxHash2BlockInfo>)list.subList(index, batchLastIndex));
-                break;
-            } else {
-                mapper.batchInsert((List<SysTxHash2BlockInfo>)list.subList(index, batchLastIndex));
-                index = batchLastIndex;
-                batchLastIndex = index + (systemPropertyConfig.getBatchCount() - 1);
-            }
-        }    
+//        int batchLastIndex = systemPropertyConfig.getBatchCount();
+//
+//        for (int index = 0; index < list.size();) {
+//
+//            if (systemPropertyConfig.getBatchCount() >= list.size() - index) {
+//                batchLastIndex = list.size();
+//                mapper.batchInsert((List<SysTxHash2BlockInfo>)list.subList(index, batchLastIndex));
+//                break;
+//            } else {
+//                mapper.batchInsert((List<SysTxHash2BlockInfo>)list.subList(index, batchLastIndex));
+//                index = batchLastIndex;
+//                batchLastIndex = index + (systemPropertyConfig.getBatchCount() - 1);
+//            }
+//        }
     }
     
     @SuppressWarnings("unchecked")

@@ -22,6 +22,7 @@ import com.webank.blockchain.data.stash.db.face.StorageService;
 import com.webank.blockchain.data.stash.db.model.SysHash2BlockInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import com.webank.blockchain.data.stash.constants.DBStaticTableConstants;
 import com.webank.blockchain.data.stash.entity.TableDataInfo;
@@ -61,7 +62,7 @@ public class SysHash2BlockInfoService extends DBBaseOperation implements Storage
 	@Override
 	@Transactional
 	public void createSchema() {
-	    mapper.createTable(DBStaticTableConstants.SYS_HASH_2_BLOCK_TABLE);
+	    //mapper.createTable(DBStaticTableConstants.SYS_HASH_2_BLOCK_TABLE);
 
 		String detailTableName = DBStaticTableConstants.SYS_HASH_2_BLOCK_TABLE + DBStaticTableConstants.SYS_DETAIL_TABLE_POST_FIX;
 		mapper.createDetailTable(detailTableName);
@@ -69,7 +70,7 @@ public class SysHash2BlockInfoService extends DBBaseOperation implements Storage
 	
 	@SuppressWarnings("unchecked")
     @Override
-    @Transactional
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public void storeTableData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
         storage(tableName, tableDataInfo, SysHash2BlockInfo.class);
     }
@@ -78,22 +79,22 @@ public class SysHash2BlockInfoService extends DBBaseOperation implements Storage
     @Override
     public void batchSave(String tableName, List list) {
         
-        log.debug("list : {}", JsonUtils.toJson(list));
-        
-        int batchLastIndex = SYS_HASH_2_BLOCK_BATCH;
-        
-        for (int index = 0; index < list.size();) {
-            
-            if (SYS_HASH_2_BLOCK_BATCH >= list.size() - index) {
-                batchLastIndex = list.size();
-                mapper.batchInsert((List<SysHash2BlockInfo>)list.subList(index, batchLastIndex));
-                break;
-            } else {
-                mapper.batchInsert((List<SysHash2BlockInfo>)list.subList(index, batchLastIndex));
-                index = batchLastIndex;
-                batchLastIndex = index + (SYS_HASH_2_BLOCK_BATCH - 1);
-            }
-        }    
+//        log.debug("list : {}", JsonUtils.toJson(list));
+//
+//        int batchLastIndex = SYS_HASH_2_BLOCK_BATCH;
+//
+//        for (int index = 0; index < list.size();) {
+//
+//            if (SYS_HASH_2_BLOCK_BATCH >= list.size() - index) {
+//                batchLastIndex = list.size();
+//                mapper.batchInsert((List<SysHash2BlockInfo>)list.subList(index, batchLastIndex));
+//                break;
+//            } else {
+//                mapper.batchInsert((List<SysHash2BlockInfo>)list.subList(index, batchLastIndex));
+//                index = batchLastIndex;
+//                batchLastIndex = index + (SYS_HASH_2_BLOCK_BATCH - 1);
+//            }
+//        }
     }
     
     @SuppressWarnings("unchecked")

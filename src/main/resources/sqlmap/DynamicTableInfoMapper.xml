@@ -4,10 +4,9 @@
 
 	<insert id="insertOrUpdate" parameterType="com.webank.blockchain.data.stash.db.model.DynamicTableInfo"
 		statementType="STATEMENT">
-		insert into ${tableName} (_id_, _hash_, _status_,
+		replace into ${tableName} (_id_, _hash_, _status_,
 		_num_${dynamicTableInfo.fields}) values
 		(${dynamicTableInfo.values})
-		${dynamicTableInfo.fieldsOnDuplicateKeyUpdates}
 	</insert>
 
 	<select id="existTable" parameterType="String" resultType="Integer">
@@ -20,7 +19,7 @@
 	<insert id="insertDetail" parameterType="com.webank.blockchain.data.stash.db.model.DynamicTableInfo"
 		useGeneratedKeys="true" keyProperty="dynamicTableInfo.pkId"
 		statementType="STATEMENT">
-		insert into ${tableName} (_id_, _hash_, _status_,
+		insert ignore into ${tableName} (_id_, _hash_, _status_,
 		_num_${dynamicTableInfo.fields}) values
 		(${dynamicTableInfo.values})
 	</insert>
@@ -36,7 +35,7 @@
 	</insert>
 
 	<insert id="batchInsertDetail" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="list.pkId">
-		insert into ${tableName} (_id_, _hash_, _status_, _num_${fields})
+		insert ignore into ${tableName} (_id_, _hash_, _status_, _num_${fields})
 		values
 		<foreach collection="list" item="item" index="index" separator=",">
 			(${item.values})

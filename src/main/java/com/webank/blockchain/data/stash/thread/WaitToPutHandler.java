@@ -4,17 +4,19 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
+ * We need to ensure the sequential property
  * @author aaronchu
  * @Description
  * @data 2021/05/08
  */
-public class CallerRunOldestPolicy implements RejectedExecutionHandler {
+public class WaitToPutHandler implements RejectedExecutionHandler {
     @Override
     public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
         if (!e.isShutdown()) {
-            Runnable oldest = e.getQueue().poll();
-            oldest.run();
-            e.execute(r);
+            try{
+                e.getQueue().put(r);
+            }
+            catch (InterruptedException ex){}
         }
     }
 }

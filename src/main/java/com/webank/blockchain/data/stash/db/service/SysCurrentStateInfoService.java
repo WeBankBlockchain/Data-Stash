@@ -69,7 +69,7 @@ public class SysCurrentStateInfoService extends DBBaseOperation implements Stora
     @SuppressWarnings("unchecked")
     @Override
     public void batchSave(String tableName, List list) {
-        /*
+
         int batchLastIndex = systemPropertyConfig.getBatchCount();
 
         for (int index = 0; index < list.size();) {
@@ -85,7 +85,7 @@ public class SysCurrentStateInfoService extends DBBaseOperation implements Stora
             }
         }
 
-         */
+
     }
     
     @SuppressWarnings("unchecked")
