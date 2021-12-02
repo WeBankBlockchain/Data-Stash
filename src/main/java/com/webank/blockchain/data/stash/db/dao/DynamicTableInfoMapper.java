@@ -13,10 +13,10 @@
  */
 package com.webank.blockchain.data.stash.db.dao;
 
-import java.util.List;
-
 import com.webank.blockchain.data.stash.db.model.DynamicTableInfo;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * 

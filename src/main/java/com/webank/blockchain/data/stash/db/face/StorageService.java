@@ -13,10 +13,10 @@
  */
 package com.webank.blockchain.data.stash.db.face;
 
-import java.sql.SQLException;
-
 import com.webank.blockchain.data.stash.entity.TableDataInfo;
 import com.webank.blockchain.data.stash.exception.DataStashException;
+
+import java.sql.SQLException;
 
 /**
  * DBService

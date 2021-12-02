@@ -1,6 +1,5 @@
 package com.webank.blockchain.data.stash.db.sharding;
 
-import com.google.common.collect.Range;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.api.sharding.standard.PreciseShardingAlgorithm;
@@ -8,7 +7,6 @@ import org.apache.shardingsphere.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.api.sharding.standard.RangeShardingAlgorithm;
 import org.apache.shardingsphere.api.sharding.standard.RangeShardingValue;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 @Slf4j

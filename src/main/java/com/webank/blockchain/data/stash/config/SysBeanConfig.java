@@ -13,24 +13,18 @@
  */
 package com.webank.blockchain.data.stash.config;
 
-import java.io.File;
-import java.util.*;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
+import com.google.common.collect.Lists;
+import com.webank.blockchain.data.stash.constants.CyptoConstants;
 import com.webank.blockchain.data.stash.crypto.CyptoInterface;
+import com.webank.blockchain.data.stash.crypto.StandardCryptoService;
+import com.webank.blockchain.data.stash.crypto.sm.SMCryptoService;
 import com.webank.blockchain.data.stash.db.face.StorageService;
 import com.webank.blockchain.data.stash.db.service.*;
 import com.webank.blockchain.data.stash.entity.RemoteServerInfo;
 import com.webank.blockchain.data.stash.enums.DataStashExceptionCodeEnums;
 import com.webank.blockchain.data.stash.exception.DataStashException;
-import com.webank.blockchain.data.stash.constants.CyptoConstants;
-import com.webank.blockchain.data.stash.crypto.StandardCryptoService;
-import com.webank.blockchain.data.stash.crypto.sm.SMCryptoService;
 import com.webank.blockchain.data.stash.store.LedgerTablesStorage;
 import com.webank.blockchain.data.stash.store.StateTablesStorage;
-import com.webank.blockchain.data.stash.thread.WaitToPutHandler;
 import com.webank.blockchain.data.stash.thread.DataStashThreadFactory;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -38,7 +32,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.google.common.collect.Lists;
+import java.io.File;
+import java.util.*;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * SysStorageConfig

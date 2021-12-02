@@ -13,14 +13,13 @@
  */
 package com.webank.blockchain.data.stash.task;
 
+import com.webank.blockchain.data.stash.constants.DBStaticTableConstants;
+import com.webank.blockchain.data.stash.db.service.DynamicTableInfoService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import com.webank.blockchain.data.stash.constants.DBStaticTableConstants;
-import com.webank.blockchain.data.stash.db.service.DynamicTableInfoService;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * HeartBeatTask

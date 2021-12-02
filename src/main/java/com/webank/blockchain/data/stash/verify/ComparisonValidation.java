@@ -13,12 +13,6 @@
  */
 package com.webank.blockchain.data.stash.verify;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
-
 import com.webank.blockchain.data.stash.aspect.UseTime;
 import com.webank.blockchain.data.stash.constants.DBStaticTableConstants;
 import com.webank.blockchain.data.stash.entity.BinlogBlockInfo;
@@ -26,21 +20,17 @@ import com.webank.blockchain.data.stash.entity.EntryInfo;
 import com.webank.blockchain.data.stash.entity.TableDataInfo;
 import com.webank.blockchain.data.stash.exception.DataStashException;
 import com.webank.blockchain.data.stash.parser.BlockBytesParser;
-import com.webank.blockchain.data.stash.utils.CommonUtil;
 import com.webank.blockchain.data.stash.utils.JsonUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.webank.blockchain.data.stash.aspect.UseTime;
-import com.webank.blockchain.data.stash.constants.DBStaticTableConstants;
-import com.webank.blockchain.data.stash.entity.BinlogBlockInfo;
-import com.webank.blockchain.data.stash.entity.EntryInfo;
-import com.webank.blockchain.data.stash.entity.TableDataInfo;
-import com.webank.blockchain.data.stash.parser.BlockBytesParser;
-import com.webank.blockchain.data.stash.utils.CommonUtil;
-import com.webank.blockchain.data.stash.utils.JsonUtils;
-import lombok.extern.slf4j.Slf4j;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * BlockValidation

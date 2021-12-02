@@ -13,9 +13,10 @@
  */
 package com.webank.blockchain.data.stash.db.dao;
 
-import java.util.List;
 import com.webank.blockchain.data.stash.db.model.SysCnsInfo;
 import com.webank.blockchain.data.stash.db.model.SysNumber2HashInfo;
+
+import java.util.List;
 
 /**
  * SysCnsInfoMapper

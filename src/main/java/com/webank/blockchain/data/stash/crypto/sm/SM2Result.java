@@ -13,13 +13,12 @@
  */
 package com.webank.blockchain.data.stash.crypto.sm;
 
-import java.math.BigInteger;
-
-import org.bouncycastle.math.ec.ECPoint;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.bouncycastle.math.ec.ECPoint;
+
+import java.math.BigInteger;
 
 /**
  * SM2Result

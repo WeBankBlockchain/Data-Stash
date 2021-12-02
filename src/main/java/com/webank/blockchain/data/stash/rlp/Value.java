@@ -13,12 +13,11 @@
  */
 package com.webank.blockchain.data.stash.rlp;
 
-import java.util.Arrays;
-import java.util.List;
-
+import com.cedarsoftware.util.DeepEquals;
 import org.spongycastle.util.encoders.Hex;
 
-import com.cedarsoftware.util.DeepEquals;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Class to encapsulate an object and provide utilities for conversion

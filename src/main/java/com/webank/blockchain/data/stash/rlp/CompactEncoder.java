@@ -13,10 +13,10 @@
  */
 package com.webank.blockchain.data.stash.rlp;
 
-import static org.spongycastle.util.encoders.Hex.encode;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.spongycastle.util.encoders.Hex.encode;
 
 public class CompactEncoder {
     private final static Map<Character, Byte> hexMap = new HashMap<>();

@@ -13,10 +13,10 @@
  */
 package com.webank.blockchain.data.stash.fetch;
 
-import java.time.LocalDateTime;
-
 import lombok.Data;
 import lombok.experimental.Accessors;
+
+import java.time.LocalDateTime;
 
 /**
  * BinlogFileInfo

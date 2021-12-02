@@ -14,19 +14,18 @@
 package com.webank.blockchain.data.stash.db.service;
 
 
-import java.util.List;
-
-import com.webank.blockchain.data.stash.db.dao.SysTableAccessInfoMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.webank.blockchain.data.stash.config.SystemPropertyConfig;
 import com.webank.blockchain.data.stash.constants.DBStaticTableConstants;
+import com.webank.blockchain.data.stash.db.dao.SysTableAccessInfoMapper;
 import com.webank.blockchain.data.stash.db.face.StorageService;
 import com.webank.blockchain.data.stash.db.model.SysTableAccessInfo;
 import com.webank.blockchain.data.stash.entity.TableDataInfo;
 import com.webank.blockchain.data.stash.exception.DataStashException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * 

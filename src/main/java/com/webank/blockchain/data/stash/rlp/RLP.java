@@ -13,19 +13,15 @@
  */
 package com.webank.blockchain.data.stash.rlp;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.spongycastle.util.encoders.Hex;
+
+import java.math.BigInteger;
+import java.util.*;
+
 import static java.util.Arrays.copyOfRange;
 import static org.spongycastle.util.Arrays.concatenate;
 import static org.spongycastle.util.BigIntegers.asUnsignedByteArray;
-
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.spongycastle.util.encoders.Hex;
 
 /**
  * Recursive Length Prefix (RLP) encoding.

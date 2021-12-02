@@ -13,14 +13,13 @@
  */
 package com.webank.blockchain.data.stash.utils;
 
-import java.lang.reflect.Field;
-import java.util.List;
-
 import com.webank.blockchain.data.stash.constants.DataStorageTypeConstants;
 import com.webank.blockchain.data.stash.entity.ColumnInfo;
 import com.webank.blockchain.data.stash.entity.EntryInfo;
-
 import lombok.extern.slf4j.Slf4j;
+
+import java.lang.reflect.Field;
+import java.util.List;
 
 /**
  * ObjectBuildUtil

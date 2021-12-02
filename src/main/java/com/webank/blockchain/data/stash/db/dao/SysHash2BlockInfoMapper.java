@@ -13,11 +13,10 @@
  */
 package com.webank.blockchain.data.stash.db.dao;
 
-import java.util.List;
-
+import com.webank.blockchain.data.stash.db.model.SysHash2BlockInfo;
 import org.apache.ibatis.annotations.Param;
 
-import com.webank.blockchain.data.stash.db.model.SysHash2BlockInfo;
+import java.util.List;
 
 /**
  * SysHash2BlockInfoMapper

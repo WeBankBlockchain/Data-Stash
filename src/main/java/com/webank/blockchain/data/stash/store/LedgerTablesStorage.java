@@ -1,25 +1,18 @@
 package com.webank.blockchain.data.stash.store;
 
 import com.webank.blockchain.data.stash.constants.DBDynamicTableConstants;
-import com.webank.blockchain.data.stash.constants.DBStaticTableConstants;
-import com.webank.blockchain.data.stash.db.face.DataStorage;
 import com.webank.blockchain.data.stash.db.face.StorageService;
 import com.webank.blockchain.data.stash.db.face.TablesStorage;
 import com.webank.blockchain.data.stash.entity.BinlogBlockInfo;
 import com.webank.blockchain.data.stash.entity.TableDataInfo;
-import com.webank.blockchain.data.stash.exception.DataStashException;
-import com.webank.blockchain.data.stash.handler.BlockHandler;
 import com.webank.blockchain.data.stash.thread.MultiPartsTask;
 import com.webank.blockchain.data.stash.utils.StringStyleUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.sql.SQLException;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 

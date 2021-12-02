@@ -13,25 +13,22 @@
  */
 package com.webank.blockchain.data.stash.handler;
 
-import java.util.List;
-
-import com.webank.blockchain.data.stash.db.face.DataStorage;
+import com.webank.blockchain.data.stash.config.SystemPropertyConfig;
 import com.webank.blockchain.data.stash.db.mapper.BlockTaskPoolMapper;
 import com.webank.blockchain.data.stash.entity.BinlogBlockInfo;
 import com.webank.blockchain.data.stash.enums.BlockTaskPoolSyncStatusEnum;
+import com.webank.blockchain.data.stash.enums.DataStashExceptionCodeEnums;
+import com.webank.blockchain.data.stash.exception.DataStashException;
 import com.webank.blockchain.data.stash.parser.BlockBytesParser;
 import com.webank.blockchain.data.stash.store.LedgerTablesStorage;
 import com.webank.blockchain.data.stash.store.StateTablesStorage;
 import com.webank.blockchain.data.stash.thread.MultiPartsTask;
+import com.webank.blockchain.data.stash.verify.ComparisonValidation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.webank.blockchain.data.stash.config.SystemPropertyConfig;
-import com.webank.blockchain.data.stash.enums.DataStashExceptionCodeEnums;
-import com.webank.blockchain.data.stash.exception.DataStashException;
-import com.webank.blockchain.data.stash.verify.ComparisonValidation;
-
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
 
 /**
  * BlockHandler
@@ -55,13 +52,6 @@ public class BlockHandler {
     private BlockTaskPoolMapper blockTaskPoolMapper;
     @Autowired
     private TaskCounterHandler taskCounterHandler;
-
-//    @Autowired
-//    private ThreadPoolExecutor ledgerPool;
-//
-//    @Autowired
-//    private ThreadPoolExecutor statePool;
-
     @Autowired
     private LedgerTablesStorage ledgerDBStorage;
     @Autowired

@@ -13,17 +13,12 @@
  */
 package com.webank.blockchain.data.stash.crypto;
 
-import java.io.IOException;
-import java.math.BigInteger;
-import java.util.Arrays;
-
 import org.fisco.bcos.sdk.crypto.hash.Hash;
 import org.fisco.bcos.sdk.crypto.hash.Keccak256;
-
 import org.fisco.bcos.sdk.crypto.signature.ECDSASignature;
 import org.fisco.bcos.sdk.utils.Hex;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 
 /**
  * CryptoService

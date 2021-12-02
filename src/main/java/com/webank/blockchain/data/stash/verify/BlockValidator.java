@@ -13,24 +13,19 @@
  */
 package com.webank.blockchain.data.stash.verify;
 
-import java.math.BigInteger;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
+import cn.hutool.core.lang.Console;
+import cn.hutool.core.util.HexUtil;
 import com.webank.blockchain.data.stash.block.BlockV2RC2;
 import com.webank.blockchain.data.stash.crypto.CyptoInterface;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.webank.blockchain.data.stash.block.BlockV2RC2;
-import com.webank.blockchain.data.stash.crypto.CyptoInterface;
-
-import cn.hutool.core.exceptions.ValidateException;
-import cn.hutool.core.lang.Console;
-import cn.hutool.core.util.HexUtil;
-import lombok.extern.slf4j.Slf4j;
+import java.math.BigInteger;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * BlockValidator

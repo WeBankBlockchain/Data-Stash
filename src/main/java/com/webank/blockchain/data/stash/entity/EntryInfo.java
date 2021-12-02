@@ -13,12 +13,12 @@
  */
 package com.webank.blockchain.data.stash.entity;
 
-import java.util.Iterator;
-import java.util.List;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * EntryInfo

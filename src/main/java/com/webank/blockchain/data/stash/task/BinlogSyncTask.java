@@ -14,20 +14,15 @@
 package com.webank.blockchain.data.stash.task;
 
 import com.webank.blockchain.data.stash.config.ReadPropertyConfig;
-import com.webank.blockchain.data.stash.manager.*;
-import org.apache.shardingsphere.api.hint.HintManager;
+import com.webank.blockchain.data.stash.manager.BlockReadManager;
+import com.webank.blockchain.data.stash.manager.CheckManager;
+import com.webank.blockchain.data.stash.manager.CleanManager;
+import com.webank.blockchain.data.stash.manager.DownloadManager;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
-
-import com.webank.blockchain.data.stash.manager.CheckManager;
-import com.webank.blockchain.data.stash.manager.CleanManager;
-import com.webank.blockchain.data.stash.manager.DownloadManager;
-
-import lombok.Data;
-
-import javax.annotation.PostConstruct;
 
 /**
  * BinlogSyncTask

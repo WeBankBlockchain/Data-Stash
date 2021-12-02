@@ -13,10 +13,10 @@
  */
 package com.webank.blockchain.data.stash.utils;
 
-import java.math.BigInteger;
-
 import org.bouncycastle.math.ec.ECCurve;
 import org.bouncycastle.math.ec.ECPoint;
+
+import java.math.BigInteger;
 
 /**
  * @Description SM2Params

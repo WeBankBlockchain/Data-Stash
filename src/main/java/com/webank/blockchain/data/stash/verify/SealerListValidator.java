@@ -13,19 +13,15 @@
  */
 package com.webank.blockchain.data.stash.verify;
 
-import java.math.BigInteger;
-import java.util.List;
-
 import com.webank.blockchain.data.stash.db.dao.SysConsensusInfoMapper;
 import com.webank.blockchain.data.stash.db.model.SysConsensusInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.util.encoders.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.webank.blockchain.data.stash.db.dao.SysConsensusInfoMapper;
-import com.webank.blockchain.data.stash.db.model.SysConsensusInfo;
-
-import lombok.extern.slf4j.Slf4j;
+import java.math.BigInteger;
+import java.util.List;
 
 /**
  * SealerListValidator

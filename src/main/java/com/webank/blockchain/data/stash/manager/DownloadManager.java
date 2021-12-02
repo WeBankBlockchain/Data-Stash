@@ -13,12 +13,8 @@
  */
 package com.webank.blockchain.data.stash.manager;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
-
+import cn.hutool.core.io.StreamProgress;
+import cn.hutool.http.HttpException;
 import com.webank.blockchain.data.stash.config.ReadPropertyConfig;
 import com.webank.blockchain.data.stash.config.SystemPropertyConfig;
 import com.webank.blockchain.data.stash.db.mapper.BlockTaskPoolMapper;
@@ -26,18 +22,20 @@ import com.webank.blockchain.data.stash.db.model.BlockTaskPool;
 import com.webank.blockchain.data.stash.entity.RemoteServerInfo;
 import com.webank.blockchain.data.stash.fetch.BinlogFileDir;
 import com.webank.blockchain.data.stash.fetch.DefaultStreamProgress;
+import com.webank.blockchain.data.stash.fetch.HttpFileFetcher;
 import com.webank.blockchain.data.stash.fetch.HttpFileScanner;
 import com.webank.blockchain.data.stash.utils.BinlogFileUtils;
 import com.webank.blockchain.data.stash.utils.JsonUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import com.webank.blockchain.data.stash.fetch.HttpFileFetcher;
-
-import cn.hutool.core.io.StreamProgress;
-import cn.hutool.http.HttpException;
-import lombok.extern.slf4j.Slf4j;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * DownloadManager

@@ -13,22 +13,19 @@
  */
 package com.webank.blockchain.data.stash.block;
 
-import java.util.List;
-import java.util.Map;
-
-import com.webank.blockchain.data.stash.rlp.RLPList;
-import org.apache.commons.codec.binary.Hex;
-
+import cn.hutool.core.util.HexUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.webank.blockchain.data.stash.rlp.RLP;
 import com.webank.blockchain.data.stash.rlp.RLPList;
-
-import cn.hutool.core.util.HexUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.apache.commons.codec.binary.Hex;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * BlockV2RC2

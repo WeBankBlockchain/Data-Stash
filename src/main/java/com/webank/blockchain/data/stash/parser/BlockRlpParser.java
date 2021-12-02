@@ -13,16 +13,15 @@
  */
 package com.webank.blockchain.data.stash.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang3.ArrayUtils;
-
 import com.webank.blockchain.data.stash.block.TransactionDetail;
 import com.webank.blockchain.data.stash.rlp.ByteUtil;
 import com.webank.blockchain.data.stash.rlp.RLP;
 import com.webank.blockchain.data.stash.rlp.RLPList;
 import com.webank.blockchain.data.stash.utils.BytesUtil;
+import org.apache.commons.lang3.ArrayUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * BlockRlpParser

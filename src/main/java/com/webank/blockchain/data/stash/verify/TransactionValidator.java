@@ -13,20 +13,15 @@
  */
 package com.webank.blockchain.data.stash.verify;
 
-import java.math.BigInteger;
-import java.util.List;
-
 import com.webank.blockchain.data.stash.block.TransactionDetail;
 import com.webank.blockchain.data.stash.db.dao.SysConfigInfoMapper;
 import com.webank.blockchain.data.stash.db.model.SysConfigInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.webank.blockchain.data.stash.block.TransactionDetail;
-import com.webank.blockchain.data.stash.db.dao.SysConfigInfoMapper;
-import com.webank.blockchain.data.stash.db.model.SysConfigInfo;
-
-import lombok.extern.slf4j.Slf4j;
+import java.math.BigInteger;
+import java.util.List;
 
 /**
  * TransactionValidator

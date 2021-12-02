@@ -13,25 +13,23 @@
  */
 package com.webank.blockchain.data.stash.manager;
 
-import java.math.BigInteger;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.*;
-
 import com.webank.blockchain.data.stash.config.SystemPropertyConfig;
+import com.webank.blockchain.data.stash.constants.DBStaticTableConstants;
 import com.webank.blockchain.data.stash.db.dao.SysHash2BlockInfoMapper;
 import com.webank.blockchain.data.stash.db.mapper.BlockTaskPoolMapper;
-import com.webank.blockchain.data.stash.db.model.*;
+import com.webank.blockchain.data.stash.db.model.BlockTaskPool;
+import com.webank.blockchain.data.stash.db.model.CheckPointInfo;
+import com.webank.blockchain.data.stash.db.model.SysHash2BlockInfo;
+import com.webank.blockchain.data.stash.db.model.SysTablesInfo;
 import com.webank.blockchain.data.stash.db.service.CheckPointInfoService;
-import com.webank.blockchain.data.stash.db.service.SysHash2BlockInfoService;
+import com.webank.blockchain.data.stash.db.service.SysTablesInfoService;
 import com.webank.blockchain.data.stash.exception.DataStashException;
 import com.webank.blockchain.data.stash.handler.TreeMapComparator;
+import com.webank.blockchain.data.stash.utils.CommonUtil;
+import com.webank.blockchain.data.stash.utils.JsonUtils;
 import com.webank.blockchain.data.stash.verify.ValidatorService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
-
 import org.fisco.bcos.sdk.crypto.hash.Hash;
 import org.fisco.bcos.sdk.crypto.hash.Keccak256;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,14 +37,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import com.webank.blockchain.data.stash.constants.DBStaticTableConstants;
-import com.webank.blockchain.data.stash.db.model.CheckPointInfo;
-import com.webank.blockchain.data.stash.db.model.SysTablesInfo;
-import com.webank.blockchain.data.stash.db.service.SysTablesInfoService;
-import com.webank.blockchain.data.stash.utils.CommonUtil;
-import com.webank.blockchain.data.stash.utils.JsonUtils;
-
 import javax.annotation.PostConstruct;
+import java.math.BigInteger;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * CheckPointOperator
