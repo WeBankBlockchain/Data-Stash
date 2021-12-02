@@ -13,7 +13,6 @@
  */
 package com.webank.blockchain.data.stash.db.dao;
 
-import com.webank.blockchain.data.stash.db.model.SysHash2BlockInfo;
 import com.webank.blockchain.data.stash.db.model.SysHash2HeaderInfo;
 import org.apache.ibatis.annotations.Param;
 

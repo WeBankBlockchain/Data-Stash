@@ -14,18 +14,14 @@
 package com.webank.blockchain.data.stash.db.service;
 
 
-import java.util.List;
-import java.util.TreeMap;
-
-import javax.annotation.PostConstruct;
-
 import com.webank.blockchain.data.stash.db.dao.CheckPointInfoMapper;
 import com.webank.blockchain.data.stash.db.model.CheckPointInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.webank.blockchain.data.stash.db.dao.CheckPointInfoMapper;
-import com.webank.blockchain.data.stash.db.model.CheckPointInfo;
+import javax.annotation.PostConstruct;
+import java.util.List;
+import java.util.TreeMap;
 
 /**
  * CommonsInfoService

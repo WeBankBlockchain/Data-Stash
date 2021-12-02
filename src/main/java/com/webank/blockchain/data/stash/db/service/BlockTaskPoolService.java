@@ -15,11 +15,10 @@ package com.webank.blockchain.data.stash.db.service;
 
 import com.webank.blockchain.data.stash.db.face.StorageService;
 import com.webank.blockchain.data.stash.db.mapper.BlockTaskPoolMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.webank.blockchain.data.stash.entity.TableDataInfo;
 import com.webank.blockchain.data.stash.exception.DataStashException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * BlockTaskPoolService

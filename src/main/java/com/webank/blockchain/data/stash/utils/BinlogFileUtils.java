@@ -13,17 +13,15 @@
  */
 package com.webank.blockchain.data.stash.utils;
 
+import cn.hutool.core.util.StrUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.util.StrUtil;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * BinlogFileUtils

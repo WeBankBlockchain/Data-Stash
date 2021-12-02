@@ -13,10 +13,10 @@
  */
 package com.webank.blockchain.data.stash.db.service;
 
+import com.webank.blockchain.data.stash.constants.DBStaticTableConstants;
 import com.webank.blockchain.data.stash.db.dao.SysHash2HeaderInfoMapper;
 import com.webank.blockchain.data.stash.db.face.StorageService;
 import com.webank.blockchain.data.stash.db.model.SysHash2HeaderInfo;
-import com.webank.blockchain.data.stash.constants.DBStaticTableConstants;
 import com.webank.blockchain.data.stash.entity.TableDataInfo;
 import com.webank.blockchain.data.stash.exception.DataStashException;
 import com.webank.blockchain.data.stash.utils.JsonUtils;

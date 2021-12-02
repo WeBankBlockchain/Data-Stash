@@ -13,8 +13,9 @@
  */
 package com.webank.blockchain.data.stash.db.dao;
 
-import java.util.List;
 import com.webank.blockchain.data.stash.db.model.SysConfigInfo;
+
+import java.util.List;
 
 /**
  * SysConfigInfoMapper

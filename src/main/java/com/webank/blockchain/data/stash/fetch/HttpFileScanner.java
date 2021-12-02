@@ -13,18 +13,17 @@
  */
 package com.webank.blockchain.data.stash.fetch;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Optional;
-
-import com.webank.blockchain.data.stash.utils.UnixDateTimeUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-import com.webank.blockchain.data.stash.utils.UnixDateTimeUtils;
 import cn.hutool.http.Header;
 import cn.hutool.http.HttpException;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
+import com.webank.blockchain.data.stash.utils.UnixDateTimeUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 /**
  * HttpFileScanner

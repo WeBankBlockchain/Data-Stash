@@ -13,13 +13,11 @@
  */
 package com.webank.blockchain.data.stash.db.dao;
 
-import java.util.List;
-import java.util.Map;
-
 import com.webank.blockchain.data.stash.db.model.SysTablesInfo;
 import org.apache.ibatis.annotations.Param;
-import com.webank.blockchain.data.stash.db.model.SysTablesInfo;
-import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * SysTablesInfoMapper

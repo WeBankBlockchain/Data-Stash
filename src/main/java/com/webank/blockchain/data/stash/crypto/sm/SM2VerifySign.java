@@ -13,21 +13,15 @@
  */
 package com.webank.blockchain.data.stash.crypto.sm;
 
-import java.io.ByteArrayInputStream;
-import java.math.BigInteger;
-import java.util.Enumeration;
-
-import org.bouncycastle.asn1.ASN1EncodableVector;
-import org.bouncycastle.asn1.ASN1InputStream;
-import org.bouncycastle.asn1.ASN1Integer;
-import org.bouncycastle.asn1.ASN1Primitive;
-import org.bouncycastle.asn1.ASN1Sequence;
-import org.bouncycastle.asn1.DERSequence;
+import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.asn1.*;
 import org.bouncycastle.crypto.digests.SM3Digest;
 import org.bouncycastle.math.ec.ECPoint;
 import org.bouncycastle.util.encoders.Hex;
 
-import lombok.extern.slf4j.Slf4j;
+import java.io.ByteArrayInputStream;
+import java.math.BigInteger;
+import java.util.Enumeration;
 
 /**
  * 

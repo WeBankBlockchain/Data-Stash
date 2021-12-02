@@ -13,9 +13,8 @@
  */
 package com.webank.blockchain.data.stash.utils;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.webank.blockchain.data.stash.constants.DBTableTypeConstants;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * SQLUtil

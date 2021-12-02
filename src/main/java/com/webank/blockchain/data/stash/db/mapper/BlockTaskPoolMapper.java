@@ -13,16 +13,10 @@
  */
 package com.webank.blockchain.data.stash.db.mapper;
 
-import java.util.Date;
-
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Result;
-import org.apache.ibatis.annotations.Results;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
-
 import com.webank.blockchain.data.stash.db.model.BlockTaskPool;
+import org.apache.ibatis.annotations.*;
+
+import java.util.Date;
 
 /**
  * BlockTaskPoolMapper

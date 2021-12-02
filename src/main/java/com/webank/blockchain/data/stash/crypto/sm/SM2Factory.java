@@ -13,9 +13,8 @@
  */
 package com.webank.blockchain.data.stash.crypto.sm;
 
-import java.math.BigInteger;
-import java.security.SecureRandom;
-
+import com.webank.blockchain.data.stash.rlp.ByteUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.crypto.AsymmetricCipherKeyPair;
 import org.bouncycastle.crypto.digests.SM3Digest;
 import org.bouncycastle.crypto.generators.ECKeyPairGenerator;
@@ -28,9 +27,8 @@ import org.bouncycastle.math.ec.ECFieldElement;
 import org.bouncycastle.math.ec.ECFieldElement.Fp;
 import org.bouncycastle.math.ec.ECPoint;
 
-import com.webank.blockchain.data.stash.rlp.ByteUtil;
-
-import lombok.extern.slf4j.Slf4j;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 
 /**
  * SM2Factory

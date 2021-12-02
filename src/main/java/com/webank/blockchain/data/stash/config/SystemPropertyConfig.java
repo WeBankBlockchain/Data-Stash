@@ -13,11 +13,10 @@
  */
 package com.webank.blockchain.data.stash.config;
 
+import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-
-import lombok.Data;
 
 import java.io.File;
 

@@ -1,7 +1,6 @@
 package com.webank.blockchain.data.stash.db.dao;
 
 import com.webank.blockchain.data.stash.db.model.SysCommitteeVotesInfo;
-import com.webank.blockchain.data.stash.db.model.SysHash2HeaderInfo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

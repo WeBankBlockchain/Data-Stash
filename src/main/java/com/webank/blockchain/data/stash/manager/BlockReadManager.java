@@ -13,8 +13,7 @@
  */
 package com.webank.blockchain.data.stash.manager;
 
-import java.util.*;
-
+import cn.hutool.core.io.IORuntimeException;
 import com.webank.blockchain.data.stash.config.SystemPropertyConfig;
 import com.webank.blockchain.data.stash.constants.BinlogConstants;
 import com.webank.blockchain.data.stash.db.mapper.BlockTaskPoolMapper;
@@ -26,11 +25,13 @@ import com.webank.blockchain.data.stash.handler.BlockHandler;
 import com.webank.blockchain.data.stash.read.MultiSourceBlockReader;
 import com.webank.blockchain.data.stash.utils.BytesUtil;
 import com.webank.blockchain.data.stash.utils.CRC32Util;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import cn.hutool.core.io.IORuntimeException;
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * BlockReadManager

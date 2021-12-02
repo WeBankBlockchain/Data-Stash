@@ -13,16 +13,14 @@
  */
 package com.webank.blockchain.data.stash.verify;
 
+import cn.hutool.core.util.HexUtil;
 import com.webank.blockchain.data.stash.block.BlockV2RC2;
 import com.webank.blockchain.data.stash.block.TransactionReceipt;
 import com.webank.blockchain.data.stash.crypto.CyptoInterface;
-import com.webank.blockchain.data.stash.utils.JsonUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import cn.hutool.core.util.HexUtil;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * TransationReceiptValidation

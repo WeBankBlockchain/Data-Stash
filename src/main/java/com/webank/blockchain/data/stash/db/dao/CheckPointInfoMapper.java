@@ -13,12 +13,11 @@
  */
 package com.webank.blockchain.data.stash.db.dao;
 
-import java.util.List;
-import java.util.TreeMap;
-
+import com.webank.blockchain.data.stash.db.model.CheckPointInfo;
 import org.apache.ibatis.annotations.Param;
 
-import com.webank.blockchain.data.stash.db.model.CheckPointInfo;
+import java.util.List;
+import java.util.TreeMap;
 
 /**
  * CommonsInfoMapper

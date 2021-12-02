@@ -13,15 +13,10 @@
  */
 package com.webank.blockchain.data.stash.db.service;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
-import javax.sql.DataSource;
-
 import com.webank.blockchain.data.stash.config.SystemPropertyConfig;
 import com.webank.blockchain.data.stash.constants.DBStaticTableConstants;
 import com.webank.blockchain.data.stash.constants.DBTableTypeConstants;
+import com.webank.blockchain.data.stash.db.dao.SysTablesInfoMapper;
 import com.webank.blockchain.data.stash.db.face.StorageService;
 import com.webank.blockchain.data.stash.db.model.SysTablesInfo;
 import com.webank.blockchain.data.stash.entity.EntryInfo;
@@ -29,12 +24,16 @@ import com.webank.blockchain.data.stash.entity.TableDataInfo;
 import com.webank.blockchain.data.stash.exception.DataStashException;
 import com.webank.blockchain.data.stash.utils.CommonUtil;
 import com.webank.blockchain.data.stash.utils.SQLUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.webank.blockchain.data.stash.db.dao.SysTablesInfoMapper;
 
-import lombok.extern.slf4j.Slf4j;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 

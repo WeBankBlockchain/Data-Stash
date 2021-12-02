@@ -13,10 +13,10 @@
  */
 package com.webank.blockchain.data.stash.fetch;
 
-import java.util.TreeSet;
-
 import lombok.Data;
 import lombok.experimental.Accessors;
+
+import java.util.TreeSet;
 
 /**
  * BinlogFileDir

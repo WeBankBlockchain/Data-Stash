@@ -16,12 +16,9 @@ package com.webank.blockchain.data.stash.convertor;
 import com.webank.blockchain.data.stash.constants.DBDynamicTableConstants;
 import com.webank.blockchain.data.stash.constants.DataStorageTypeConstants;
 import com.webank.blockchain.data.stash.db.model.BaseInfo;
-import org.springframework.stereotype.Service;
-import com.webank.blockchain.data.stash.constants.DBDynamicTableConstants;
-import com.webank.blockchain.data.stash.constants.DataStorageTypeConstants;
-import com.webank.blockchain.data.stash.db.model.BaseInfo;
 import com.webank.blockchain.data.stash.entity.EntryInfo;
 import com.webank.blockchain.data.stash.utils.ObjectBuildUtil;
+import org.springframework.stereotype.Service;
 
 /**
  * EntryConvertHandler

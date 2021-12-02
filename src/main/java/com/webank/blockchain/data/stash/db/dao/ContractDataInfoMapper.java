@@ -13,9 +13,10 @@
  */
 package com.webank.blockchain.data.stash.db.dao;
 
-import java.util.List;
-import org.apache.ibatis.annotations.Param;
 import com.webank.blockchain.data.stash.db.model.ContractDataInfo;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 
 /**

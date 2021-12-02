@@ -13,16 +13,14 @@
  */
 package com.webank.blockchain.data.stash.block;
 
-import java.math.BigInteger;
-
-
 import com.webank.blockchain.data.stash.rlp.ByteUtil;
 import com.webank.blockchain.data.stash.rlp.RLPList;
-
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.fisco.bcos.sdk.abi.datatypes.Address;
+
+import java.math.BigInteger;
 
 /**
  * TransactionDetail

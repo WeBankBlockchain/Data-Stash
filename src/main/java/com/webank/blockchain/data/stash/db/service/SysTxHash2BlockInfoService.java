@@ -13,20 +13,19 @@
  */
 package com.webank.blockchain.data.stash.db.service;
 
-import java.util.List;
-
+import com.webank.blockchain.data.stash.config.SystemPropertyConfig;
+import com.webank.blockchain.data.stash.constants.DBStaticTableConstants;
 import com.webank.blockchain.data.stash.db.dao.SysTxHash2BlockInfoMapper;
+import com.webank.blockchain.data.stash.db.face.StorageService;
+import com.webank.blockchain.data.stash.db.model.SysTxHash2BlockInfo;
+import com.webank.blockchain.data.stash.entity.TableDataInfo;
+import com.webank.blockchain.data.stash.exception.DataStashException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.webank.blockchain.data.stash.config.SystemPropertyConfig;
-import com.webank.blockchain.data.stash.constants.DBStaticTableConstants;
-import com.webank.blockchain.data.stash.db.face.StorageService;
-import com.webank.blockchain.data.stash.db.model.SysTxHash2BlockInfo;
-import com.webank.blockchain.data.stash.entity.TableDataInfo;
-import com.webank.blockchain.data.stash.exception.DataStashException;
+import java.util.List;
 
 /**
  * 
@@ -68,21 +67,6 @@ public class SysTxHash2BlockInfoService extends DBBaseOperation implements Stora
     @SuppressWarnings("unchecked")
     @Override
     public void batchSave(String tableName, List list) {
-        
-//        int batchLastIndex = systemPropertyConfig.getBatchCount();
-//
-//        for (int index = 0; index < list.size();) {
-//
-//            if (systemPropertyConfig.getBatchCount() >= list.size() - index) {
-//                batchLastIndex = list.size();
-//                mapper.batchInsert((List<SysTxHash2BlockInfo>)list.subList(index, batchLastIndex));
-//                break;
-//            } else {
-//                mapper.batchInsert((List<SysTxHash2BlockInfo>)list.subList(index, batchLastIndex));
-//                index = batchLastIndex;
-//                batchLastIndex = index + (systemPropertyConfig.getBatchCount() - 1);
-//            }
-//        }
     }
     
     @SuppressWarnings("unchecked")

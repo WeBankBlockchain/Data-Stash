@@ -13,27 +13,15 @@
  */
 package com.webank.blockchain.data.stash.crypto.sm;
 
-import java.io.IOException;
-import java.util.Arrays;
-
 import com.webank.blockchain.data.stash.crypto.CyptoInterface;
-import com.webank.wedpr.crypto.CryptoResult;
-import com.webank.wedpr.crypto.NativeInterface;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.asn1.ASN1EncodableVector;
-import org.bouncycastle.asn1.ASN1Integer;
-import org.bouncycastle.asn1.DERSequence;
 import org.bouncycastle.util.encoders.Hex;
 import org.fisco.bcos.sdk.crypto.hash.Hash;
 import org.fisco.bcos.sdk.crypto.hash.SM3Hash;
 import org.fisco.bcos.sdk.crypto.signature.SM2Signature;
 import org.fisco.bcos.sdk.crypto.signature.Signature;
-import org.fisco.bcos.sdk.utils.Numeric;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Service;
 
-import com.webank.blockchain.data.stash.crypto.CyptoInterface;
-import com.webank.blockchain.data.stash.utils.BigIntegerUtils;
+import java.io.IOException;
 
 /**
  * CryptoService

@@ -13,10 +13,10 @@
  */
 package com.webank.blockchain.data.stash.db.model;
 
-import java.util.Date;
-
 import lombok.Data;
 import lombok.experimental.Accessors;
+
+import java.util.Date;
 
 /**
  * BlockTaskPool

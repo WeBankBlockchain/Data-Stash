@@ -13,10 +13,10 @@
  */
 package com.webank.blockchain.data.stash.entity;
 
-import java.util.TreeSet;
-
 import lombok.Data;
 import lombok.experimental.Accessors;
+
+import java.util.TreeSet;
 
 /**
  * 

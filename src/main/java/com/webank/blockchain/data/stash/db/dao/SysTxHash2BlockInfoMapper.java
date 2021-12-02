@@ -13,8 +13,9 @@
  */
 package com.webank.blockchain.data.stash.db.dao;
 
-import java.util.List;
 import com.webank.blockchain.data.stash.db.model.SysTxHash2BlockInfo;
+
+import java.util.List;
 
 /**
  * SysTxHash2BlockInfoMapper

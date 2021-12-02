@@ -13,22 +13,19 @@
  */
 package com.webank.blockchain.data.stash.manager;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import cn.hutool.core.util.StrUtil;
+import com.webank.blockchain.data.stash.config.SystemPropertyConfig;
+import com.webank.blockchain.data.stash.entity.RemoteServerInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import com.webank.blockchain.data.stash.config.SystemPropertyConfig;
-import com.webank.blockchain.data.stash.entity.RemoteServerInfo;
-
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.util.StrUtil;
-import lombok.extern.slf4j.Slf4j;
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * CheckManager
