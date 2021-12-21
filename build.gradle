@@ -20,7 +20,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 group = 'com.webank'
-version = '1.2.2'
+version = '1.2.3'
 
 ext['lombok.version'] = "1.18.8"
 
@@ -34,8 +34,15 @@ repositories {
     mavenCentral()
 }
 
+def log4j_version="2.16.0"
+List logger = [
+        "org.apache.logging.log4j:log4j-api:$log4j_version",
+        "org.apache.logging.log4j:log4j-to-slf4j:$log4j_version",
+]
+
 dependencies {
-	//implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    compile logger
+    //implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     annotationProcessor "org.projectlombok:lombok"
     compileOnly "org.projectlombok:lombok"
     testAnnotationProcessor "org.projectlombok:lombok"
