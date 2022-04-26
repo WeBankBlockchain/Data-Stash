@@ -70,7 +70,7 @@ public class ObjectBuildUtil {
         try {
             fieldList[0].setAccessible(true);
             fieldList[1].setAccessible(true);
-            fieldList[2].setAccessible(true);
+            //fieldList[2].setAccessible(true);
 
             fieldList[0].set(obj, fields.toString());
             fieldList[1].set(obj, values.toString());
