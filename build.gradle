@@ -109,10 +109,6 @@ bootJar {
             from file('tools/')
             into 'dist/'
         }
-        copy {
-            from file('src/main/tools/')
-            into 'dist'
-        }
 		copy {
 			from configurations.runtime
 			into 'dist/lib'
