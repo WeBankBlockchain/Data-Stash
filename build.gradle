@@ -98,17 +98,10 @@ sourceSets {
 bootJar {
 	destinationDir file('dist')
 	archiveName project.name  + '.jar'
-    from('src/main/java'){
-        include '**/*.xml'
-    }
     exclude '**/*.properties'
     exclude '**/*.yml'
 
     doLast {
-        copy {
-            from file('tools/')
-            into 'dist/'
-        }
 		copy {
 			from configurations.runtime
 			into 'dist/lib'
