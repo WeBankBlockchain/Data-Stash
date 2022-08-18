@@ -54,7 +54,7 @@ public class BinlogSyncTask implements ApplicationRunner {
             readConfig.setFiles(3);
         }
         while (true) {
-//            downloadManager.download();
+            downloadManager.download();
             checkManager.check();
             long blocks = blockReadManager.read();
             cleanManager.clean();
