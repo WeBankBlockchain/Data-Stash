@@ -88,7 +88,7 @@
 	</insert>
 	
 	<insert id="batchInsertDetail" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="pkId">
-		insert ignore into _sys_hash_2_block_d_ (_id_, _hash_, _status_, _num_, hash, value) values
+		insert ignore into _sys_hash_2_block_ (_id_, _hash_, _status_, _num_, hash, value) values
 		<foreach collection="list" item="item" index="index" separator="," >
 			(#{item.id,jdbcType=BIGINT}, #{item.hash,jdbcType=VARCHAR}, #{item.status,jdbcType=INTEGER},
 		#{item.num,jdbcType=BIGINT}, #{item.hash,jdbcType=VARCHAR}, #{item.value,jdbcType=VARCHAR})
@@ -97,7 +97,7 @@
 	
 	<insert id="insertDetail" parameterType="com.webank.blockchain.data.stash.db.model.SysHash2BlockInfo"
 		useGeneratedKeys="true" keyProperty="pkId">
-		insert ignore into _sys_hash_2_block_d_ (_id_, _hash_, _status_, _num_,
+		insert ignore into _sys_hash_2_block_ (_id_, _hash_, _status_, _num_,
       	hash, value)
     	values (#{id,jdbcType=BIGINT}, #{hash,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER}, #{num,jdbcType=BIGINT}, 
       	#{hash,jdbcType=VARCHAR}, #{value,jdbcType=VARCHAR})
@@ -107,7 +107,7 @@
 		resultMap="BaseResultMap">
 		select
 		<include refid="Base_Column_List" />
-		from _sys_hash_2_block_d_
+		from _sys_hash_2_block_
 		where _id_ = #{id,jdbcType=BIGINT}
 	</select>
 	
@@ -115,13 +115,13 @@
 		resultMap="BaseResultMap">
 		select
 		<include refid="Base_Column_List" />
-		from _sys_hash_2_block_d_
+		from _sys_hash_2_block_
 		where _num_ =
 		#{num,jdbcType=BIGINT}
 	</select>
 	
 	<delete id="deleteDetailByBlockNum" parameterType="java.lang.Long">
-		delete from _sys_hash_2_block_d_
+		delete from _sys_hash_2_block_
 		where _num_ = #{num,jdbcType=BIGINT}
 	</delete>
 </mapper>

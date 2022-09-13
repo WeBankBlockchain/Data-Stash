@@ -61,7 +61,7 @@ public class SysHash2BlockInfoService extends DBBaseOperation implements Storage
 	public void createSchema() {
 	    //mapper.createTable(DBStaticTableConstants.SYS_HASH_2_BLOCK_TABLE);
 
-		String detailTableName = DBStaticTableConstants.SYS_HASH_2_BLOCK_TABLE + DBStaticTableConstants.SYS_DETAIL_TABLE_POST_FIX;
+		String detailTableName = DBStaticTableConstants.SYS_HASH_2_BLOCK_TABLE;
 		mapper.createDetailTable(detailTableName);
 	}
 	
