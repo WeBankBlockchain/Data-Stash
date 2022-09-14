@@ -96,7 +96,7 @@ public class DownloadManager {
             }
             log.info("Download start from last task: {}", last);
         }
-        download(server, last);
+//        download(server, last);
         localFiles.add(last);
         while (localFiles.size() < readPropertyConfig.getFiles()) {
             if (last >= remote.last()) {
