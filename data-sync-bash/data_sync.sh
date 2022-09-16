@@ -2,10 +2,10 @@
 
 #determine the operating system and pull the corresponding execution file
 if [ "$(uname)" == "Darwin" ]; then
-    curl -#LO https://github.com/WeBankBlockchain/Data-Stash/releases/download/V1.2.0/data-sync_mac.tar.gz
+    curl -#LO https://github.com/WeBankBlockchain/Data-Stash/releases/download/V1.2.4/data-sync_mac.tar.gz
     tar -zxvf data-sync_mac.tar.gz
 elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
-    curl -#LO https://github.com/WeBankBlockchain/Data-Stash/releases/download/V1.2.0/data-sync_linux.tar.gz
+    curl -#LO https://github.com/WeBankBlockchain/Data-Stash/releases/download/V1.2.4/data-sync_linux.tar.gz
     tar -zxvf data-sync_linux.tar.gz
 fi
 
