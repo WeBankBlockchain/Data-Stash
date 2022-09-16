@@ -87,9 +87,11 @@ public class SysHash2BlockInfoService extends DBBaseOperation implements Storage
 
             if (SYS_HASH_2_BLOCK_BATCH >= list.size() - index) {
                 batchLastIndex = list.size();
+                mapper.batchInsert((List<SysHash2BlockInfo>)list.subList(index, batchLastIndex));
                 mapper.batchInsertDetail((List<SysHash2BlockInfo>)list.subList(index, batchLastIndex));
                 break;
             } else {
+                mapper.batchInsert((List<SysHash2BlockInfo>)list.subList(index, batchLastIndex));
                 mapper.batchInsertDetail((List<SysHash2BlockInfo>)list.subList(index, batchLastIndex));
                 index = batchLastIndex;
                 batchLastIndex = index + (SYS_HASH_2_BLOCK_BATCH - 1);
