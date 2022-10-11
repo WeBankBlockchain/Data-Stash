@@ -31,7 +31,7 @@ import javax.annotation.PostConstruct;
 import java.util.List;
 
 /**
- * 
+ *
  * SysHash2BlockInfoService
  *
  * @Description: SysHash2BlockInfoService
@@ -43,29 +43,29 @@ import java.util.List;
 @Service
 @Slf4j
 public class SysHash2BlockInfoService extends DBBaseOperation implements StorageService {
-	
-	@Autowired
-	private SysHash2BlockInfoMapper mapper;
 
-	@Autowired
-	private SystemPropertyConfig config;
-	private int SYS_HASH_2_BLOCK_BATCH;
+    @Autowired
+    private SysHash2BlockInfoMapper mapper;
 
-	@PostConstruct
-	private void init(){
-	    SYS_HASH_2_BLOCK_BATCH = config.getBatchCount();
+    @Autowired
+    private SystemPropertyConfig config;
+    private int SYS_HASH_2_BLOCK_BATCH;
+
+    @PostConstruct
+    private void init(){
+        SYS_HASH_2_BLOCK_BATCH = config.getBatchCount();
     }
 
-	@Override
-	@Transactional
-	public void createSchema() {
-	    //mapper.createTable(DBStaticTableConstants.SYS_HASH_2_BLOCK_TABLE);
+    @Override
+    @Transactional
+    public void createSchema() {
+        mapper.createTable(DBStaticTableConstants.SYS_HASH_2_BLOCK_TABLE);
 
-		String detailTableName = DBStaticTableConstants.SYS_HASH_2_BLOCK_TABLE + DBStaticTableConstants.SYS_DETAIL_TABLE_POST_FIX;
-		mapper.createDetailTable(detailTableName);
-	}
-	
-	@SuppressWarnings("unchecked")
+        String detailTableName = DBStaticTableConstants.SYS_HASH_2_BLOCK_TABLE + DBStaticTableConstants.SYS_DETAIL_TABLE_POST_FIX;
+        mapper.createDetailTable(detailTableName);
+    }
+
+    @SuppressWarnings("unchecked")
     @Override
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void storeTableData(String tableName, TableDataInfo tableDataInfo) throws DataStashException {
@@ -77,25 +77,25 @@ public class SysHash2BlockInfoService extends DBBaseOperation implements Storage
     public void batchSave(String tableName, List list) {
 
     }
-    
+
     @SuppressWarnings("unchecked")
     @Override
     public void batchSaveDetail(String tableName, List list) {
         int batchLastIndex = SYS_HASH_2_BLOCK_BATCH;
 
         for (int index = 0; index < list.size();) {
-            
+
             if (SYS_HASH_2_BLOCK_BATCH >= list.size() - index) {
                 batchLastIndex = list.size();
+                mapper.batchInsert((List<SysHash2BlockInfo>)list.subList(index, batchLastIndex));
                 mapper.batchInsertDetail((List<SysHash2BlockInfo>)list.subList(index, batchLastIndex));
                 break;
             } else {
+                mapper.batchInsert((List<SysHash2BlockInfo>)list.subList(index, batchLastIndex));
                 mapper.batchInsertDetail((List<SysHash2BlockInfo>)list.subList(index, batchLastIndex));
                 index = batchLastIndex;
                 batchLastIndex = index + (SYS_HASH_2_BLOCK_BATCH - 1);
             }
-        } 
+        }
     }
-   
-   
 }

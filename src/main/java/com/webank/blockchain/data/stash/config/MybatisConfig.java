@@ -45,10 +45,10 @@ public class MybatisConfig {
     public SqlSessionFactory sqlSessionFactory() throws Exception {
       SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
       sessionFactory.setDataSource(dataSource);
-      sessionFactory.setTypeAliasesPackage("com.webank.blockchain.data.stash.db.model");
+//      sessionFactory.setTypeAliasesPackage("com.webank.blockchain.data.stash.db.model");
       
       PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
-      sessionFactory.setMapperLocations(resolver.getResources("classpath*:**/sqlmap/*.xml"));
+      sessionFactory.setMapperLocations(resolver.getResources("classpath*:sqlmap/*.xml"));
       return sessionFactory.getObject();
     }
     

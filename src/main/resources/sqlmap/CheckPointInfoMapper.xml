@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.webank.blockchain.data.stash.db.dao.CheckPointInfoMapper">
+	<resultMap id="BaseResultMap" type="com.webank.blockchain.data.stash.db.model.CheckPointInfo">
+    	<id column="pk_id" jdbcType="BIGINT" property="pkId" />
+    	<result column="block_num" jdbcType="BIGINT" property="blockNum" />
+		<result column="block_data_hash" jdbcType="VARCHAR" property="blockDataHash" />
+  	</resultMap>
+  	
+  	<sql id="Base_Column_List">
+		pk_id, block_num, block_data_hash
+	</sql>
+  
+    <update id="createTable" parameterType="String">
+		CREATE TABLE IF NOT EXISTS check_point (
+		`pk_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+		`block_num` bigint(20) unsigned NOT NULL,
+		`block_data_hash` VARCHAR(255) NOT NULL,
+  		PRIMARY KEY (`pk_id`),
+		UNIQUE KEY (block_num)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    </update>
+  
+    <insert id="insert" parameterType="com.webank.blockchain.data.stash.db.model.CheckPointInfo"
+		useGeneratedKeys="true" keyProperty="pkId">
+		insert into check_point (block_num, block_data_hash)
+		values (#{blockNum,jdbcType=BIGINT}, #{blockDataHash,jdbcType=VARCHAR})
+	</insert>
+  
+  	<select id="selectByBlockNum" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    	select 
+    	<include refid="Base_Column_List" />
+    	from check_point
+    	where block_num = #{blockNum,jdbcType=BIGINT}
+  	</select>
+  	
+	<select id="selectBlockDataByBlockNum" parameterType="java.lang.Long"
+		resultType="java.util.TreeMap">
+		select * from ${tableName}
+		where _num_ = #{blockNum,jdbcType=BIGINT} order by _id_
+	</select>
+	
+	<delete id="rollbackByBlockNum" parameterType="java.lang.Long">
+		delete from check_point
+		where block_num >= #{num,jdbcType=BIGINT}
+	</delete>
+
+	<select id="nextCheckpoint" resultType="java.lang.Long">
+		select IFNULL(block_num,0) from check_point
+		order by 1 desc
+		limit 1
+	</select>
+</mapper>
